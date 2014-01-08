@@ -1,0 +1,210 @@
+/*  skin/toolbar-button.css  */
+#ssleuth-tb-img, #ssleuth-ub-img {
+  -moz-box-orient: horizontal !important;
+}
+
+#ssleuth-tb-img[rank="default"],
+#ssleuth-ub-img[rank="default"] {
+  list-style-image: url("chrome://ssleuth/skin/btn-large-gray.png");
+}
+
+#ssleuth-tb-img[rank="low"], 
+#ssleuth-ub-img[rank="low"] {
+  list-style-image: url("chrome://ssleuth/skin/btn-large-red.png");
+}
+
+#ssleuth-tb-img[rank="medium"], 
+#ssleuth-ub-img[rank="medium"] {
+  list-style-image: url("chrome://ssleuth/skin/btn-large-orange.png");
+}
+
+#ssleuth-tb-img[rank="high"],
+#ssleuth-ub-img[rank="high"] {
+  list-style-image: url("chrome://ssleuth/skin/btn-large-blue.png");
+}
+
+#ssleuth-tb-img[rank="vhigh"],
+#ssleuth-ub-img[rank="vhigh"] {
+  list-style-image: url("chrome://ssleuth/skin/btn-large-green.png");
+}
+
+toolbar[iconsize="small"] #ssleuth-tb-img {
+    width: 16px; 
+    height: auto; 
+}
+
+#ssleuth-ub-img {
+    width: 18px; 
+    height: auto;
+}
+
+#ssleuth-ub-rank {
+    /* font-weight: bold;*/
+    padding-left:4px;
+    padding-right:2px; 
+}
+#ssleuth-ub-rank[rank="default"]{
+    color: #5b696c; 
+}
+#ssleuth-ub-rank[rank="low"]{
+    color: #5e0a0a; 
+}    
+#ssleuth-ub-rank[rank="medium"]{
+    color: #e88119;
+}    
+#ssleuth-ub-rank[rank="high"]{
+    color: #3f629e; 
+}    
+#ssleuth-ub-rank[rank="vhigh"]{
+    color: #4f941c; 
+}    
+
+#ssleuth-box-urlbar {
+    background: -moz-linear-gradient(120deg,  #d8dbdc, rgba(255,255,255,0));
+    margin-left: 5px; 
+    margin-right: 1px;
+/*  margin-top: -1px; 
+    margin-bottom: 0px; 
+     */
+}
+#ssleuth-box-urlbar[rank="default"] {
+    background: -moz-linear-gradient(120deg,  #d8dbdc, rgba(255,255,255,0)); 
+}
+#ssleuth-box-urlbar[rank="low"] {
+    background: -moz-linear-gradient(120deg,  #cbb1b1, rgba(255,255,255,0));
+}
+#ssleuth-box-urlbar[rank="medium"] {
+    background: -moz-linear-gradient(120deg,  #f8eac8, rgba(255,255,255,0));
+}
+#ssleuth-box-urlbar[rank="high"] {
+    background: -moz-linear-gradient(120deg,  #ced7e6, rgba(255,255,255,0));
+}
+#ssleuth-box-urlbar[rank="vhigh"] {
+    background: -moz-linear-gradient(120deg,  #d1e3c4, rgba(255,255,255,0));
+}
+
+#ssleuth-box-urlbar:hover {
+    background: transparent;
+}
+
+.ssleuth-img-state {
+    margin-top: 4px; 
+}
+
+#ssleuth-img-cipher-rank[status="low"] {
+    list-style-image: url("chrome://ssleuth/skin/status-bad.png");
+}
+#ssleuth-img-cipher-rank[status="med"] {
+    list-style-image: url("chrome://ssleuth/skin/status-medium.png");
+}
+#ssleuth-img-cipher-rank[status="high"] {
+    list-style-image: url("chrome://ssleuth/skin/status-high.png");
+}
+
+.ssleuth-star {
+    list-style-image: url("chrome://ssleuth/skin/starred-empty.png"); 
+    width: 15px; 
+    height: auto; 
+}
+.ssleuth-star-half {
+    list-style-image: url("chrome://ssleuth/skin/starred-half.png"); 
+    width: 15px; 
+    height: auto; 
+}
+.ssleuth-star-full {
+    list-style-image: url("chrome://ssleuth/skin/starred.png"); 
+    width: 15px; 
+    height: auto; 
+}
+    
+#ssleuth-img-p-f-secrecy[status="no"] {
+    list-style-image: url("chrome://ssleuth/skin/status-medium.png");
+}
+#ssleuth-img-p-f-secrecy[status="yes"] {
+    list-style-image: url("chrome://ssleuth/skin/status-high.png");
+}
+
+#ssleuth-img-ff-connection-status[state="Secure"] {
+    list-style-image: url("chrome://ssleuth/skin/status-good.png"); 
+}
+#ssleuth-img-ff-connection-status[state="Insecure"] {
+    list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
+}
+#ssleuth-img-ff-connection-status[state="Broken"] {
+    list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
+}
+
+#ssleuth-text-ff-connection-status-broken {
+    color: #a02121; 
+}
+
+#ssleuth-img-cert-state[state="good"] {
+    list-style-image: url("chrome://ssleuth/skin/status-good.png"); 
+}
+#ssleuth-img-cert-state[state="bad"] {
+    list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
+}
+
+#ssleuth-text-cert-extended-validation[ev="Yes"] {
+    color: #28802c; 
+    font-weight: bold;
+}
+#ssleuth-text-cert-extended-validation[ev="No"] {
+    /* font-size: 10px; */
+} 
+
+#ssleuth-text-cert-common-name {
+    font-weight: bold; 
+}
+#ssleuth-text-cert-org {
+	font-weight: bold;
+}
+#ssleuth-text-cert-issuer-org {
+	font-weight: bold;
+}
+#ssleuth-text-cert-validity[valid="true"] {
+} 
+#ssleuth-text-cert-validity[valid="false"] {
+    color: #a02121; 
+    font-weight: bold; 
+} 
+
+#ssleuth-text-cert-domain-matched[match="No"] {
+    color : #a02121; 
+    font-weight: bold; 
+}
+
+#ssleuth-text-cipher-rank-numeric {
+    font-weight: bold;
+}
+
+#ssleuth-img-http-omg {
+    list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
+}
+.ssleuth-text-body-default {
+    font-size: 0.85em; 
+}
+.ssleuth-text-title-default {
+    /* Default ff font */
+    /* font-weight: bold; */
+}
+
+.ssleuth-text-body-large {
+    font-size: 0.95em; 
+}
+.ssleuth-text-title-large {
+    /* font-size: 1.1em;  */
+    font-weight: bold
+}
+
+.ssleuth-text-body-larger {
+    font-size: 1.03em; 
+}
+.ssleuth-text-title-larger {
+    font-size: 1.2em; 
+    /* Default ff font */
+}
+.ssleuth-pref-text {
+    /* white-space: pre-wrap;*/
+    width: 500px; 
+}

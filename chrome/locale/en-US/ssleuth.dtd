@@ -1,0 +1,18 @@
+<!ENTITY ssleuth.cipher.suite.label "Cipher Details">
+<!ENTITY ssleuth.cipher.suite.rank.label "SSleuth cipher rank: ">
+<!ENTITY ssleuth.cipher.suite.keylength.label "cipher keylength: ">
+<!ENTITY ssleuth.ff.connection.status "Connection status (firefox): ">
+<!ENTITY ssleuth.ff.connection.status.broken "This page has either insecure content or a bad certificate.">
+<!ENTITY ssleuth.cert.details.label "Certificate Details" >
+<!ENTITY ssleuth.cert.ev.label "Extended validation: ">
+<!ENTITY ssleuth.cert.cn.label "Common Name: ">
+<!ENTITY ssleuth.cert.issuedto.label "Issued to: ">
+<!ENTITY ssleuth.cert.issuedby.label "Issued by: ">
+<!ENTITY ssleuth.cert.validity.label "Validity: ">
+<!ENTITY ssleuth.cert.domain.matched.label "Domain name matched: " >
+
+<!ENTITY ssleuth.http.noenc.warning "Your connection to this site is not encrypted.">
+<!ENTITY ssleuth.http.attempt.enc "You can attempt connecting to the secure version of the site if available.">
+<!ENTITY ssleuth.http.enc.disclaimer "Note; The availability of the above link depends on the site's offering of the same content over an https connection.">
+
+              
