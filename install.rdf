@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>ssleuth@github</em:id>
+    <em:version>0.1.1</em:version>
+    <em:type>2</em:type>
+   
+    <em:targetApplication>
+      <Description>
+        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+        <em:minVersion>25.0</em:minVersion>
+        <em:maxVersion>29.0.*</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+   
+    <!-- Front End MetaData -->
+    <em:name>SSleuth</em:name>
+    <em:description>How strong is your SSL connection? SSleuth ranks an established SSL connection and provides a brief analysis of the SSL/TLS parameters.</em:description>
+    <em:creator>Sibi Antony</em:creator>
+    <em:homepageURL>https://github.com/sibiantony/ssleuth</em:homepageURL>
+    <em:iconURL>chrome://ssleuth/skin/ssleuth-icon.png</em:iconURL>
+    <em:optionsURL>chrome://ssleuth/content/preferences.xul</em:optionsURL>
+
+  </Description>
+</RDF>

@@ -1,0 +1,8 @@
+content		ssleuth		chrome/content/
+resource	ssleuth		chrome/content/
+overlay 	chrome://browser/content/browser.xul 		chrome://ssleuth/content/ssleuth.xul
+
+skin 		ssleuth 	classic/1.0 			skin/
+style 		chrome://global/content/customizeToolbar.xul 	chrome://ssleuth/skin/ssleuth.css
+
+locale 		ssleuth		en-US				chrome/locale/en-US/
