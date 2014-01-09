@@ -23,10 +23,10 @@ by ranking it and appropriateley color coding it.
 The addon panel also gives the information on perfect forward secrecy, firefox 
 connection status and the certificate details.
 
-Ranking Rationale
-=================
-The ranking mechanism is in the early stages now, and will keep changing
-over time. User feedback and inputs on the ranking are welcome!
+## Ranking Rationale
+
+The ranking mechanism is in the early stages now, and might change
+in future. User feedback and inputs on the ranking are welcome!
 
 The overall connection rankings depend on these parameters
 * Cipher suite rank
@@ -39,8 +39,7 @@ Cipher suite rankings are based on the encryption algorithm used and
 the HMAC. Stronger block ciphers (like AES-256, CAMELLIA-256) are ranked
 the highest (10/10) while ciphers using smaller keylength (eg: DES) are demoted.
 Although RC4 ciphers are broken, at the moment
-for an attack to be practical, access to huge amounts of data encrypted
-using different keys are necessary. [https://community.qualys.com/blogs/securitylabs/2013/03/19/rc4-in-tls-is-broken-now-what].
+for an attack to be practical, access to [huge amounts of data encrypted using different keys are necessary.](https://community.qualys.com/blogs/securitylabs/2013/03/19/rc4-in-tls-is-broken-now-what)
 For this reason, although RC4 is ranked low, it is not the least.
 
 SHA-1 and MD5 digests are reportedly weak, hence there are warning
@@ -70,19 +69,19 @@ An extended validation (EV) certificate also gains another point out of 10.
 
 Overall this is how the connection ranking is calculated :
 
-```Cipher rank/5 + 
-    PFS/2 + 
-    Extended Validation/1 + 
-    Firefox connection status/1 + 
-    Valid Domain in Certificate/1 = Connection Rank/10```
+```Cipher rank(5) + 
+    PFS(2) + 
+    Extended Validation(1) + 
+    Firefox connection status(1) + 
+    Valid certificate(1) = Connection Rank(10)```
 
 No claims are made that the above approach is the right way to
 estimate connection strength. If possible, a future release of the
 addon will make the ranking mechanism configurable, so advanced
 users can tweak the way the strength is estimated.
 
-References
-------------
+### References
+
 The cipher strength rankings and those reported by [SSL labs](https://www.ssllabs.com/ssltest/index.html)
 were compared during the development.
 Firefox developer Brian Smith [makes a proposal here](https://briansmith.org/browser-ciphersuites-01.html)
@@ -93,35 +92,36 @@ There is also an [IETF working group](https://datatracker.ietf.org/wg/uta/charte
 best practices for TLS clients and servers, including recommending
 versions of TLS, cipher suites etc.
 
-How to disable weak ciphers in Firefox
-======================================
+## How to disable weak ciphers in Firefox
+
 This addon only reports the states and do not attempt to make any
 changes in the user security preferences.
 If the user wishes to enable only strong ciphers, visit firefox
 configuration (about:config) and play around with the flags
-security.ssl3.<cipher-suite-name>
+`security.ssl3.<cipher-suite-name>`
 The flags are boolean and can be enabled/disabled quickly.
 Please note that you must take extreme care while choosing to
 disable cipher suites. You may end up unable to connect to some
 web servers if you disable a lot of them!
 
-UI
-====
+## UI
+
 There is a URL bar notification box (next to Firefox's own notification
 area). A 'sleuth' cap and the rank notifies the user of the estimated strength.
 There is an optional toolbar button mode (choose from preferences), if the
 user wishes to move around a toolbar button. 
 
-Color coding
-------------
+### Color coding
+
 The color of the notification area changes from green (very good), to blue (good),
 orange (medium) and red(bad). 
 
-Keyboard shortcut
------------------
+### Keyboard shortcut
+
 The panel can be easily brought up with the key combinations 'Ctrl' + 'Shift' + '}'. 
-If the keyboard shortcut interferes with any existing addon please report it.
-It is however possible to change the keyboard shortcut from firefox configuration.
+If the keyboard shortcut interferes with any existing addon and/or your keyboard doesn't
+support the key combination, please report it.
+It is however possible to change the keyboard shortcut via configuration.
 * Navigate to '`about:config`'
 * Key in `extensions.ssleuth` to find all ssleuth configurables, and look for `extensions.ssleuth.ui.keyshortcut`
 * The preference type is a string and you can change the modifieres and key. Please follow
