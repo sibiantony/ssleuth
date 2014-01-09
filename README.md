@@ -35,6 +35,7 @@ The overall connection rankings depend on these parameters
 * A valid certificate (matching domain/ valid dates)
 * And an extended validation certificate.
 
+### Cipher suite ranking
 Cipher suite rankings are based on the encryption algorithm used and
 the HMAC. Stronger block ciphers (like AES-256, CAMELLIA-256) are ranked
 the highest (10/10) while ciphers using smaller keylength (eg: DES) are demoted.
@@ -49,11 +50,13 @@ The  cipher suite ranks can be found here : `chrome/content/cipherSuites.js`
 While calculating the overall connection rank, SSleuth gives a weightage
 of 5/10 for cipher suite alone.
 
+### Perfect forward secrecy
 If the cipher suite supports perfect forward secrecy (Ephemeral Diffie-Hellmann
 key exchange) a point of 1 is awarded. Since the points are given separately 
 for PFS, the key exchange algorithm is not considered while ranking the
 cipher suites.
 
+### Firefox connection status
 Another point is awarded for a 'Secure' connection status from Firefox's
 own flags. The Firefox flag reports 3 states : 'Secure', 'Broken' or
 'Insecure'. For the latter 2 states, the API does not really inform
@@ -63,11 +66,12 @@ insecure content (flash plugins). Firefox notifies the user
 on these explicity via the browser UI. If the states are 'Broken' or
 'Insecure' there are no points awarded.
 
+### Valid certificate
 A valid certificate earns another point. As of now, the validity is checked
 for a matching domain name and valid dates on the certificate.
 An extended validation (EV) certificate also gains another point out of 10.
 
-Overall this is how the connection ranking is calculated :
+This is how the overall connection ranking is calculated :
 
 ```Cipher rank(5) + 
     PFS(2) + 
