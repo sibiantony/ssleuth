@@ -13,8 +13,8 @@ SSL labs testing is meant for web servers, more sophisticated and is much more
 than a cipher ranking service. However to know which ciphers are used when a user
 connects to a website, browser support and/or an addon is necessary. Firefox started
 exposing the full cipher suite name from version 25.0. Users can see the
-cipher suite by going to the URL notification lock icon -> More information
-or Page Info -> Security -> Technical details.
+cipher suite by going to the `URL notification lock icon -> More information`
+or `Page Info -> Security -> Technical details`.
 The user can see the cipher suite used for connection and firefox's
 assessment of the strength of the cipher.
 
