@@ -242,13 +242,7 @@ var ssleuth = {
                 var cert = sslStatus.serverCert;
                 var extendedValidation = false;
 
-                for (var i = 0; i < cipherSuites.length; i++) {
-                    if (cipherName == cipherSuites[i].name) {
-                        cipherSuite = cipherSuites[i];
-                        break; 
-                    }
-                }
-                // Security Info - Firefox states
+               // Security Info - Firefox states
                 if ((aState & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
                     securityState = "Secure"; 
                 } else if ((aState & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
@@ -264,37 +258,86 @@ var ssleuth = {
                 if (!sslStatus.isDomainMismatch) {
                     domainNameMatched = "Yes"; 
                 }
-                //  UI  
-                if (!cipherSuite) {
+
+                cipherSuite = {name: cipherName, 
+                                rank: cipherStrength.LOW, 
+                                pfs: 0, 
+                                notes: "",
+                                keyExchange: null, 
+                                bulkCipher: null, 
+                                HMAC: null 
+                              }; 
+                                
+                // Key exchange
+                for (var i=0; i< csKeyExchange.length; i++) {
+                    if((cipherName.indexOf(csKeyExchange[i].name) != -1)) {
+                        cipherSuite.keyExchange = csKeyExchange[i];
+                        cipherSuite.pfs = csKeyExchange[i].pfs; 
+                        break; 
+                    }
+                }
+                // Bulk cipher
+                for (var i=0; i< csBulkCipher.length; i++) {
+                    if((cipherName.indexOf(csBulkCipher[i].name) != -1)) {
+                        cipherSuite.bulkCipher = csBulkCipher[i];
+                        break; 
+                    }
+                }
+                // HMAC
+                for (var i=0; i< csHMAC.length; i++) {
+                    if((cipherName.indexOf(csHMAC[i].name) != -1)) {
+                        cipherSuite.HMAC = csHMAC[i];
+                        break; 
+                    }
+                }
+
+                if (!cipherSuite.keyExchange) {
+                    cipherSuite.keyExchange = {name: "",
+                                                rank: 10,
+                                                pfs: 0, 
+                                                notes: "Unknown key exchange type"
+                                              };
+                }
+
+                if (!cipherSuite.bulkCipher) {
+                    cipherSuite.bulkCipher = {name: "",
+                                                rank: 0,
+                                                notes: "Unknown Bulk cipher"
+                                              }; 
                     /* Something's missing in our list.
                      * Get the security strength from Firefox's own flags.*/
-                    cipherSuite = {name: sslStatus.cipherName, 
-                                    rank: cipherStrength.LOW, 
-                                    pfs: 0, 
-                                    notes: "Missing Cipher details. Using Firefox Security Strength flags."
-                                  }
-                    // Get PFS from cipherName
-                    if ((cipherSuite.name.indexOf('TLS_DHE') != -1 ) || 
-                        (cipherSuite.name.indexOf('TLS_ECDHE') != -1) ) {
-                            cipherSuite.pfs = 1; 
-                    }
-
-                    // Set cipherSuite rank
+                    // Set cipher rank
                     if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
-                        cipherSuite.rank = cipherStrength.MAX; 
+                        cipherSuite.bulkCipher.rank = cipherStrength.MAX; 
                     } else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
-                        cipherSuite.rank = cipherStrength.HIGH - 1; 
+                        cipherSuite.bulkCipher.rank = cipherStrength.HIGH - 1; 
                     } else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
-                        cipherSuite.rank = cipherStrength.MED - 1; 
+                        cipherSuite.bulkCipher.rank = cipherStrength.MED - 1; 
                     } 
-                } 
+                }
+
+                if (!cipherSuite.HMAC) {
+                    cipherSuite.HMAC = {name: "",
+                                                rank: 10,
+                                                notes: "Unknown MAC Algorithm"
+                                              };
+                }
+
+                cipherSuite.notes = cipherSuite.keyExchange.notes +
+                                        cipherSuite.bulkCipher.notes +
+                                        cipherSuite.HMAC.notes; 
+
+                // Calculate ciphersuite rank  - adds up to 20. 
+                cipherSuite.rank = ( cipherSuite.keyExchange.rank/2 +
+                                        cipherSuite.bulkCipher.rank + 
+                                        cipherSuite.HMAC.rank/2 )/2;
 
                 var connectionRank = cipherSuite.rank/2; 
                 if (cipherSuite.pfs) {
                     connectionRank += 2; 
                 }
 
-                if (aState & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
+                if (extendedValidation) {
                     connectionRank += 1; 
                 }
 
@@ -305,6 +348,10 @@ var ssleuth = {
                 if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) {
                     connectionRank += 1; 
                 }
+
+                dump ("\n connection rank : " + connectionRank + "\n"); 
+                connectionRank = Number(connectionRank).toFixed(1); 
+                dump ("\n connection rank : " + connectionRank + "\n"); 
 
                 // Now set the appropriate button
                 this.setButtonRank(connectionRank); 
@@ -374,7 +421,7 @@ var ssleuth = {
 
             ssleuthUbRank.setAttribute("rank", buttonRank);
             if (connectionRank != -1) {
-                ssleuthUbRank.textContent = String(connectionRank.toFixed(1)); 
+                ssleuthUbRank.textContent = String(Number(connectionRank).toFixed(1)); 
             } else {
                 ssleuthUbRank.textContent = ""; 
             }
