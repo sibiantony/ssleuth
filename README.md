@@ -130,5 +130,5 @@ It is however possible to change the keyboard shortcut via configuration.
 * Navigate to '`about:config`'
 * Key in `extensions.ssleuth` to find all ssleuth configurables, and look for `extensions.ssleuth.ui.keyshortcut`
 * The preference type is a string and you can change the modifieres and key. Please follow
-[mozilla guidelines](https://developer.mozilla.org/en-US/docs/XUL/Tutorial/Keyboard_Shortcuts) to set the shortcut. SSleuth uses 'keys' rather than 'keycodes'. 
+mozilla guidelines for [modifiers](https://developer.mozilla.org/en-US/docs/XUL/Attribute/modifiers) and [keys](https://developer.mozilla.org/en-US/docs/XUL/Attribute/key) to set the shortcut. SSleuth uses 'keys' rather than 'keycodes'. 
 
