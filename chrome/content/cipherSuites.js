@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["cipherStrength", "csKeyExchange", "csBulkCipher", "csHMAC"];
+var EXPORTED_SYMBOLS = ["cipherStrength", "csKeyExchange", "csBulkCipher", "csHMAC", "csWeighting"];
 
 const csKeyExchange = [
     { name: "TLS_ECDHE_RSA",    rank: 10,   pfs: 1, notes: "", },
@@ -19,21 +19,22 @@ const csBulkCipher = [
     { name: "CAMELLIA_256_CBC",   rank: 10,   notes: "" },
     { name: "AES_256_CBC",        rank: 10,   notes: "" },
     { name: "3DES_EDE_CBC",       rank: 9,    notes: "" },
-    { name: "AES_128_GCM",        rank: 9,    notes: "" },
-    { name: "AES_128_CBC",        rank: 9,    notes: "" },
-    { name: "CAMELLIA_128_CBC",   rank: 9,    notes: "" },
+    { name: "AES_128_GCM",        rank: 8,    notes: "" },
+    { name: "AES_128_CBC",        rank: 8,    notes: "" },
+    { name: "CAMELLIA_128_CBC",   rank: 8,    notes: "" },
+    { name: "SEED_CBC",           rank: 8,    notes: "" },
     { name: "RC4_128",            rank: 6,    notes: "RC4 considered unsafe. " },
     { name: "DES_CBC",            rank: 2,    notes: "Weak" },
     { name: "DES40_CBC",          rank: 2,    notes: "Weak" },
     { name: "RC2_CBC_40",         rank: 2,    notes: "Weak" },
     { name: "RC4_40",             rank: 2,    notes: "Weak" },
-    { name: "SEED_CBC",           rank: 0,    notes: "" },
 ];
 
 const csHMAC = [
+    { name: "SHA512",     rank: 10,    notes: ""},
     { name: "SHA384",     rank: 10,    notes: ""},
     { name: "SHA256",     rank:  9,    notes: ""},
-    { name: "SHA",     rank:  5,    notes: "SHA-1 reportedly weak. "},
+    { name: "SHA",     rank:  6,    notes: "SHA-1 reportedly weak. "},
     { name: "MD5",     rank:  2,    notes: "MD5 is broken. "}
 ];
 
@@ -44,3 +45,9 @@ const cipherStrength = {
     LOW: 0
 }; 
 
+const csWeighting = {
+    keyExchange : 2,
+    bulkCipher  : 6,
+    hmac        : 2,
+    total       : 10
+}

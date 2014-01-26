@@ -47,7 +47,7 @@ SHA-1 and MD5 digests are reportedly weak, hence there are warning
 texts on the addon panel to notify of the weakness.
 
 The  cipher suite ranks can be found here : `chrome/content/cipherSuites.js`
-While calculating the overall connection rank, SSleuth gives a weightage
+While calculating the overall connection rank, SSleuth gives a weight
 of 5/10 for cipher suite alone.
 
 ### Perfect forward secrecy
@@ -95,6 +95,7 @@ cipher suites.
 There is also an [IETF working group](https://datatracker.ietf.org/wg/uta/charter/) that aims to propose a set of
 best practices for TLS clients and servers, including recommending
 versions of TLS, cipher suites etc.
+https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4
 
 ## How to disable weak ciphers in Firefox
 

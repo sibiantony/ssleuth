@@ -1,6 +1,6 @@
-<!ENTITY ssleuth.cipher.suite.label "Cipher Details">
-<!ENTITY ssleuth.cipher.suite.rank.label "SSleuth cipher rank: ">
-<!ENTITY ssleuth.cipher.suite.keylength.label "cipher keylength: ">
+<!ENTITY ssleuth.cipher.suite.label "Cipher suite Details">
+<!ENTITY ssleuth.cipher.suite.rank.label "SSleuth rating: ">
+<!ENTITY ssleuth.cipher.suite.keylength.label "keylength: ">
 <!ENTITY ssleuth.ff.connection.status "Connection status (firefox): ">
 <!ENTITY ssleuth.ff.connection.status.broken "This page has either insecure content or a bad certificate.">
 <!ENTITY ssleuth.cert.details.label "Certificate Details" >

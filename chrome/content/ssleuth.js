@@ -18,7 +18,7 @@ var ssleuth = {
     urlChanged: false, 
 
     init: function() {
-        dump("\n Init \n");
+        dump("\nSSleuth Init \n");
         /* Handle exceptions while init(). If the panel
         *  is not properly installed for the buttons, the mainPopupSet 
         *  panel elements will wreak havoc on the browser UI. */
@@ -32,13 +32,13 @@ var ssleuth = {
             this.ssleuthInstallButton(this.ssleuthBtnLocation); 
             this.setButtonRank(-1);
         } catch(e) {
-            dump("\n Error : \n" + e.message + "\n"); 
+            dump("\nError : \n" + e.message + "\n"); 
             this.uninit();
         }
     },
 
     uninit: function() {
-        dump("\n Uninit \n");
+        dump("\nSSleuth Uninit \n");
         gBrowser.removeProgressListener(this);
     },
 
@@ -269,7 +269,7 @@ var ssleuth = {
                               }; 
                                 
                 // Key exchange
-                for (var i=0; i< csKeyExchange.length; i++) {
+                for (var i=0; i<csKeyExchange.length; i++) {
                     if((cipherName.indexOf(csKeyExchange[i].name) != -1)) {
                         cipherSuite.keyExchange = csKeyExchange[i];
                         cipherSuite.pfs = csKeyExchange[i].pfs; 
@@ -277,14 +277,14 @@ var ssleuth = {
                     }
                 }
                 // Bulk cipher
-                for (var i=0; i< csBulkCipher.length; i++) {
+                for (var i=0; i<csBulkCipher.length; i++) {
                     if((cipherName.indexOf(csBulkCipher[i].name) != -1)) {
                         cipherSuite.bulkCipher = csBulkCipher[i];
                         break; 
                     }
                 }
                 // HMAC
-                for (var i=0; i< csHMAC.length; i++) {
+                for (var i=0; i<csHMAC.length; i++) {
                     if((cipherName.indexOf(csHMAC[i].name) != -1)) {
                         cipherSuite.HMAC = csHMAC[i];
                         break; 
@@ -328,10 +328,11 @@ var ssleuth = {
                                         cipherSuite.HMAC.notes; 
 
                 // Calculate ciphersuite rank  - adds up to 20. 
-                cipherSuite.rank = ( cipherSuite.keyExchange.rank/2 +
-                                        cipherSuite.bulkCipher.rank + 
-                                        cipherSuite.HMAC.rank/2 )/2;
+                cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
+                                        cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
+                                        cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
 
+                // At the moment, cipher suite rank amounts to half of the connection rank.
                 var connectionRank = cipherSuite.rank/2; 
                 if (cipherSuite.pfs) {
                     connectionRank += 2; 
@@ -349,9 +350,8 @@ var ssleuth = {
                     connectionRank += 1; 
                 }
 
-                dump ("\n connection rank : " + connectionRank + "\n"); 
                 connectionRank = Number(connectionRank).toFixed(1); 
-                dump ("\n connection rank : " + connectionRank + "\n"); 
+                // dump ("\n connection rank : " + connectionRank + "\n"); 
 
                 // Now set the appropriate button
                 this.setButtonRank(connectionRank); 
@@ -382,7 +382,7 @@ var ssleuth = {
         var s = []; 
 
         /* This is ugly, but I don't see any easy CSS hacks
-         * without having to autogenarate spans in html.
+         * without having to autogenerate spans in html.
          */
         for (var i=1; i<=10; i++) {
             s[i] = document.getElementById("ssleuth-img-cipher-rank-star-" + String(i)); 
@@ -438,7 +438,7 @@ var ssleuth = {
         document.getElementById("ssleuth-img-cipher-rank").setAttribute("status", marginCipherStatus); 
 
         document.getElementById("ssleuth-text-cipher-suite").textContent = (cipherSuite.name); 
-        document.getElementById("ssleuth-text-cipher-suite-rank").textContent = (cipherSuite.rank + "/10"); 
+        document.getElementById("ssleuth-text-cipher-suite-rank").textContent = (cipherSuite.rank.toFixed(1) + "/10"); 
         document.getElementById("ssleuth-text-cipher-suite-note").textContent = (cipherSuite.notes); 
         document.getElementById("ssleuth-text-cipher-keylength").textContent = (keyLength); 
     },
