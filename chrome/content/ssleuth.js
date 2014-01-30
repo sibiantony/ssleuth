@@ -2,17 +2,17 @@ Components.utils.import("resource://ssleuth/cipherSuites.js");
 
 const ssleuthPanelProto = { PROTOCOLHTTP: 0, PROTOCOLHTTPS: 1, PROTOCOLUNKNOWN: 2 };
 const ssleuthLoc = { URLBAR: 0, TOOLBAR: 1 }; 
-var ssleuthBtnImg = null; 
-var ssleuthPanelBox = null; 
-var ssleuthButton = null; 
-var ssleuthPanel = null; 
-var ssleuthPanelMenu = null; 
 
 var ssleuth = {
 	
     protocol: ssleuthPanelProto.PROTOCOLUNKNOWN, 
     ssleuthPanelHidden: true, 
     ssleuthBtnLocation: ssleuthLoc.URLBAR, 
+    ssleuthPanelBox : null, 
+    ssleuthBtnImg : null, 
+    ssleuthButton : null, 
+    ssleuthPanel : null, 
+    ssleuthPanelMenu : null, 
     prefsWindow: null, 
     prevURL: null, 
     urlChanged: false, 
@@ -24,13 +24,14 @@ var ssleuth = {
         *  panel elements will wreak havoc on the browser UI. */
         try {
             gBrowser.addProgressListener(this);
-            ssleuthPanelBox = document.getElementById("ssleuth-panel-vbox");
+            this.ssleuthPanelBox = document.getElementById("ssleuth-panel-vbox");
 
             /* Read preferences here */
             this.readPreferences(); 
             /* Set button location */
             this.ssleuthInstallButton(this.ssleuthBtnLocation); 
             this.setButtonRank(-1);
+
         } catch(e) {
             dump("\nError : \n" + e.message + "\n"); 
             this.uninit();
@@ -55,8 +56,8 @@ var ssleuth = {
 
         /* If the user navigates the tabs with the panel open, 
          *  make it appear smooth. */
-        if (ssleuthPanel.state == "open") {
-           this.showPanel(ssleuthPanel, true); 
+        if (this.ssleuthPanel.state == "open") {
+           this.showPanel(this.ssleuthPanel, true); 
         } 
     },
     onProgressChange: function() {
@@ -124,32 +125,32 @@ var ssleuth = {
 
         if (location == ssleuthLoc.URLBAR) {
             /* XUL can do?. Insert the urlbar button ourselves */
-            ssleuthButton = btnUbar; 
+            this.ssleuthButton = btnUbar; 
             var parent = document.getElementById("urlbar");
-            parent.insertBefore(ssleuthButton, document.getElementById("identity-box")); 
+            parent.insertBefore(this.ssleuthButton, document.getElementById("identity-box")); 
 
-            ssleuthPanel = pnlUbar; 
-            ssleuthPanel.appendChild(ssleuthPanelBox);
+            this.ssleuthPanel = pnlUbar; 
+            this.ssleuthPanel.appendChild(this.ssleuthPanelBox);
             
-            ssleuthBtnImg = document.getElementById("ssleuth-ub-img"); 
+            this.ssleuthBtnImg = document.getElementById("ssleuth-ub-img"); 
 
             btnTbar.hidden = true;
             pnlTbar.hidden = true; 
 
         } else if (location == ssleuthLoc.TOOLBAR) {
-            ssleuthButton = btnTbar; 
-            ssleuthPanel = pnlTbar; 
-            ssleuthPanel.appendChild(ssleuthPanelBox);
+            this.ssleuthButton = btnTbar; 
+            this.ssleuthPanel = pnlTbar; 
+            this.ssleuthPanel.appendChild(this.ssleuthPanelBox);
 
-            ssleuthBtnImg = document.getElementById("ssleuth-tb-img"); 
+            this.ssleuthBtnImg = document.getElementById("ssleuth-tb-img"); 
             btnUbar.hidden = true; 
             pnlUbar.hidden = true; 
         } else {
             /* else what. */
         }
         /* Add popup menu */
-        ssleuthPanelMenu = document.getElementById("ssleuth-panel-menu");
-        /* ssleuthPanelMenu.anchorNode = ssleuthButton; */
+        this.ssleuthPanelMenu = document.getElementById("ssleuth-panel-menu");
+        /* this.ssleuthPanelMenu.anchorNode = this.ssleuthButton; */
 
     },
 
@@ -166,19 +167,19 @@ var ssleuth = {
             if (!(event.type == "click" && 
                     event.button == 0 &&
                     this.ssleuthBtnLocation == ssleuthLoc.TOOLBAR )) {
-                ssleuth.togglePanel(ssleuthPanel); 
+                ssleuth.togglePanel(this.ssleuthPanel); 
             }
         }
     },
     xulPopupMenu: function(event) {
         event.preventDefault(); 
 
-        ssleuthPanelMenu.openPopup(ssleuthButton); 
+        this.ssleuthPanelMenu.openPopup(this.ssleuthButton); 
     },
 
     showPanel: function(panel, show) {
         if (show) {
-            panel.openPopup(ssleuthButton); 
+            panel.openPopup(this.ssleuthButton); 
             this.ssleuthPanelHidden = false; 
         } else {
             panel.hidePopup(); 
@@ -234,6 +235,7 @@ var ssleuth = {
         if (secUI) {
             var sslStatus = secUI.SSLStatus; 
             if (sslStatus) {
+                const cs = ssleuthCipherSuites; 
                 var securityState = "";
                 var cipherName = sslStatus.cipherName; 
                 var cipherSuite = null; 
@@ -260,7 +262,7 @@ var ssleuth = {
                 }
 
                 cipherSuite = {name: cipherName, 
-                                rank: cipherStrength.LOW, 
+                                rank: cs.cipherStrength.LOW, 
                                 pfs: 0, 
                                 notes: "",
                                 keyExchange: null, 
@@ -269,24 +271,24 @@ var ssleuth = {
                               }; 
                                 
                 // Key exchange
-                for (var i=0; i<csKeyExchange.length; i++) {
-                    if((cipherName.indexOf(csKeyExchange[i].name) != -1)) {
-                        cipherSuite.keyExchange = csKeyExchange[i];
-                        cipherSuite.pfs = csKeyExchange[i].pfs; 
+                for (var i=0; i<cs.keyExchange.length; i++) {
+                    if((cipherName.indexOf(cs.keyExchange[i].name) != -1)) {
+                        cipherSuite.keyExchange = cs.keyExchange[i];
+                        cipherSuite.pfs = cs.keyExchange[i].pfs; 
                         break; 
                     }
                 }
                 // Bulk cipher
-                for (var i=0; i<csBulkCipher.length; i++) {
-                    if((cipherName.indexOf(csBulkCipher[i].name) != -1)) {
-                        cipherSuite.bulkCipher = csBulkCipher[i];
+                for (var i=0; i<cs.bulkCipher.length; i++) {
+                    if((cipherName.indexOf(cs.bulkCipher[i].name) != -1)) {
+                        cipherSuite.bulkCipher = cs.bulkCipher[i];
                         break; 
                     }
                 }
                 // HMAC
-                for (var i=0; i<csHMAC.length; i++) {
-                    if((cipherName.indexOf(csHMAC[i].name) != -1)) {
-                        cipherSuite.HMAC = csHMAC[i];
+                for (var i=0; i<cs.HMAC.length; i++) {
+                    if((cipherName.indexOf(cs.HMAC[i].name) != -1)) {
+                        cipherSuite.HMAC = cs.HMAC[i];
                         break; 
                     }
                 }
@@ -308,11 +310,11 @@ var ssleuth = {
                      * Get the security strength from Firefox's own flags.*/
                     // Set cipher rank
                     if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
-                        cipherSuite.bulkCipher.rank = cipherStrength.MAX; 
+                        cipherSuite.bulkCipher.rank = cs.cipherStrength.MAX; 
                     } else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
-                        cipherSuite.bulkCipher.rank = cipherStrength.HIGH - 1; 
+                        cipherSuite.bulkCipher.rank = cs.cipherStrength.HIGH - 1; 
                     } else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
-                        cipherSuite.bulkCipher.rank = cipherStrength.MED - 1; 
+                        cipherSuite.bulkCipher.rank = cs.cipherStrength.MED - 1; 
                     } 
                 }
 
@@ -328,9 +330,9 @@ var ssleuth = {
                                         cipherSuite.HMAC.notes; 
 
                 // Calculate ciphersuite rank  - adds up to 20. 
-                cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
-                                        cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
-                                        cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
+                cipherSuite.rank = ( cipherSuite.keyExchange.rank * cs.weighting.keyExchange +
+                                        cipherSuite.bulkCipher.rank * cs.weighting.bulkCipher +
+                                        cipherSuite.HMAC.rank * cs.weighting.hmac )/cs.weighting.total;
 
                 // At the moment, cipher suite rank amounts to half of the connection rank.
                 var connectionRank = cipherSuite.rank/2; 
@@ -415,7 +417,7 @@ var ssleuth = {
         } else if (connectionRank <= 10) {
             buttonRank = "vhigh"; 
         }
-        ssleuthBtnImg.setAttribute("rank", buttonRank); 
+        this.ssleuthBtnImg.setAttribute("rank", buttonRank); 
         if (this.ssleuthBtnLocation == ssleuthLoc.URLBAR) {
             var ssleuthUbRank = document.getElementById("ssleuth-ub-rank");  
 
@@ -425,14 +427,15 @@ var ssleuth = {
             } else {
                 ssleuthUbRank.textContent = ""; 
             }
-            ssleuthButton.setAttribute("rank", buttonRank); 
+            this.ssleuthButton.setAttribute("rank", buttonRank); 
         }
     },
     showCipherDetails: function(cipherSuite, keyLength) {
+        const cs = ssleuthCipherSuites; 
         var marginCipherStatus = "low"; 
-        if (cipherSuite.rank >= cipherStrength.HIGH) {
+        if (cipherSuite.rank >= cs.cipherStrength.HIGH) {
             marginCipherStatus = "high"; 
-        } else if (cipherSuite.rank > cipherStrength.MEDIUM) {
+        } else if (cipherSuite.rank > cs.cipherStrength.MEDIUM) {
             marginCipherStatus = "med"; 
         }
         document.getElementById("ssleuth-img-cipher-rank").setAttribute("status", marginCipherStatus); 
