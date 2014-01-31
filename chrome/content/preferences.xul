@@ -3,156 +3,156 @@
 <?xml-stylesheet href="chrome://ssleuth/skin/ssleuth.css" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://ssleuth/locale/preferences.dtd">
 <prefwindow type="prefwindow" id="ssleuth-preferences" 
-              xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" 
-              title="&ssleuth.pref.title.label;"
-              onload="onLoad()">
-  <script><![CDATA[
+							xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" 
+							title="&ssleuth.pref.title.label;"
+							onload="onLoad()">
+	<script><![CDATA[
 
-    function onLoad() {
-        var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
-          
-        if("arguments" in window && window.arguments.length > 0) {
-            prefTabbox.selectedIndex = window.arguments[0].tabIndex;
-        }
-    }
+		function onLoad() {
+				var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
+					
+				if("arguments" in window && window.arguments.length > 0) {
+						prefTabbox.selectedIndex = window.arguments[0].tabIndex;
+				}
+		}
 ]]></script>
-  <prefpane id="ssleuth-prefpane" label="preferences">
-    <preferences>
-      <preference id="ssleuth-notifier-location" 
-                  name="extensions.ssleuth.notifier.location" 
-                  type="int"/>
-      <preference id="ssleuth-panel-fontsize" 
-                  name="extensions.ssleuth.panel.fontsize" 
-                  type="int"/>
-    </preferences>
+	<prefpane id="ssleuth-prefpane" label="preferences">
+		<preferences>
+			<preference id="ssleuth-notifier-location" 
+									name="extensions.ssleuth.notifier.location" 
+									type="int"/>
+			<preference id="ssleuth-panel-fontsize" 
+									name="extensions.ssleuth.panel.fontsize" 
+									type="int"/>
+		</preferences>
 
-    <tabbox id="ssleuth-preferences-tabbox">
-      <tabs>
-        <tab label="&ssleuth.pref.tab.ssleuthui;"/>
-        <tab label="&ssleuth.pref.tab.ranking;"/>
-        <tab label="&ssleuth.pref.tab.about;" />
-      </tabs>
-      <tabpanels>
-        <tabpanel id="ssleuth-pref-ui">
-          <vbox>
-            <description class="ssleuth-pref-text" 
-                          value="At the moment, you will need a browser restart to apply your changes."/>
-            <description value="&ssleuth.pref.ui.notifier.label;"
-                          style="font-weight:bold"/>
-            <radiogroup id="ssleuth-notifier-location-radio" 
-              preference="ssleuth-notifier-location"
-              oncommand="">
-              <radio id="ssleuth-notifier-urlbar" 
-                  label="&ssleuth.pref.ui.notifier.urlbar;"
-                  value="0" 
-                  accesskey="U" 
-                  selected="true"
-                  style="margin-left: 15px;"/>
-              <radio id="ssleuth-notifier-toolbar"
-                  label="&ssleuth.pref.ui.notifier.toolbar;"
-                  value="1"
-                  accesskey="T"
-                  style="margin-left: 15px;"/>
-            </radiogroup>
-            <description value="&ssleuth.pref.ui.fontsize;"
-                          style="font-weight:bold"/>
-            <radiogroup id="ssleuth-panel-fontsize-radio" 
-              preference="ssleuth-panel-fontsize"
-              oncommand="">
-              <hbox align="baseline">
-                <radio id="ssleuth-panel-fontsize-default" 
-                    value="0" 
-                    selected="true"
-                    style="margin-left: 15px;"
-                    label="&ssleuth.pref.ui.fontsize.default;"/>
-                <label value="&ssleuth.pref.ui.fontsize.header;"
-                        control="ssleuth-panel-fontsize-default"
-                        class="ssleuth-text-title-default"/>
-                <label value="&ssleuth.pref.ui.fontsize.body;"
-                        control="ssleuth-panel-fontsize-default"
-                        class="ssleuth-text-body-default"/>
-              </hbox>
-              <hbox align="baseline">
-                <radio id="ssleuth-panel-fontsize-large" 
-                    value="1" 
-                    style="margin-left: 15px;"
-                    label="&ssleuth.pref.ui.fontsize.large;"/>
-                <label value="&ssleuth.pref.ui.fontsize.header;"
-                        control="ssleuth-panel-fontsize-large"
-                        class="ssleuth-text-title-large"/>
-                <label value="&ssleuth.pref.ui.fontsize.body;"
-                        control="ssleuth-panel-fontsize-large"
-                        class="ssleuth-text-body-large"/>
-              </hbox>
-              <hbox align="baseline">
-                <radio id="ssleuth-panel-fontsize-larger"
-                    value="2"
-                    style="margin-left: 15px;"
-                    label="&ssleuth.pref.ui.fontsize.larger;"/>
-                <label value="&ssleuth.pref.ui.fontsize.header;"
-                        control="ssleuth-panel-fontsize-larger"
-                        class="ssleuth-text-title-larger"/>
-                <label value="&ssleuth.pref.ui.fontsize.body;"
-                        control="ssleuth-panel-fontsize-larger"
-                        class="ssleuth-text-body-larger"/>
-              </hbox>
-            </radiogroup>
-            <description value=""/>
-          </vbox>
-        </tabpanel>
+		<tabbox id="ssleuth-preferences-tabbox">
+			<tabs>
+				<tab label="&ssleuth.pref.tab.ssleuthui;"/>
+				<tab label="&ssleuth.pref.tab.ranking;"/>
+				<tab label="&ssleuth.pref.tab.about;" />
+			</tabs>
+			<tabpanels>
+				<tabpanel id="ssleuth-pref-ui">
+					<vbox>
+						<description class="ssleuth-pref-text" 
+													value="At the moment, you will need a browser restart to apply your changes."/>
+						<description value="&ssleuth.pref.ui.notifier.label;"
+													style="font-weight:bold"/>
+						<radiogroup id="ssleuth-notifier-location-radio" 
+							preference="ssleuth-notifier-location"
+							oncommand="">
+							<radio id="ssleuth-notifier-urlbar" 
+									label="&ssleuth.pref.ui.notifier.urlbar;"
+									value="0" 
+									accesskey="U" 
+									selected="true"
+									style="margin-left: 15px;"/>
+							<radio id="ssleuth-notifier-toolbar"
+									label="&ssleuth.pref.ui.notifier.toolbar;"
+									value="1"
+									accesskey="T"
+									style="margin-left: 15px;"/>
+						</radiogroup>
+						<description value="&ssleuth.pref.ui.fontsize;"
+													style="font-weight:bold"/>
+						<radiogroup id="ssleuth-panel-fontsize-radio" 
+							preference="ssleuth-panel-fontsize"
+							oncommand="">
+							<hbox align="baseline">
+								<radio id="ssleuth-panel-fontsize-default" 
+										value="0" 
+										selected="true"
+										style="margin-left: 15px;"
+										label="&ssleuth.pref.ui.fontsize.default;"/>
+								<label value="&ssleuth.pref.ui.fontsize.header;"
+												control="ssleuth-panel-fontsize-default"
+												class="ssleuth-text-title-default"/>
+								<label value="&ssleuth.pref.ui.fontsize.body;"
+												control="ssleuth-panel-fontsize-default"
+												class="ssleuth-text-body-default"/>
+							</hbox>
+							<hbox align="baseline">
+								<radio id="ssleuth-panel-fontsize-large" 
+										value="1" 
+										style="margin-left: 15px;"
+										label="&ssleuth.pref.ui.fontsize.large;"/>
+								<label value="&ssleuth.pref.ui.fontsize.header;"
+												control="ssleuth-panel-fontsize-large"
+												class="ssleuth-text-title-large"/>
+								<label value="&ssleuth.pref.ui.fontsize.body;"
+												control="ssleuth-panel-fontsize-large"
+												class="ssleuth-text-body-large"/>
+							</hbox>
+							<hbox align="baseline">
+								<radio id="ssleuth-panel-fontsize-larger"
+										value="2"
+										style="margin-left: 15px;"
+										label="&ssleuth.pref.ui.fontsize.larger;"/>
+								<label value="&ssleuth.pref.ui.fontsize.header;"
+												control="ssleuth-panel-fontsize-larger"
+												class="ssleuth-text-title-larger"/>
+								<label value="&ssleuth.pref.ui.fontsize.body;"
+												control="ssleuth-panel-fontsize-larger"
+												class="ssleuth-text-body-larger"/>
+							</hbox>
+						</radiogroup>
+						<description value=""/>
+					</vbox>
+				</tabpanel>
 
-        <!-- No locale from below, text to be changed -->
-        <tabpanel id="ssleuth-pref-ranking">
-          <vbox>
-            <description class="ssleuth-pref-text" >
-              As of this version, SSleuth calculates the rank as shown:
-            </description>
-            <description class="ssleuth-pref-text" 
-                  style="margin-left: 15px;"
-                  value="Cipher suite rank/5 +"/>
-            <description class="ssleuth-pref-text"
-                  style="margin-left: 15px;"
-                  value="Perfect Forward Secrecy/2 +"/>
-            <description class="ssleuth-pref-text"
-                  style="margin-left: 15px;"
-                  value="Extended validation certificate/1 +"/>
-            <description class="ssleuth-pref-text"
-                  style="margin-left: 15px;"
-                  value="Firefox connection status/1 +"/>
-            <description class="ssleuth-pref-text"
-                  style="margin-left: 15px;"
-                  value="Certificate state/1 = Connection ranking/10"/>
-            <description class="ssleuth-pref-text">
-              This could be made configurable in a future release.
-            </description>
-          </vbox>
-        </tabpanel>
-        <tabpanel id="ssleuth-pref-about">
-          <vbox>
-            <description value="Copyright (C) 2013-2014 Sibi Antony"/>
-            <description class="ssleuth-pref-text" >
-              Your feedback and development/translation support are welcome.
-              See the project page for more details.
-            </description>
-            <!-- spacer flex="1"/ -->
-            <label class="text-link" 
-                          href="https://github.com/sibiantony/ssleuth"
-                          value="https://github.com/sibiantony/ssleuth"/>
+				<!-- No locale from below, text to be changed -->
+				<tabpanel id="ssleuth-pref-ranking">
+					<vbox>
+						<description class="ssleuth-pref-text" >
+							As of this version, SSleuth calculates the rank as shown:
+						</description>
+						<description class="ssleuth-pref-text" 
+									style="margin-left: 15px;"
+									value="Cipher suite rank/5 +"/>
+						<description class="ssleuth-pref-text"
+									style="margin-left: 15px;"
+									value="Perfect Forward Secrecy/2 +"/>
+						<description class="ssleuth-pref-text"
+									style="margin-left: 15px;"
+									value="Extended validation certificate/1 +"/>
+						<description class="ssleuth-pref-text"
+									style="margin-left: 15px;"
+									value="Firefox connection status/1 +"/>
+						<description class="ssleuth-pref-text"
+									style="margin-left: 15px;"
+									value="Certificate state/1 = Connection ranking/10"/>
+						<description class="ssleuth-pref-text">
+							This could be made configurable in a future release.
+						</description>
+					</vbox>
+				</tabpanel>
+				<tabpanel id="ssleuth-pref-about">
+					<vbox>
+						<description value="Copyright (C) 2013-2014 Sibi Antony"/>
+						<description class="ssleuth-pref-text" >
+							Your feedback and development/translation support are welcome.
+							See the project page for more details.
+						</description>
+						<!-- spacer flex="1"/ -->
+						<label class="text-link" 
+													href="https://github.com/sibiantony/ssleuth"
+													value="https://github.com/sibiantony/ssleuth"/>
 
-            <description class="ssleuth-pref-text" >
-              SSleuth is free software: You can redistribute it and/or modify 
-              it under the terms of the GNU General Public License as published by 
-              the Free Software Foundation, either version 3 of the License, or 
-              (at your option) any later version.
-            </description>
+						<description class="ssleuth-pref-text" >
+							SSleuth is free software: You can redistribute it and/or modify 
+							it under the terms of the GNU General Public License as published by 
+							the Free Software Foundation, either version 3 of the License, or 
+							(at your option) any later version.
+						</description>
 
-            <description class="ssleuth-pref-text">
-              This software is distributed in the hope that it will be useful, 
-              but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
-            </description>
-          </vbox>
-        </tabpanel>
-      </tabpanels>
-    </tabbox>
-  </prefpane>
+						<description class="ssleuth-pref-text">
+							This software is distributed in the hope that it will be useful, 
+							but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
+						</description>
+					</vbox>
+				</tabpanel>
+			</tabpanels>
+		</tabbox>
+	</prefpane>
 </prefwindow>
