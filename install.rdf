@@ -5,7 +5,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>ssleuth@github</em:id>
-    <em:version>0.1.1</em:version>
+    <em:version>0.1.3</em:version>
     <em:type>2</em:type>
    
     <em:targetApplication>
@@ -18,7 +18,7 @@
    
     <!-- Front End MetaData -->
     <em:name>SSleuth</em:name>
-    <em:description>How strong is your SSL connection? SSleuth ranks an established SSL connection and provides a brief analysis of the SSL/TLS parameters.</em:description>
+    <em:description>How strong is your SSL connection? SSleuth ranks an established SSL connection and provides a brief analysis of the cipher suite used, certificate and other SSL/TLS parameters.</em:description>
     <em:creator>Sibi Antony</em:creator>
     <em:homepageURL>https://github.com/sibiantony/ssleuth</em:homepageURL>
     <em:iconURL>chrome://ssleuth/skin/ssleuth-icon.png</em:iconURL>
