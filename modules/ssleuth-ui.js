@@ -432,14 +432,15 @@ function setButtonRank(connectionRank) {
 }
 
 function showCipherDetails(cipherSuite, keyLength) {
-	var marginCipherStatus = "low"; 
 	var doc = _window().document; 
-
-	if (cipherSuite.rank >= cipherStrength.HIGH) {
+	const cs = ssleuthCipherSuites; 
+	var marginCipherStatus = "low"; 
+	if (cipherSuite.rank >= cs.cipherStrength.HIGH) {
 		marginCipherStatus = "high"; 
-	} else if (cipherSuite.rank > cipherStrength.MEDIUM) {
+	} else if (cipherSuite.rank > cs.cipherStrength.MEDIUM) {
 		marginCipherStatus = "med"; 
 	}
+
 	doc.getElementById("ssleuth-img-cipher-rank").setAttribute("status", marginCipherStatus); 
 
 	doc.getElementById("ssleuth-text-cipher-suite").textContent = (cipherSuite.name); 
