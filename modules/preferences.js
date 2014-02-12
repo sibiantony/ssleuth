@@ -7,7 +7,6 @@ const Ci = Components.interfaces;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://ssleuth/new-window.js");
 
 var ssleuthDefaultPrefs = {
 	PREF_BRANCH : "extensions.ssleuth.", 
@@ -150,6 +149,12 @@ function _window() {
 	return Cc["@mozilla.org/embedcomp/window-watcher;1"]
 						.getService(Components.interfaces.nsIWindowWatcher)
 						.activeWindow; 
+}
+function forEachOpenWindow(todo)  // Apply a function to all open browser windows
+{
+	var windows = Services.wm.getEnumerator("navigator:browser");
+	while (windows.hasMoreElements())
+		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
 }
 
 Components.utils.import("resource://ssleuth/ssleuth-ui.js");
