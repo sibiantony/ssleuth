@@ -1,35 +1,35 @@
 /*  skin/toolbar-button.css  */
-#ssleuth-tb-img, #ssleuth-ub-img {
+#ssleuth-tb-button, #ssleuth-ub-img {
   -moz-box-orient: horizontal !important;
 }
 
-#ssleuth-tb-img[rank="default"],
+#ssleuth-tb-button[rank="default"],
 #ssleuth-ub-img[rank="default"] {
   list-style-image: url("chrome://ssleuth/skin/btn-large-gray.png");
 }
 
-#ssleuth-tb-img[rank="low"], 
+#ssleuth-tb-button[rank="low"], 
 #ssleuth-ub-img[rank="low"] {
   list-style-image: url("chrome://ssleuth/skin/btn-large-red.png");
 }
 
-#ssleuth-tb-img[rank="medium"], 
+#ssleuth-tb-button[rank="medium"], 
 #ssleuth-ub-img[rank="medium"] {
   list-style-image: url("chrome://ssleuth/skin/btn-large-orange.png");
 }
 
-#ssleuth-tb-img[rank="high"],
+#ssleuth-tb-button[rank="high"],
 #ssleuth-ub-img[rank="high"] {
   list-style-image: url("chrome://ssleuth/skin/btn-large-blue.png");
 }
 
-#ssleuth-tb-img[rank="vhigh"],
+#ssleuth-tb-button[rank="vhigh"],
 #ssleuth-ub-img[rank="vhigh"] {
   list-style-image: url("chrome://ssleuth/skin/btn-large-green.png");
 }
 
-toolbar[iconsize="small"] #ssleuth-tb-img {
-    width: 16px; 
+toolbar[iconsize="small"] #ssleuth-tb-button {
+    /* width: 16px;*/
     height: auto; 
 }
 
@@ -40,8 +40,9 @@ toolbar[iconsize="small"] #ssleuth-tb-img {
 
 #ssleuth-ub-rank {
     /* font-weight: bold;*/
-    padding-left:4px;
+/*  padding-left: 4px;
     padding-right:2px; 
+*/
 }
 #ssleuth-ub-rank[rank="default"]{
     color: #5b696c; 
@@ -116,7 +117,7 @@ toolbar[iconsize="small"] #ssleuth-tb-img {
     width: 15px; 
     height: auto; 
 }
-    
+
 #ssleuth-img-p-f-secrecy[status="no"] {
     list-style-image: url("chrome://ssleuth/skin/status-medium.png");
 }
@@ -181,6 +182,8 @@ toolbar[iconsize="small"] #ssleuth-tb-img {
 #ssleuth-img-http-omg {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
 }
+
+/* Change default -> small ? */
 .ssleuth-text-body-default {
     font-size: 0.85em; 
 }

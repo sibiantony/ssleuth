@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<!-- ?xml-stylesheet href="chrome://ssleuth/skin/ssleuth.css" type="text/css"?-->
+<!DOCTYPE overlay SYSTEM "chrome://ssleuth/locale/ssleuth.dtd">
+<overlay id="ssleuth-panel-overlay" 
+				 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+	<popupset id="mainPopupSet">
+		<!-- Box container for the panel. Not sure if mainPopupSet is the
+				 right place for this.
+
+				 hidden='true' is necessary to prevent XUL loading the elements
+				 on top of the toolbar the first time -->
+		<box id="ssleuth-panel-vbox">
+			<vbox id="ssleuth-panel-vbox-https" width="300" height="250" hidden="true">
+				<hbox id="ssleuth-img-cipher-rank-star" align="baseline" height="20">
+					<image id="ssleuth-img-cipher-rank-star-1" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-2" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-3" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-4" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-5" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-6" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-7" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-8" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-9" class="ssleuth-star"/>
+					<image id="ssleuth-img-cipher-rank-star-10" class="ssleuth-star"/>
+					<description id="ssleuth-text-cipher-rank-numeric"
+												class="ssleuth-text-title-class"/>
+				</hbox>
+
+				<hbox id="ssleuth-hbox-1" align="top" width="300">
+					<vbox id="ssleuth-hbox-1-vbox-1" align="left" width="30">
+						<image id="ssleuth-img-cipher-rank" class="ssleuth-img-state"/>
+					</vbox>
+					<vbox id="ssleuth-hbox-1-vbox-2" align="left">
+						<description id="ssleuth-text-cipher-suite-label" 
+								value="&ssleuth.cipher.suite.label;"
+								class="ssleuth-text-title-class"/>
+						<description id="ssleuth-text-cipher-suite" 
+													class="ssleuth-text-body-class"/>
+						<hbox id="ssleuth-text-cipher-details">
+							<description id="ssleuth-text-cipher-suite-rank-label"
+														value="&ssleuth.cipher.suite.rank.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-rank"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-keylength-label"
+														value="&ssleuth.cipher.suite.keylength.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-keylength"
+																class="ssleuth-text-body-class"/>
+					 </hbox>
+						<description id="ssleuth-text-cipher-suite-note"
+														class="ssleuth-text-body-class"/>
+					</vbox>
+				</hbox>
+
+				<hbox id="ssleuth-hbox-2" align="top" width="300" height="30">
+					<vbox id="ssleuth-hbox-2-vbox-1" align="left" width="30">
+						<image id="ssleuth-img-p-f-secrecy" class="ssleuth-img-state"/>
+					</vbox>
+					<vbox id="ssleuth-hbox-2-vbox-2" align="left">
+						<description id="ssleuth-text-p-f-secrecy"
+													class="ssleuth-text-title-class"/>
+					</vbox>
+				</hbox>
+
+				<hbox id="ssleuth-ff-connection-status">
+					<vbox id="ssleuth-ff-connection-status-i" align="left" width="30">
+						<image id="ssleuth-img-ff-connection-status" 
+										class="ssleuth-img-state"/>
+					</vbox>
+					<vbox id="ssleuth-ff-connection-status-text-vbox">
+						<hbox id="ssleuth-ff-connection-status-text-hbox">
+							<description id="ssleuth-text-conn-status" 
+														value="&ssleuth.ff.connection.status;"
+														class="ssleuth-text-title-class"/>
+							<description id="ssleuth-text-ff-connection-status"
+														class="ssleuth-text-title-class"/>
+						</hbox>
+						<description id="ssleuth-text-ff-connection-status-broken" 
+													value="&ssleuth.ff.connection.status.broken;" 
+													hidden="true"
+													class="ssleuth-text-body-class"/>
+					</vbox>
+				</hbox>
+
+				<hbox id="ssleuth-hbox-3" width="300" height="100">
+					<vbox id="ssleuth-hbox-3-vbox-1" align="left" width="30">
+						<image id="ssleuth-img-cert-state" class="ssleuth-img-state"/>
+					</vbox>
+					<vbox id="ssleuth-hbox-3-vbox-2" align="left">
+						<description id="ssleuth-text-cert-label" 
+													value="&ssleuth.cert.details.label;"
+													class="ssleuth-text-title-class"/>
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-ev" 
+														value="&ssleuth.cert.ev.label;"
+														class="ssleuth-text-body-class"/> 
+							<description id="ssleuth-text-cert-extended-validation"
+														class="ssleuth-text-body-class"/>
+						</hbox>
+
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-cn-label" 
+														value="&ssleuth.cert.cn.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cert-common-name"
+														class="ssleuth-text-body-class"/>
+						</hbox>
+
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-issuedto" 
+														value="&ssleuth.cert.issuedto.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cert-org"
+														class="ssleuth-text-title-class"/>
+							<description id="ssleuth-text-cert-org-unit"
+														class="ssleuth-text-body-class"/>
+						</hbox>
+
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-issuedby" 
+														value="&ssleuth.cert.issuedby.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cert-issuer-org"
+														class="ssleuth-text-title-class"/>
+							<description id="ssleuth-text-cert-issuer-org-unit"
+														class="ssleuth-text-body-class"/>
+						</hbox>
+
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-validity-text" 
+														value="&ssleuth.cert.validity.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cert-validity"
+														class="ssleuth-text-body-class"/>
+						</hbox>
+
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-domain" 
+														value="&ssleuth.cert.domain.matched.label;"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cert-domain-matched"
+														class="ssleuth-text-body-class"/>
+						</hbox>
+					</vbox>
+				</hbox>
+			</vbox>
+
+			<vbox id="ssleuth-panel-vbox-http" width="350" height="100" 
+						hidden="true" flex="2">
+				<hbox align="baseline" flex="1">
+					<image id="ssleuth-img-http-omg" class="ssleuth-img-state"/>
+					<vbox flex="1">
+						<description id="ssleuth-text-http-1"
+													class="ssleuth-text-title-class">
+							&ssleuth.http.noenc.warning;
+						</description>
+						<description id="ssleuth-text-http-2"
+													class="ssleuth-text-title-class">
+							&ssleuth.http.attempt.enc;
+						</description>
+						<label id="ssleuth-panel-https-link" class="text-link" 
+										crop="center" focus="true"/>
+						<description id="ssleuth-text-http-note"
+													class="ssleuth-text-body-class">
+
+							&ssleuth.http.enc.disclaimer;
+						</description>
+					</vbox>
+				</hbox>
+			</vbox>
+		</box>
+	</popupset>
+
+</overlay> 
