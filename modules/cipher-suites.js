@@ -1,33 +1,32 @@
 var EXPORTED_SYMBOLS = ["ssleuthCipherSuites"];
 
+/* The cipher suites ratings are in its early stages now.
+ * This is subject to change in future.
+ */
 const ssleuthCipherSuites = {
 	keyExchange : [
 		{ name: "TLS_ECDHE",	rank: 10,   pfs: 1, notes: "", },
-		{ name: "TLS_ECDH",	rank: 9,	pfs: 0, notes: "", },
+		{ name: "TLS_ECDH",		rank: 9,	pfs: 0, notes: "", },
 		{ name: "TLS_DHE",		rank: 9,	pfs: 1, notes: "", },
-		{ name: "TLS_RSA_WITH",			rank: 6,	pfs: 0, notes: "", },
-		{ name: "SSL_RSA_WITH",			rank: 5,	pfs: 0, notes: "", },
-		{ name: "TLS_RSA_EXPORT",	rank: 4,	pfs: 0, notes: "", },
+		{ name: "TLS_RSA_WITH",	rank: 6,	pfs: 0, notes: "", },
+		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, notes: "", },
+		{ name: "TLS_RSA_EXPORT",	rank: 2,	pfs: 0, notes: "Weak Kx. ", },
 	],
 
+	/* No known weaknesses for the algorithms here. Except for the key length.
+	 * RSA secure minimum keyLength>=2048
+	 * ECDSA comparable keyLength>=263 - RFC 4492
+	 */
 	authentication : [
-		{ name: "_RSA_", 			rank: 10, 	notes: "" },
-		{ name: "_DSA_", 			rank: 10, 	notes: "" },
-		{ name: "_ECDSA_", 		rank: 10, 	notes: "" },
-		/* Auth */
-		/* { name: "_DSS_", 		rank: 10, notes: "" } */
-
-	],
-
-	authKeyLength : [
-		{ 
-		}
+		{ name: "_RSA_", 	rank: 10, 	minSecureKeyLength: 2048, notes: "" },
+		{ name: "_ECDSA_", 	rank: 10, 	minSecureKeyLength: 263, notes: "" },
+		{ name: "_DSS_", 	rank: 10, 	minSecureKeyLength: 2048, notes: "" } 
 	],
 
 	bulkCipher : [
 		{ name: "AES_256_GCM",		rank: 10,   notes: "" },
 		{ name: "CAMELLIA_256_CBC", rank: 10,   notes: "" },
-		{ name: "AES_256_CBC",		rank: 10,   notes: "" },
+		{ name: "AES_256_CBC",		rank: 10,	notes: "" },
 		{ name: "3DES_EDE_CBC",		rank: 9,	notes: "" },
 		{ name: "AES_128_GCM",		rank: 8,	notes: "" },
 		{ name: "AES_128_CBC",		rank: 8,	notes: "" },
@@ -43,7 +42,7 @@ const ssleuthCipherSuites = {
 	HMAC : [
 		{ name: "SHA512",	 rank: 10,	notes: ""},
 		{ name: "SHA384",	 rank: 10,	notes: ""},
-		{ name: "SHA256",	 rank:  9,	notes: ""},
+		{ name: "SHA256",	 rank: 10,	notes: ""},
 		{ name: "SHA",	 rank:  6,	notes: "SHA-1 reportedly weak. "},
 		{ name: "MD5",	 rank:  2,	notes: "MD5 is broken. "}
 	],
