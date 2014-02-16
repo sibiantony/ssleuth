@@ -15,6 +15,8 @@ const ssleuthCipherSuites = {
 			ui: "RSA", 		notes: "" },
 		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, 
 			ui: "RSA", 		notes: "" },
+		{ name: "SSL_RSA_FIPS_WITH",	rank: 5,	pfs: 0, 
+			ui: "RSA", 		notes: "" },
 		{ name: "TLS_RSA_EXPORT",	rank: 2,	pfs: 0, 
 			ui: "RSA EXPORT", 	notes: "Weak Kx. " },
 	],
