@@ -27,17 +27,27 @@
 					<description id="ssleuth-text-cipher-rank-numeric"
 												class="ssleuth-text-title-class"/>
 				</hbox>
+				<hbox id="ssleuth-hbox-1" align="top" width="300" flex="2">
 
-				<hbox id="ssleuth-hbox-1" align="top" width="300">
 					<vbox id="ssleuth-hbox-1-vbox-1" align="left" width="30">
 						<image id="ssleuth-img-cipher-rank" class="ssleuth-img-state"/>
 					</vbox>
-					<vbox id="ssleuth-hbox-1-vbox-2" align="left">
+
+					<vbox id="ssleuth-hbox-1-vbox-2" flex="2">
 						<description id="ssleuth-text-cipher-suite-label" 
 								value="&ssleuth.cipher.suite.label;"
 								class="ssleuth-text-title-class"/>
-						<description id="ssleuth-text-cipher-suite" 
-													class="ssleuth-text-body-class"/>
+
+						<hbox id="ssleuth-text-cipher-suite-name" align="baseline">
+							<description id="ssleuth-text-cipher-suite" 
+														class="ssleuth-text-body-class"/>
+							<hbox flex="2"
+								align="right">
+								<description id="ssleuth-cipher-suite-rating" 
+											class="ssleuth-text-body-rating"/>
+							</hbox>
+
+						</hbox>
 						<hbox id="ssleuth-text-key-exchange" hidden="true">
 							<description id="ssleuth-text-key-exchange-label"
 														value="&ssleuth.cipher.suite.kxchange.label;"
@@ -68,40 +78,50 @@
 														class="ssleuth-text-body-class"/>
 						</hbox>
 			
-						<hbox id="ssleuth-text-cipher-details">
+						<!-- hbox id="ssleuth-text-cipher-details">
 							<description id="ssleuth-text-cipher-suite-rank-label"
 														value="&ssleuth.cipher.suite.rank.label;"
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-rank"
 														class="ssleuth-text-body-class"/>
-					 </hbox>
-						<description id="ssleuth-text-cipher-suite-note"
-														class="ssleuth-text-body-class"/>
+					 	</hbox-->
+						<!-- description id="ssleuth-text-cipher-suite-note"
+														class="ssleuth-text-body-class"/-->
 					</vbox>
 				</hbox>
 
-				<hbox id="ssleuth-hbox-2" align="top" width="300" height="30">
-					<vbox id="ssleuth-hbox-2-vbox-1" align="left" width="30">
+				<hbox id="ssleuth-hbox-2" align="top" >
+					<hbox id="ssleuth-hbox-2-vbox-1" align="left" width="30">
 						<image id="ssleuth-img-p-f-secrecy" class="ssleuth-img-state"/>
-					</vbox>
-					<vbox id="ssleuth-hbox-2-vbox-2" align="left">
+					</hbox>
+					<hbox id="ssleuth-hbox-2-vbox-2" align="baseline" flex="2">
 						<description id="ssleuth-text-p-f-secrecy"
 													class="ssleuth-text-title-class"/>
-					</vbox>
+						<hbox flex="2" align="right">
+							<description id="ssleuth-p-f-secrecy-rating" 
+										class="ssleuth-text-body-rating"/>
+						</hbox>
+					</hbox>
 				</hbox>
 
-				<hbox id="ssleuth-ff-connection-status">
+				<hbox id="ssleuth-ff-connection-status" >
 					<vbox id="ssleuth-ff-connection-status-i" align="left" width="30">
 						<image id="ssleuth-img-ff-connection-status" 
 										class="ssleuth-img-state"/>
 					</vbox>
-					<vbox id="ssleuth-ff-connection-status-text-vbox">
-						<hbox id="ssleuth-ff-connection-status-text-hbox">
+					<vbox id="ssleuth-ff-connection-status-text-vbox" flex="2">
+						<hbox id="ssleuth-ff-connection-status-text-hbox" 
+									align="baseline">
 							<description id="ssleuth-text-conn-status" 
 														value="&ssleuth.ff.connection.status;"
 														class="ssleuth-text-title-class"/>
 							<description id="ssleuth-text-ff-connection-status"
 														class="ssleuth-text-title-class"/>
+							<hbox flex="2" align="right">
+								<description id="ssleuth-ff-connection-status-rating" 
+											class="ssleuth-text-body-rating"/>
+							</hbox>
+
 						</hbox>
 						<description id="ssleuth-text-ff-connection-status-broken" 
 													value="&ssleuth.ff.connection.status.broken;" 
@@ -110,21 +130,33 @@
 					</vbox>
 				</hbox>
 
-				<hbox id="ssleuth-hbox-3" width="300" height="100" flex="1">
+				<hbox id="ssleuth-hbox-3" height="100" flex="2">
 					<vbox id="ssleuth-hbox-3-vbox-1" align="left" width="30">
 						<image id="ssleuth-img-cert-state" class="ssleuth-img-state"/>
 					</vbox>
-					<vbox id="ssleuth-hbox-3-vbox-2" align="left" flex="1">
+					<vbox id="ssleuth-hbox-3-vbox-2" flex="2">
 
-						<description id="ssleuth-text-cert-label" 
-													value="&ssleuth.cert.details.label;"
-													class="ssleuth-text-title-class"/>
+						<hbox align="baseline">
+							<description id="ssleuth-text-cert-label" 
+														value="&ssleuth.cert.details.label;"
+														class="ssleuth-text-title-class"/>
+							<hbox flex="2" align="right">
+								<description id="ssleuth-cert-status-rating" 
+											class="ssleuth-text-body-rating"/>
+							</hbox>
+						</hbox>
+
 						<hbox align="baseline">
 							<description id="ssleuth-text-cert-ev" 
 														value="&ssleuth.cert.ev.label;"
 														class="ssleuth-text-body-class"/> 
 							<description id="ssleuth-text-cert-extended-validation"
 														class="ssleuth-text-body-class"/>
+							<hbox flex="2" align="right">
+								<description id="ssleuth-cert-ev-rating" 
+											class="ssleuth-text-body-rating"/>
+							</hbox>
+
 						</hbox>
 
 						<hbox align="baseline">

@@ -160,7 +160,6 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 		var cipherName = sslStatus.cipherName; 
 		var cipherSuite = null; 
 		var keyLength = sslStatus.keyLength; 
-		var secretKeyLength = sslStatus.secretKeyLength; 
 		var cert = sslStatus.serverCert;
 		var extendedValidation = false;
 
@@ -185,7 +184,7 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 		var signatureKeyLen = getSignatureKeyLen(cert); 
 
 		cipherSuite = {name: cipherName, 
-						rank: cs.cipherStrength.LOW, 
+						rank: cs.cipherSuiteStrength.LOW, 
 						pfs: 0, 
 						notes: "",
 						signatureKeyLen: signatureKeyLen, 
@@ -244,11 +243,11 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 			 * Get the security strength from Firefox's own flags.*/
 			// Set cipher rank
 			if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
-				cipherSuite.bulkCipher.rank = cs.cipherStrength.MAX; 
+				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX; 
 			} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
-				cipherSuite.bulkCipher.rank = cs.cipherStrength.HIGH - 1; 
+				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1; 
 			} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
-				cipherSuite.bulkCipher.rank = cs.cipherStrength.MED - 1; 
+				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1; 
 			} 
 
 		}
@@ -260,8 +259,6 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 									  };
 		}
 
-		
-
 		cipherSuite.notes = cipherSuite.keyExchange.notes +
 								cipherSuite.bulkCipher.notes +
 								cipherSuite.HMAC.notes; 
@@ -271,25 +268,16 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 							cipherSuite.bulkCipher.rank * cs.weighting.bulkCipher +
 							cipherSuite.HMAC.rank * cs.weighting.hmac )/cs.weighting.total;
 
-		// At the moment, cipher suite rank amounts to half of the connection rank.
-		var connectionRank = cipherSuite.rank/2; 
-		if (cipherSuite.pfs) {
-			connectionRank += 2; 
-		}
+		// Get the connection rating. Normalize the params to 10
+		var ffStatus = (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) ? 1 : 0;
+		ffStatus = ffStatus * 10; 
+		var rating = getConnectionRating(cipherSuite.rank, 
+						cipherSuite.pfs * 10, 
+						ffStatus,
+						Number(!sslStatus.isDomainMismatch && isCertValid(cert)) * 10,
+						Number(extendedValidation) * 10);
 
-		if (extendedValidation) {
-			connectionRank += 1; 
-		}
-
-		if (!sslStatus.isDomainMismatch && isCertValid(cert)) {
-			connectionRank += 1; 
-		}
-
-		if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) {
-			connectionRank += 1; 
-		}
-
-		connectionRank = Number(connectionRank).toFixed(1); 
+		var connectionRank = Number(rating).toFixed(1); 
 		dump ("\n connection rank : " + connectionRank + "\n"); 
 
 		// Now set the appropriate button
@@ -302,23 +290,35 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 		showCertDetails(cert, sslStatus.isDomainMismatch, extendedValidation); 
 	}
 }
+function getConnectionRating(csRating, pfs,
+			ffStatus,
+			certStatus,
+			evCert) {
+	const cr = ssleuthConnectionRating; 
+	return ((csRating * cr.cipherSuite +
+				pfs * cr.pfs +
+				ffStatus * cr.ffStatus +
+				certStatus * cr.certStatus +
+				evCert * cr.evCert )/10); 
+}
 
 function getSignatureKeyLen(cert) {
 	try {
-	var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
-						.createInstance(Components.interfaces.nsIASN1Tree); 
-    certASN1.loadASN1Structure(cert.ASN1Structure);
+		var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
+							.createInstance(Components.interfaces.nsIASN1Tree); 
+		certASN1.loadASN1Structure(cert.ASN1Structure);
 
-	/* The key size is not available directly as an attribute in any 
-	 * interfaces. So we're on our own parsing the cert structure strings. 
-	 * Here I didn't want to mess around with strings like 'Modulus' or
-	 * 'bits' or '(' which could get localized.
-	 * So simply extract the first occuring digit from the string
-	 * corresponding to Subject's Public key. Hope this holds on. */
-	var keySize = certASN1.getDisplayData(12)
-					.split('\n')[0]
-					.match(/\d+/g)[0]; 
-	dump("\n CertASN1 : " + keySize); 
-	return keySize;
-	} catch (e) { dump("Error getSignatureKeyLen() : " + e.message + "\n"); }
+		/* The key size is not available directly as an attribute in any 
+		 * interfaces. So we're on our own parsing the cert structure strings. 
+		 * Here I didn't want to mess around with strings like 'Modulus' or
+		 * 'bits' or '(' which could get localized.
+		 * So simply extract the first occuring digit from the string
+		 * corresponding to Subject's Public key. Hope this holds on. */
+		var keySize = certASN1.getDisplayData(12)
+						.split('\n')[0]
+						.match(/\d+/g)[0]; 
+		return keySize;
+	} catch (e) { 
+		dump("Error getSignatureKeyLen() : " + e.message + "\n"); 
+	}
 }

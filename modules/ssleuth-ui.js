@@ -435,9 +435,9 @@ function showCipherDetails(cipherSuite, keyLength) {
 	var doc = _window().document; 
 	const cs = ssleuthCipherSuites; 
 	var marginCipherStatus = "low"; 
-	if (cipherSuite.rank >= cs.cipherStrength.HIGH) {
+	if (cipherSuite.rank >= cs.cipherSuiteStrength.HIGH) {
 		marginCipherStatus = "high"; 
-	} else if (cipherSuite.rank > cs.cipherStrength.MEDIUM) {
+	} else if (cipherSuite.rank > cs.cipherSuiteStrength.MEDIUM) {
 		marginCipherStatus = "med"; 
 	}
 
@@ -446,6 +446,10 @@ function showCipherDetails(cipherSuite, keyLength) {
 
 	doc.getElementById("ssleuth-text-cipher-suite").textContent = 
 		(cipherSuite.name); 
+	/* TODO : Get things to scale */
+	doc.getElementById("ssleuth-cipher-suite-rating").textContent =
+		(cipherSuite.rank/2 + "/" + "5");
+
 	doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
 		(cipherSuite.keyExchange.ui); 
 	doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
@@ -455,24 +459,25 @@ function showCipherDetails(cipherSuite, keyLength) {
 		(cipherSuite.bulkCipher.name + " " + cipherSuite.bulkCipher.notes); 
 	doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent = 
 		(cipherSuite.HMAC.name + " " + cipherSuite.HMAC.notes); 
-	doc.getElementById("ssleuth-text-cipher-suite-rank").textContent = 
-		(cipherSuite.rank.toFixed(1) + "/10"); 
-//	doc.getElementById("ssleuth-text-cipher-suite-note").textContent = (cipherSuite.notes); 
-// doc.getElementById("ssleuth-text-cipher-keylength").textContent = (keyLength); 
 }
+
 function showPFS(pfs) {
 	var doc = _window().document; 
 
 	const pfsImg = doc.getElementById("ssleuth-img-p-f-secrecy"); 
 	const pfsTxt = doc.getElementById("ssleuth-text-p-f-secrecy"); 
+	const pfsRating = doc.getElementById("ssleuth-p-f-secrecy-rating"); 
 
-	pfsImg.setAttribute("hidden", "false"); 
+	// pfsImg.setAttribute("hidden", "false"); 
+	// TODO: scale!
 	if (pfs) {
 		pfsImg.setAttribute("status", "yes"); 
 		pfsTxt.textContent = "Perfect Forward Secrecy : Yes";
+		pfsRating.textContent = "2/2";
 	} else {
 		pfsImg.setAttribute("status", "no"); 
 		pfsTxt.textContent = "Perfect Forward Secrecy : No";
+		pfsRating.textContent = "0/2";
 	}
 }
 
@@ -481,10 +486,13 @@ function showFFState(state) {
 
 	doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state); 
 	doc.getElementById("ssleuth-text-ff-connection-status").textContent = state; 
+	const statusRating = doc.getElementById("ssleuth-ff-connection-status-rating");
 	var brokenText = doc.getElementById("ssleuth-text-ff-connection-status-broken");
 	if ( state == "Broken" || state == "Insecure") {
+		statusRating.textContent = "0/1"; 
 		brokenText.setAttribute("hidden", "false"); 
 	} else {
+		statusRating.textContent = "1/1"; 
 		brokenText.setAttribute("hidden", "true"); 
 	}
 }
@@ -494,16 +502,14 @@ function showCertDetails(cert, domMismatch, ev) {
 	var doc = _window().document; 
 
 	doc.getElementById("ssleuth-text-cert-common-name").textContent = cert.commonName; 
+	var certRating = doc.getElementById("ssleuth-cert-status-rating"); 
+	var evRating = doc.getElementById("ssleuth-cert-ev-rating"); 
 	var elemEV = doc.getElementById("ssleuth-text-cert-extended-validation"); 
 	var evText = (ev)? "Yes" : "No"; 
 	elemEV.textContent = evText; 
 	elemEV.setAttribute("ev", evText); 
+	evRating.textContent = (ev)? "1/1" : "0/1"; 
 
-	// doc.getElementById("ssleuth-text-cert-org").textContent = cert.organization;
-	// doc.getElementById("ssleuth-text-cert-org-unit").textContent = cert.organizationalUnit;
-	// doc.getElementById("ssleuth-text-cert-issuer-org").textContent = cert.issuerOrganization; 
-	// doc.getElementById("ssleuth-text-cert-issuer-org-unit").textContent = cert.issuerOrganizationUnit; 
-	
 	toggleCertElem("ssleuth-text-cert-org", cert.organization); 
 	toggleCertElem("ssleuth-text-cert-org-unit", cert.organizationalUnit); 
 	toggleCertElem("ssleuth-text-cert-issuer-org", cert.issuerOrganization); 
@@ -517,8 +523,8 @@ function showCertDetails(cert, domMismatch, ev) {
 	}
 
 	var certValidity = doc.getElementById("ssleuth-text-cert-validity"); 
-	var certValid = (isCertValid(cert)? "true" : "false"); 
-	certValidity.setAttribute("valid", certValid); 
+	var certValid = isCertValid(cert);
+	certValidity.setAttribute("valid", certValid.toString()); 
 	certValidity.textContent = validity.notBeforeGMT + " till " + validity.notAfterGMT;
 
 	var domainMatched = doc.getElementById("ssleuth-text-cert-domain-matched"); 
@@ -526,10 +532,12 @@ function showCertDetails(cert, domMismatch, ev) {
 	domainMatched.textContent = domMatchText; 
 	domainMatched.setAttribute("match", domMatchText); 
 
-	if (certValid == "true" && !domMismatch) {
+	if (certValid && !domMismatch) {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "good"); 
+		certRating.textContent = "1/1"; 
 	} else {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 
+		certRating.textContent = "0/1"; 
 	}
 }
 	 

@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["ssleuthCipherSuites"];
+var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating"];
 
 /* The cipher suites ratings are in its early stages now.
  * This is subject to change in future.
@@ -15,7 +15,7 @@ const ssleuthCipherSuites = {
 			ui: "RSA", 		notes: "" },
 		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, 
 			ui: "RSA", 		notes: "" },
-		{ name: "SSL_RSA_FIPS_WITH",	rank: 5,	pfs: 0, 
+		{ name: "SSL_RSA_FIPS",	rank: 5,	pfs: 0, 
 			ui: "RSA", 		notes: "" },
 		{ name: "TLS_RSA_EXPORT",	rank: 2,	pfs: 0, 
 			ui: "RSA EXPORT", 	notes: "Weak Kx. " },
@@ -58,7 +58,7 @@ const ssleuthCipherSuites = {
 		{ name: "MD5",	 rank:  2,	notes: "MD5 is broken. "}
 	],
 
-	cipherStrength : {
+	cipherSuiteStrength : {
 		MAX: 10, 
 		HIGH: 7, 
 		MEDIUM: 5, 
@@ -72,3 +72,11 @@ const ssleuthCipherSuites = {
 		total	   : 10
 	}
 }; 
+
+var ssleuthConnectionRating = {
+	cipherSuite : 5, 
+	pfs			: 2,
+	ffStatus	: 1, 
+	certStatus	: 1,
+	evCert		: 1
+}

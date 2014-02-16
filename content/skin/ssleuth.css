@@ -178,6 +178,10 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
 #ssleuth-text-cipher-rank-numeric {
     font-weight: bold;
 }
+.ssleuth-text-body-rating {
+	color : #686868;
+	font-size: 0.75em; 
+}
 
 #ssleuth-img-http-omg {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
