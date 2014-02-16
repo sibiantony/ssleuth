@@ -7,17 +7,21 @@ const Ci = Components.interfaces;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://ssleuth/cipher-suites.js");
 
 var ssleuthDefaultPrefs = {
 	PREF_BRANCH : "extensions.ssleuth.", 
 	PREFS : {
 		"notifier.location" : 0,
 		"panel.fontsize" : 1, 
-		"ui.keyshortcut" : "control shift }"
+		"ui.keyshortcut" : "control shift }",
+		"rating.params"	 : ssleuthConnectionRating
    }
 }; 
 
 var ssleuthPreferences = {
+	ratingParams: ssleuthConnectionRating, 
+
 	init : function() {
 		this.setDefaultPreferences(); 
 		/* Set trigger=false, or else preferences setting
@@ -45,6 +49,9 @@ var ssleuthPreferences = {
 				case "string":
 					branch.setCharPref(key, val);
 					break;
+				default :
+					dump("setDefaultPreferences Unknown preference: " + val); 
+					branch.setCharPref(key, JSON.stringify(val));
 			}
 		}
 	},
@@ -76,6 +83,10 @@ var ssleuthPreferences = {
 		if (prefsWindow && !prefsWindow.closed) {
 			prefsWindow.close();
 		} 
+	},
+
+	getRatingParams: function() {
+		return this.ratingParams; 
 	}
 
 }; 
@@ -140,6 +151,9 @@ var ssleuthPrefListener = new PrefListener(
 					createKeyShortcut(win.document); 
 				}); 
 				break;
+			case "rating.params": 
+				ssleuthPreferences.ratingParams = 
+						JSON.parse(branch.getCharPref(name));
 		}
 	}
 );

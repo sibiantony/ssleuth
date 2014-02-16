@@ -13,7 +13,6 @@ Components.utils.import("resource://ssleuth/preferences.js");
 Components.utils.import("resource://ssleuth/utils.js");
 
 var ssleuth = {
-	win : null, 
 	prevURL: null,
 	urlChanged: false,
 
@@ -26,7 +25,6 @@ var ssleuth = {
 		try {
 			dump ("\nSSleuth init \n"); 
 
-			this.win = window; 
 			window.gBrowser.addProgressListener(this);
 			ssleuthPreferences.init(); 
 			ssleuthUI.init(window); 
@@ -49,7 +47,6 @@ var ssleuth = {
 		var win = Cc["@mozilla.org/embedcomp/window-watcher;1"]
 						.getService(Components.interfaces.nsIWindowWatcher)
 						.activeWindow; 
-		this.win = win; 
 		if (win == null) {
 			dump("Window is null\n"); 
 			return;
@@ -84,13 +81,12 @@ var ssleuth = {
 						.getService(Components.interfaces.nsIWindowWatcher)
 						.activeWindow; 
 		/* Get rid of this !! */
-		this.win = win; 
 		var loc = win.content.location;
 
 		dump("\n onSecurityChange: " + loc.protocol + "\n"); 
 		if (loc.protocol == "https:" ) {
 			try {
-				protocolHttps(aWebProgress, aRequest, aState);
+				protocolHttps(aWebProgress, aRequest, aState, win);
 			} catch (e) {
 				dump("Failed protocolHttps : " + e.message + "\n"); 
 			}
@@ -119,12 +115,12 @@ function protocolHttp(loc) {
 	setHttpsLink(httpsURL); 
 }
 
-function protocolHttps(aWebProgress, aRequest, aState) {
+function protocolHttps(aWebProgress, aRequest, aState, win) {
 	dump("\n protocolHttps \n");
 	const Cc = Components.classes; 
 	const Ci = Components.interfaces;
 
-	var secUI = ssleuth.win.gBrowser.securityUI; 
+	var secUI = win.gBrowser.securityUI; 
 	setBoxHidden("https", false); 
 	setBoxHidden("http", true); 
 
@@ -249,7 +245,6 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 			} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
 				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1; 
 			} 
-
 		}
 
 		if (!cipherSuite.HMAC) {
@@ -263,43 +258,42 @@ function protocolHttps(aWebProgress, aRequest, aState) {
 								cipherSuite.bulkCipher.notes +
 								cipherSuite.HMAC.notes; 
 
-		// Calculate ciphersuite rank  - adds up to 20. 
+		// Calculate ciphersuite rank  - All the cipher suite params 
+		// are out of 10, so this will get normalized to 10.
 		cipherSuite.rank = ( cipherSuite.keyExchange.rank * cs.weighting.keyExchange +
 							cipherSuite.bulkCipher.rank * cs.weighting.bulkCipher +
 							cipherSuite.HMAC.rank * cs.weighting.hmac )/cs.weighting.total;
 
+		var ratingParams = ssleuthPreferences.getRatingParams();
 		// Get the connection rating. Normalize the params to 10
-		var ffStatus = (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) ? 1 : 0;
-		ffStatus = ffStatus * 10; 
 		var rating = getConnectionRating(cipherSuite.rank, 
 						cipherSuite.pfs * 10, 
-						ffStatus,
+						((securityState == "Secure") ? 1 : 0) * 10,
 						Number(!sslStatus.isDomainMismatch && isCertValid(cert)) * 10,
-						Number(extendedValidation) * 10);
+						Number(extendedValidation) * 10, 
+						ratingParams);
 
 		var connectionRank = Number(rating).toFixed(1); 
 		dump ("\n connection rank : " + connectionRank + "\n"); 
 
 		// Now set the appropriate button
-		setButtonRank(connectionRank); 
-		panelConnectionRank(connectionRank); 
-
-		showCipherDetails(cipherSuite, keyLength); 
-		showPFS(cipherSuite.pfs); 
-		showFFState(securityState); 
-		showCertDetails(cert, sslStatus.isDomainMismatch, extendedValidation); 
+		ssleuthUI.fillPanel(connectionRank, 
+					cipherSuite,
+					securityState,
+					cert,
+					sslStatus.isDomainMismatch,
+					extendedValidation,
+					ratingParams); 
 	}
 }
 function getConnectionRating(csRating, pfs,
 			ffStatus,
 			certStatus,
-			evCert) {
-	const cr = ssleuthConnectionRating; 
-	return ((csRating * cr.cipherSuite +
-				pfs * cr.pfs +
-				ffStatus * cr.ffStatus +
-				certStatus * cr.certStatus +
-				evCert * cr.evCert )/10); 
+			evCert,
+			rp) {
+	return ((csRating * rp.cipherSuite + pfs * rp.pfs +
+				ffStatus * rp.ffStatus + certStatus * rp.certStatus +
+				evCert * rp.evCert )/rp.total); 
 }
 
 function getSignatureKeyLen(cert) {

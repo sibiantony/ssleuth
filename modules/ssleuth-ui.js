@@ -108,7 +108,24 @@ var ssleuthUI = {
 		if (ssleuthPanel.state == "open") {
 			showPanel(ssleuthPanel, true); 
 		}
+	},
+
+	fillPanel: function(connectionRank,
+				cipherSuite,
+				securityState,
+				cert,
+				domMismatch,
+				ev,
+				ratingParams) {
+		setButtonRank(connectionRank); 
+		panelConnectionRank(connectionRank); 
+
+		showCipherDetails(cipherSuite, ratingParams); 
+		showPFS(cipherSuite.pfs, ratingParams); 
+		showFFState(securityState, ratingParams); 
+		showCertDetails(cert, domMismatch, ev, ratingParams); 
 	}
+
 };
 
 /* The problem with the window element : 
@@ -431,7 +448,7 @@ function setButtonRank(connectionRank) {
 	} 
 }
 
-function showCipherDetails(cipherSuite, keyLength) {
+function showCipherDetails(cipherSuite, rp) {
 	var doc = _window().document; 
 	const cs = ssleuthCipherSuites; 
 	var marginCipherStatus = "low"; 
@@ -447,8 +464,9 @@ function showCipherDetails(cipherSuite, keyLength) {
 	doc.getElementById("ssleuth-text-cipher-suite").textContent = 
 		(cipherSuite.name); 
 	/* TODO : Get things to scale */
+	var rating = Number(cipherSuite.rank * rp.cipherSuite/10).toFixed(1);
 	doc.getElementById("ssleuth-cipher-suite-rating").textContent =
-		(cipherSuite.rank/2 + "/" + "5");
+		(rating + "/" + rp.cipherSuite); 
 
 	doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
 		(cipherSuite.keyExchange.ui); 
@@ -461,43 +479,46 @@ function showCipherDetails(cipherSuite, keyLength) {
 		(cipherSuite.HMAC.name + " " + cipherSuite.HMAC.notes); 
 }
 
-function showPFS(pfs) {
+function showPFS(pfs, rp) {
 	var doc = _window().document; 
 
 	const pfsImg = doc.getElementById("ssleuth-img-p-f-secrecy"); 
 	const pfsTxt = doc.getElementById("ssleuth-text-p-f-secrecy"); 
 	const pfsRating = doc.getElementById("ssleuth-p-f-secrecy-rating"); 
 
+	var rating = Number(pfs * rp.pfs).toFixed(1);
+	pfsRating.textContent = rating + "/" + rp.pfs; 
+
 	// pfsImg.setAttribute("hidden", "false"); 
 	// TODO: scale!
 	if (pfs) {
 		pfsImg.setAttribute("status", "yes"); 
 		pfsTxt.textContent = "Perfect Forward Secrecy : Yes";
-		pfsRating.textContent = "2/2";
 	} else {
 		pfsImg.setAttribute("status", "no"); 
 		pfsTxt.textContent = "Perfect Forward Secrecy : No";
-		pfsRating.textContent = "0/2";
 	}
 }
 
-function showFFState(state) {
+function showFFState(state, rp) {
 	var doc = _window().document; 
 
 	doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state); 
 	doc.getElementById("ssleuth-text-ff-connection-status").textContent = state; 
 	const statusRating = doc.getElementById("ssleuth-ff-connection-status-rating");
 	var brokenText = doc.getElementById("ssleuth-text-ff-connection-status-broken");
+
+	var rating = Number(((state == "Secure") ? 1 : 0) * rp.ffStatus).toFixed(1);
+	statusRating.textContent = rating + "/" + rp.ffStatus; 
+
 	if ( state == "Broken" || state == "Insecure") {
-		statusRating.textContent = "0/1"; 
 		brokenText.setAttribute("hidden", "false"); 
 	} else {
-		statusRating.textContent = "1/1"; 
 		brokenText.setAttribute("hidden", "true"); 
 	}
 }
 
-function showCertDetails(cert, domMismatch, ev) {
+function showCertDetails(cert, domMismatch, ev, rp) {
 	var validity = cert.validity.QueryInterface(Ci.nsIX509CertValidity);
 	var doc = _window().document; 
 
@@ -508,7 +529,9 @@ function showCertDetails(cert, domMismatch, ev) {
 	var evText = (ev)? "Yes" : "No"; 
 	elemEV.textContent = evText; 
 	elemEV.setAttribute("ev", evText); 
-	evRating.textContent = (ev)? "1/1" : "0/1"; 
+
+	var rating = (Number(ev) * rp.evCert).toFixed(1);
+	evRating.textContent = rating + "/" + rp.evCert; 
 
 	toggleCertElem("ssleuth-text-cert-org", cert.organization); 
 	toggleCertElem("ssleuth-text-cert-org-unit", cert.organizationalUnit); 
@@ -532,12 +555,13 @@ function showCertDetails(cert, domMismatch, ev) {
 	domainMatched.textContent = domMatchText; 
 	domainMatched.setAttribute("match", domMatchText); 
 
+	var rating = (Number(certValid && !domMismatch) * rp.certStatus).toFixed(1);
+	certRating.textContent = rating + "/" + rp.certStatus; 
+
 	if (certValid && !domMismatch) {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "good"); 
-		certRating.textContent = "1/1"; 
 	} else {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 
-		certRating.textContent = "0/1"; 
 	}
 }
 	 
