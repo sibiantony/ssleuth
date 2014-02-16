@@ -441,12 +441,24 @@ function showCipherDetails(cipherSuite, keyLength) {
 		marginCipherStatus = "med"; 
 	}
 
-	doc.getElementById("ssleuth-img-cipher-rank").setAttribute("status", marginCipherStatus); 
+	doc.getElementById("ssleuth-img-cipher-rank")
+		.setAttribute("status", marginCipherStatus); 
 
-	doc.getElementById("ssleuth-text-cipher-suite").textContent = (cipherSuite.name); 
-	doc.getElementById("ssleuth-text-cipher-suite-rank").textContent = (cipherSuite.rank.toFixed(1) + "/10"); 
-	doc.getElementById("ssleuth-text-cipher-suite-note").textContent = (cipherSuite.notes); 
-	doc.getElementById("ssleuth-text-cipher-keylength").textContent = (keyLength); 
+	doc.getElementById("ssleuth-text-cipher-suite").textContent = 
+		(cipherSuite.name); 
+	doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
+		(cipherSuite.keyExchange.ui); 
+	doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
+		(cipherSuite.authentication.ui + " " 
+		+ cipherSuite.signatureKeyLen + " bits"); 
+	doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
+		(cipherSuite.bulkCipher.name + " " + cipherSuite.bulkCipher.notes); 
+	doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent = 
+		(cipherSuite.HMAC.name + " " + cipherSuite.HMAC.notes); 
+	doc.getElementById("ssleuth-text-cipher-suite-rank").textContent = 
+		(cipherSuite.rank.toFixed(1) + "/10"); 
+//	doc.getElementById("ssleuth-text-cipher-suite-note").textContent = (cipherSuite.notes); 
+// doc.getElementById("ssleuth-text-cipher-keylength").textContent = (keyLength); 
 }
 function showPFS(pfs) {
 	var doc = _window().document; 
@@ -487,10 +499,22 @@ function showCertDetails(cert, domMismatch, ev) {
 	elemEV.textContent = evText; 
 	elemEV.setAttribute("ev", evText); 
 
-	doc.getElementById("ssleuth-text-cert-org").textContent = cert.organization;
-	doc.getElementById("ssleuth-text-cert-org-unit").textContent = cert.organizationalUnit;
-	doc.getElementById("ssleuth-text-cert-issuer-org").textContent = cert.issuerOrganization; 
-	doc.getElementById("ssleuth-text-cert-issuer-org-unit").textContent = cert.issuerOrganizationUnit; 
+	// doc.getElementById("ssleuth-text-cert-org").textContent = cert.organization;
+	// doc.getElementById("ssleuth-text-cert-org-unit").textContent = cert.organizationalUnit;
+	// doc.getElementById("ssleuth-text-cert-issuer-org").textContent = cert.issuerOrganization; 
+	// doc.getElementById("ssleuth-text-cert-issuer-org-unit").textContent = cert.issuerOrganizationUnit; 
+	
+	toggleCertElem("ssleuth-text-cert-org", cert.organization); 
+	toggleCertElem("ssleuth-text-cert-org-unit", cert.organizationalUnit); 
+	toggleCertElem("ssleuth-text-cert-issuer-org", cert.issuerOrganization); 
+	toggleCertElem("ssleuth-text-cert-issuer-org-unit", 
+			cert.issuerOrganizationUnit); 
+
+	function toggleCertElem(id, text) {
+		var elem = doc.getElementById(id); 
+		elem.textContent = text; 
+		elem.hidden = (text == "");
+	}
 
 	var certValidity = doc.getElementById("ssleuth-text-cert-validity"); 
 	var certValid = (isCertValid(cert)? "true" : "false"); 
@@ -502,7 +526,7 @@ function showCertDetails(cert, domMismatch, ev) {
 	domainMatched.textContent = domMatchText; 
 	domainMatched.setAttribute("match", domMatchText); 
 
-	if (certValid == "true" && domMatchText == "Yes" ) {
+	if (certValid == "true" && !domMismatch) {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "good"); 
 	} else {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 

@@ -5,22 +5,31 @@ var EXPORTED_SYMBOLS = ["ssleuthCipherSuites"];
  */
 const ssleuthCipherSuites = {
 	keyExchange : [
-		{ name: "TLS_ECDHE",	rank: 10,   pfs: 1, notes: "", },
-		{ name: "TLS_ECDH",		rank: 9,	pfs: 0, notes: "", },
-		{ name: "TLS_DHE",		rank: 9,	pfs: 1, notes: "", },
-		{ name: "TLS_RSA_WITH",	rank: 6,	pfs: 0, notes: "", },
-		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, notes: "", },
-		{ name: "TLS_RSA_EXPORT",	rank: 2,	pfs: 0, notes: "Weak Kx. ", },
+		{ name: "TLS_ECDHE",	rank: 10,   pfs: 1, 
+			ui: "ECDHE", 	notes: "" },
+		{ name: "TLS_ECDH",		rank: 9,	pfs: 0, 
+			ui: "ECDH", 	notes: "" },
+		{ name: "TLS_DHE",		rank: 9,	pfs: 1, 
+			ui: "DHE", 		notes: "" },
+		{ name: "TLS_RSA_WITH",	rank: 6,	pfs: 0, 
+			ui: "RSA", 		notes: "" },
+		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, 
+			ui: "RSA", 		notes: "" },
+		{ name: "TLS_RSA_EXPORT",	rank: 2,	pfs: 0, 
+			ui: "RSA EXPORT", 	notes: "Weak Kx. " },
 	],
 
 	/* No known weaknesses for the algorithms here. Except for the key length.
 	 * RSA secure minimum keyLength>=2048
-	 * ECDSA comparable keyLength>=263 - RFC 4492
+	 * ECDSA comparable keyLength>=263 [RFC 4492]
 	 */
 	authentication : [
-		{ name: "_RSA_", 	rank: 10, 	minSecureKeyLength: 2048, notes: "" },
-		{ name: "_ECDSA_", 	rank: 10, 	minSecureKeyLength: 263, notes: "" },
-		{ name: "_DSS_", 	rank: 10, 	minSecureKeyLength: 2048, notes: "" } 
+		{ name: "_RSA_", 	rank: 10, 	minSecureKeyLength: 2048, 
+			ui: "RSA", 		notes: "" },
+		{ name: "_ECDSA_", 	rank: 10, 	minSecureKeyLength: 263, 
+			ui: "ECDSA", 	notes: "" },
+		{ name: "_DSS_", 	rank: 10, 	minSecureKeyLength: 2048, 
+			ui: "DSA", 		notes: "" } 
 	],
 
 	bulkCipher : [

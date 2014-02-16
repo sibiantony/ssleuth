@@ -1,8 +1,14 @@
 <!ENTITY ssleuth.cipher.suite.label "Cipher Suite Details">
+<!ENTITY ssleuth.cipher.suite.kxchange.label "Key exchange: ">
+<!ENTITY ssleuth.cipher.suite.auth.label "Authentication: ">
+<!ENTITY ssleuth.cipher.suite.bulkcipher.label "Bulk cipher: ">
+<!ENTITY ssleuth.cipher.suite.hmac.label "HMAC: ">
 <!ENTITY ssleuth.cipher.suite.rank.label "SSleuth cipher suite rating: ">
 <!ENTITY ssleuth.cipher.suite.keylength.label "Keylength: ">
+
 <!ENTITY ssleuth.ff.connection.status "Connection status (firefox): ">
 <!ENTITY ssleuth.ff.connection.status.broken "This page has either insecure content or a bad certificate.">
+
 <!ENTITY ssleuth.cert.details.label "Certificate Details" >
 <!ENTITY ssleuth.cert.ev.label "Extended validation: ">
 <!ENTITY ssleuth.cert.cn.label "Common Name: ">
