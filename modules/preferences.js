@@ -20,7 +20,6 @@ var ssleuthDefaultPrefs = {
 }; 
 
 var ssleuthPreferences = {
-	ratingParams: ssleuthConnectionRating, 
 
 	init : function() {
 		this.setDefaultPreferences(); 
@@ -28,6 +27,8 @@ var ssleuthPreferences = {
 		 * 	will conflict with a UI init. This is because, the overlay will
 		 * 	not be merged immediately and is notified asynchronously.*/
 		ssleuthPrefListener.register(false);
+
+		return this.readInitPreferences(); 
 	},
 
 	uninit: function() {
@@ -85,10 +86,28 @@ var ssleuthPreferences = {
 		} 
 	},
 
-	getRatingParams: function() {
-		return this.ratingParams; 
-	}
-
+	readInitPreferences: function() {
+		const prefs =
+			Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+		var sp = ssleuthDefaultPrefs; 
+		for (let [key, val] in Iterator(sp.PREFS)) {
+			switch (typeof val) {
+				case "boolean":
+					sp.PREFS[key] = prefs.getBoolPref(sp.PREF_BRANCH+key);
+					break;
+				case "number":
+					sp.PREFS[key] = prefs.getIntPref(sp.PREF_BRANCH+key);
+					break; 
+				case "string":
+					sp.PREFS[key] = prefs.getCharPref(sp.PREF_BRANCH+key);
+					break;
+				default :
+					dump("setDefaultPreferences Unknown preference: " + val + "\n"); 
+					sp.PREFS[key] = JSON.parse(prefs.getCharPref(sp.PREF_BRANCH+key));
+			}
+		}
+		return sp; 
+	}		
 }; 
 
 function PrefListener(branch_name, callback) {

@@ -15,6 +15,7 @@ Components.utils.import("resource://ssleuth/utils.js");
 var ssleuth = {
 	prevURL: null,
 	urlChanged: false,
+	prefs: null, 
 
 	init: function(window) {
 
@@ -26,7 +27,7 @@ var ssleuth = {
 			dump ("\nSSleuth init \n"); 
 
 			window.gBrowser.addProgressListener(this);
-			ssleuthPreferences.init(); 
+			this.prefs = ssleuthPreferences.init(); 
 			ssleuthUI.init(window); 
 
 		} catch(e) {
@@ -132,22 +133,21 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 			if (secUI.SSLStatus) {
 				sslStatus = secUI.SSLStatus; 
 			}
-		}
-		/* TODO : clean up, combine with above */
-		if (!sslStatus) {
-			dump("\n SSLStatus is null \n");
-			/* 1. A rather annoying behaviour : Firefox do not seem to populate
-			 * SSLStatus if a tab switches to a page with the same URL.
-			 */
+			if (!sslStatus) {
+				dump("\n SSLStatus is null \n");
+				/* 1. A rather annoying behaviour : Firefox do not seem to populate
+				 * SSLStatus if a tab switches to a page with the same URL.
+				 */
 
-			/* 2. A page load event can fire even if there is 
-			 * no connectivity and user attempts to reload a page. 
-			 * The hidden=true should prevent stale values from getting 
-			 * displayed */
-			if (ssleuth.urlChanged) {
-				setBoxHidden("https", true); 
-			} 
-			return; 
+				/* 2. A page load event can fire even if there is 
+				 * no connectivity and user attempts to reload a page. 
+				 * The hidden=true should prevent stale values from getting 
+				 * displayed */
+				if (ssleuth.urlChanged) {
+					setBoxHidden("https", true); 
+				} 
+				return; 
+			}
 		}
 		
 
@@ -264,7 +264,8 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 							cipherSuite.bulkCipher.rank * cs.weighting.bulkCipher +
 							cipherSuite.HMAC.rank * cs.weighting.hmac )/cs.weighting.total;
 
-		var ratingParams = ssleuthPreferences.getRatingParams();
+		var ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
+
 		// Get the connection rating. Normalize the params to 10
 		var rating = getConnectionRating(cipherSuite.rank, 
 						cipherSuite.pfs * 10, 
