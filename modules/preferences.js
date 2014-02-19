@@ -27,13 +27,9 @@ var ssleuthPreferences = {
 		// Set trigger=false, or else preferences setting
 		// 	will conflict with a UI init. This is because, the overlay will
 		//	not be merged immediately and is notified asynchronously.
-		// ssleuthPrefListener.register(false);
-
-		// return this.readInitPreferences(); 
 	},
 
 	uninit: function() {
-		// ssleuthPrefListener.unregister(); 
 		this.closeDialog(); 
 	},
 
@@ -61,22 +57,29 @@ var ssleuthPreferences = {
 		let application = 
 			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
 		const win = _window(); 
-		var prefsWindow = win.document.getElementById("ssleuth-preferences"); 
+		// var prefsWindow = win.document.getElementById("ssleuth-preferences"); 
 
-		if (null == prefsWindow || prefsWindow.closed) {
+		//if (null == prefsWindow || prefsWindow.closed) {
+		if (null == this.prefsWindow) {
+			dump("prefs Window is null\n");
 			const instantApply =
 				application.prefs.get("browser.preferences.instantApply");
 			const features =
 				"chrome,titlebar,toolbar,centerscreen" +
 				(instantApply.value ? ",dialog=no" : ",modal");
-			prefsWindow =
-				win.openDialog(
+			var prefsWindow =
+				/* win.openDialog(
 				"chrome://ssleuth/content/preferences.xul",
 				"ssleuth-preferences-window", features, 
-				{tabIndex: index});
+				{tabIndex: index});*/
+				win.gBrowser.loadOneTab(
+					"chrome://ssleuth/content/preferences.xul",
+					{inBackground: false, tabIndex: index});
+				this.prefsWindow = prefsWindow; 
+		} else {
+			win.selectedTab = this.prefsWindow; 
 		}
-		prefsWindow.focus();
-		this.prefsWindow = prefsWindow; 
+		// prefsWindow.focus();
 	}, 
 
 	closeDialog: function() {

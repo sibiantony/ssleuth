@@ -7,7 +7,6 @@
 							title="&ssleuth.pref.title.label;"
 							onload="onLoad()">
 	<script><![CDATA[
-
 		function onLoad() {
 				var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
 					
