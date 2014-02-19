@@ -10,8 +10,8 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/ssleuth.js");
 
 var Bootstrap = {
-
 	extensionStartup: function(firstRun, reinstall) {
+		ssleuthPreferences.init(); 
 		forEachOpenWindow(initWindow); 
 		Services.wm.addListener(WindowListener); 
 	},
@@ -19,45 +19,46 @@ var Bootstrap = {
 	extensionShutdown: function() {
 		forEachOpenWindow(unloadWindow); 
 		Services.wm.removeListener(WindowListener); 
+		ssleuthPreferences.uninit(); 
 	},
 
 	extensionUninstall: function() {
 	}
-
 };
 
 function initWindow(window) {
-	dump("\n New window callback"); 
+	dump("\nNew window callback"); 
 	try {
 		ssleuth.init(window); 
 	} catch(ex) {
-		dump("\n Error ssleuth init: " + ex.message + "\n"); 
+		dump("\nError ssleuth init: " + ex.message + "\n"); 
 	}
-
 }
+
 function unloadWindow(window) {
-	dump("\n Shutdown \n"); 
-
+	dump("\nShutdown \n"); 
 	ssleuth.uninit(window); 
-
 }
-function forEachOpenWindow(todo)  // Apply a function to all open browser windows
-{
+
+// Apply a function to all open browser windows 
+function forEachOpenWindow(todo)  {
 	var windows = Services.wm.getEnumerator("navigator:browser");
 	while (windows.hasMoreElements())
-		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
+		todo(windows.getNext()
+			.QueryInterface(Components.interfaces.nsIDOMWindow));
 }
-var WindowListener =
-{
+
+var WindowListener = {
 	onOpenWindow: function(xulWindow)
 	{
 		var window = 
 			xulWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-							  .getInterface(Components.interfaces.nsIDOMWindow);
+				.getInterface(Components.interfaces.nsIDOMWindow);
 		function onWindowLoad()
 		{
 			window.removeEventListener("load",onWindowLoad);
-			if (window.document.documentElement.getAttribute("windowtype") == "navigator:browser")
+			if (window.document.documentElement
+					.getAttribute("windowtype") == "navigator:browser")
 				initWindow(window);
 		}
 		window.addEventListener("load",onWindowLoad);
@@ -65,3 +66,5 @@ var WindowListener =
 	onCloseWindow: function(xulWindow) { },
 	onWindowTitleChange: function(xulWindow, newTitle) { }
 };
+
+Components.utils.import("resource://ssleuth/preferences.js");

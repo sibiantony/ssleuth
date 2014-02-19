@@ -9,37 +9,40 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js"); 
 Components.utils.import("resource://ssleuth/ssleuth-ui.js");
-Components.utils.import("resource://ssleuth/preferences.js");
 Components.utils.import("resource://ssleuth/utils.js");
+Components.utils.import("resource://ssleuth/preferences.js");
 
 var ssleuth = {
 	prevURL: null,
 	urlChanged: false,
 	prefs: null, 
+	prefRegistered : false,
 
 	init: function(window) {
 
-		dump("\n ssleuth init \n"); 
-		/* Handle exceptions while init(). If the panel
-		*  is not properly installed for the buttons, the mainPopupSet 
-		*  panel elements will wreak havoc on the browser UI. */
+		dump("\nssleuth init \n"); 
+		// Handle exceptions while init(). If the panel
+		// is not properly installed for the buttons, the mainPopupSet 
+		// panel elements will wreak havoc on the browser UI. 
 		try {
 			dump ("\nSSleuth init \n"); 
-
 			window.gBrowser.addProgressListener(this);
-			this.prefs = ssleuthPreferences.init(); 
+			this.prefs = ssleuthPreferences.readInitPreferences(); 
+			if (!this.prefRegistered) {
+				prefListener.register(false); 
+				this.prefRegistered = true; 	
+			}
 			ssleuthUI.init(window); 
-
 		} catch(e) {
-			dump("\n Error : " + e.message + "\n"); 
+			dump("\nError : " + e.message + "\n"); 
 			this.uninit();
 		}
 	},
 
 	uninit: function(window) {
-		dump("\n Uninit \n");
+		dump("\nUninit \n");
 		ssleuthUI.uninit(window); 
-		ssleuthPreferences.uninit(); 
+		prefListener.unregister(); 
 		window.gBrowser.removeProgressListener(this);
 	},
 
@@ -71,7 +74,7 @@ var ssleuth = {
 		return;
 	},
 
-    QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
+    /* QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]), */
 
 	onStateChange: function(aWebProgress, aRequest, aFlag, aStatus) {
 		return; 
@@ -84,7 +87,7 @@ var ssleuth = {
 		/* Get rid of this !! */
 		var loc = win.content.location;
 
-		dump("\n onSecurityChange: " + loc.protocol + "\n"); 
+		dump("\nonSecurityChange: " + loc.protocol + "\n"); 
 		if (loc.protocol == "https:" ) {
 			try {
 				protocolHttps(aWebProgress, aRequest, aState, win);
@@ -106,7 +109,7 @@ function protocolUnknown() {
 }
 
 function protocolHttp(loc) {
-	dump("\n protocolHttp \n");
+	dump("\nprotocolHttp \n");
 	setButtonRank(-1);
 	setBoxHidden("https", true); 
 	setBoxHidden("http", false); 
@@ -117,7 +120,7 @@ function protocolHttp(loc) {
 }
 
 function protocolHttps(aWebProgress, aRequest, aState, win) {
-	dump("\n protocolHttps \n");
+	dump("\nprotocolHttps \n");
 	const Cc = Components.classes; 
 	const Ci = Components.interfaces;
 
@@ -128,21 +131,20 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 	if (secUI) {
 		var sslStatus = secUI.SSLStatus; 
 		if (!sslStatus) {
-			dump("\n SSLStatus is null : Querying SSLstatus \n");
+			dump("\nSSLStatus is null : Querying SSLstatus \n");
 			secUI.QueryInterface(Ci.nsISSLStatusProvider); 
 			if (secUI.SSLStatus) {
 				sslStatus = secUI.SSLStatus; 
 			}
 			if (!sslStatus) {
-				dump("\n SSLStatus is null \n");
-				/* 1. A rather annoying behaviour : Firefox do not seem to populate
-				 * SSLStatus if a tab switches to a page with the same URL.
-				 */
-
-				/* 2. A page load event can fire even if there is 
-				 * no connectivity and user attempts to reload a page. 
-				 * The hidden=true should prevent stale values from getting 
-				 * displayed */
+				dump("\nSSLStatus is null \n");
+				// 1. A rather annoying behaviour : Firefox do not seem to populate
+				//  SSLStatus if a tab switches to a page with the same URL.
+				//
+				// 2. A page load event can fire even if there is 
+				//  no connectivity and user attempts to reload a page. 
+				//  The hidden=true should prevent stale values from getting 
+				//  displayed */
 				if (ssleuth.urlChanged) {
 					setBoxHidden("https", true); 
 				} 
@@ -235,8 +237,8 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 										rank: 0,
 										notes: "Unknown Bulk cipher"
 									  }; 
-			/* Something's missing in our list.
-			 * Get the security strength from Firefox's own flags.*/
+			// Something's missing in our list.
+			// Get the security strength from Firefox's own flags.
 			// Set cipher rank
 			if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
 				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX; 
@@ -258,35 +260,38 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 								cipherSuite.bulkCipher.notes +
 								cipherSuite.HMAC.notes; 
 
-		// Calculate ciphersuite rank  - All the cipher suite params 
+		// Calculate ciphersuite rank  - All the cipher suite params ratings
 		// are out of 10, so this will get normalized to 10.
 		cipherSuite.rank = ( cipherSuite.keyExchange.rank * cs.weighting.keyExchange +
 							cipherSuite.bulkCipher.rank * cs.weighting.bulkCipher +
 							cipherSuite.HMAC.rank * cs.weighting.hmac )/cs.weighting.total;
 
 		var ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
+		var certValid = isCertValid(cert); 
 
 		// Get the connection rating. Normalize the params to 10
 		var rating = getConnectionRating(cipherSuite.rank, 
 						cipherSuite.pfs * 10, 
 						((securityState == "Secure") ? 1 : 0) * 10,
-						Number(!sslStatus.isDomainMismatch && isCertValid(cert)) * 10,
+						Number(!sslStatus.isDomainMismatch && certValid) * 10,
 						Number(extendedValidation) * 10, 
 						ratingParams);
 
 		var connectionRank = Number(rating).toFixed(1); 
-		dump ("\n connection rank : " + connectionRank + "\n"); 
+		dump ("\nconnection rank : " + connectionRank + "\n"); 
 
 		// Now set the appropriate button
 		ssleuthUI.fillPanel(connectionRank, 
 					cipherSuite,
 					securityState,
 					cert,
+					certValid,
 					sslStatus.isDomainMismatch,
 					extendedValidation,
 					ratingParams); 
 	}
 }
+
 function getConnectionRating(csRating, pfs,
 			ffStatus,
 			certStatus,
@@ -303,12 +308,12 @@ function getSignatureKeyLen(cert) {
 							.createInstance(Components.interfaces.nsIASN1Tree); 
 		certASN1.loadASN1Structure(cert.ASN1Structure);
 
-		/* The key size is not available directly as an attribute in any 
-		 * interfaces. So we're on our own parsing the cert structure strings. 
-		 * Here I didn't want to mess around with strings like 'Modulus' or
-		 * 'bits' or '(' which could get localized.
-		 * So simply extract the first occuring digit from the string
-		 * corresponding to Subject's Public key. Hope this holds on. */
+		// The key size is not available directly as an attribute in any 
+		// interfaces. So we're on our own parsing the cert structure strings. 
+		// Here I didn't want to mess around with strings like 'Modulus' or
+		// 'bits' or '(' which could get localized.
+		// So simply extract the first occuring digit from the string
+		// corresponding to Subject's Public key. Hope this holds on. 
 		var keySize = certASN1.getDisplayData(12)
 						.split('\n')[0]
 						.match(/\d+/g)[0]; 
@@ -317,3 +322,15 @@ function getSignatureKeyLen(cert) {
 		dump("Error getSignatureKeyLen() : " + e.message + "\n"); 
 	}
 }
+
+var prefListener = new PrefListener(
+	ssleuthDefaultPrefs.PREF_BRANCH,
+	function(branch, name) {
+		switch(name) {
+			case "rating.params": 
+				ssleuth.prefs.PREFS["rating.params"] = 
+						JSON.parse(branch.getCharPref(name));
+		}
+	}
+); 
+

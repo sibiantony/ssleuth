@@ -1,6 +1,7 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuthPreferences"]; 
+var EXPORTED_SYMBOLS = ["ssleuthPreferences", "ssleuthDefaultPrefs",
+							"PrefListener"]; 
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -23,16 +24,16 @@ var ssleuthPreferences = {
 
 	init : function() {
 		this.setDefaultPreferences(); 
-		/* Set trigger=false, or else preferences setting
-		 * 	will conflict with a UI init. This is because, the overlay will
-		 * 	not be merged immediately and is notified asynchronously.*/
-		ssleuthPrefListener.register(false);
+		// Set trigger=false, or else preferences setting
+		// 	will conflict with a UI init. This is because, the overlay will
+		//	not be merged immediately and is notified asynchronously.
+		// ssleuthPrefListener.register(false);
 
-		return this.readInitPreferences(); 
+		// return this.readInitPreferences(); 
 	},
 
 	uninit: function() {
-		ssleuthPrefListener.unregister(); 
+		// ssleuthPrefListener.unregister(); 
 		this.closeDialog(); 
 	},
 
@@ -50,8 +51,7 @@ var ssleuthPreferences = {
 				case "string":
 					branch.setCharPref(key, val);
 					break;
-				default :
-					dump("setDefaultPreferences Unknown preference: " + val); 
+				case "object" :
 					branch.setCharPref(key, JSON.stringify(val));
 			}
 		}
@@ -83,7 +83,7 @@ var ssleuthPreferences = {
 		const prefsWindow = this.prefsWindow; 
 		if (prefsWindow && !prefsWindow.closed) {
 			prefsWindow.close();
-		} 
+		}
 	},
 
 	readInitPreferences: function() {
@@ -101,8 +101,7 @@ var ssleuthPreferences = {
 				case "string":
 					sp.PREFS[key] = prefs.getCharPref(sp.PREF_BRANCH+key);
 					break;
-				default :
-					dump("setDefaultPreferences Unknown preference: " + val + "\n"); 
+				case "object":
 					sp.PREFS[key] = JSON.parse(prefs.getCharPref(sp.PREF_BRANCH+key));
 			}
 		}
@@ -143,40 +142,6 @@ PrefListener.prototype.unregister = function() {
 		this._branch.removeObserver('', this);
 };
 
-var ssleuthPrefListener = new PrefListener(
-	ssleuthDefaultPrefs.PREF_BRANCH, 	
-	function(branch, name) {
-		switch (name) {
-			case "notifier.location":
-				/* Changing the notifier location requires tearing down
-				 * everything. Button, panel.. and the panel overlay!
-				 */
-				forEachOpenWindow(function(win) {
-					ssleuthUI.uninit(win); 
-				}); 
-			
-				forEachOpenWindow(function(win) {
-					ssleuthUI.init(win); 
-				}); 
-				break;
-			case "panel.fontsize":
-				forEachOpenWindow(function(win) {
-					setPanelFont(branch.getIntPref(name), win.document); 
-				}); 
-				break;
-			case "ui.keyshortcut":
-				forEachOpenWindow(function(win) {
-					deleteKeyShortcut(win.document); 
-					createKeyShortcut(win.document); 
-				}); 
-				break;
-			case "rating.params": 
-				ssleuthPreferences.ratingParams = 
-						JSON.parse(branch.getCharPref(name));
-		}
-	}
-);
-
 /* Move to utils ? */
 function _window() {
 	return Cc["@mozilla.org/embedcomp/window-watcher;1"]
@@ -189,5 +154,3 @@ function forEachOpenWindow(todo)  // Apply a function to all open browser window
 	while (windows.hasMoreElements())
 		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
 }
-
-Components.utils.import("resource://ssleuth/ssleuth-ui.js");

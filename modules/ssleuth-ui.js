@@ -1,16 +1,10 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuthUI", "setButtonRank", 
-						"panelConnectionRank",
+var EXPORTED_SYMBOLS = ["ssleuthUI", 
 						"showCipherDetails",
-						"showPFS",
-						"showFFState",
-						"showCertDetails",
+						"setButtonRank", 
 						"setBoxHidden",
-						"setHttpsLink",
-						"setPanelFont",
-						"createKeyShortcut", 
-						"deleteKeyShortcut"]; 
+						"setHttpsLink"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -19,18 +13,16 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/utils.js");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
+Components.utils.import("resource://ssleuth/preferences.js");
 
 var ssleuthUI = {
 	ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
 	ssleuthBtnLocation : null, 
-	win : null, 
+	prefs: null, 
+	prefsRegistered: false, 
 
 	init: function(window) {
-		dump("\n UI init \n"); 
-		
 		dump ("\nssleuth UI init : \n");
-		this.win = window; 
-
 		try {
 			window.document.loadOverlay("chrome://ssleuth/content/ssleuth.xul", 
 								{observe: function(subject, topic, data) {
@@ -46,7 +38,6 @@ var ssleuthUI = {
 	},
 
 	initSSleuthUI: function(window) {
-
 		/* Verify if things are in good shape! */
 		if(window.document.getElementById("ssleuth-panel-vbox")) {
 			dump("initSSleuthUI : panel elems available!\n"); 
@@ -54,8 +45,14 @@ var ssleuthUI = {
 			dump("** tough luck!\n");
 			this.uninit(); 
 		}
-		readUIPreferences();
+		this.prefs = ssleuthPreferences.readInitPreferences(); 
+		if (!this.prefsRegistered) {
+				prefListener.register(false); 
+				this.prefRegistered = true; 	
+		}
+
 		
+		this.ssleuthBtnLocation = this.prefs.PREFS["notifier.location"]; 
 		var ssleuthButton = createButton(window); 
 		installButton(ssleuthButton,
 						true, 
@@ -72,20 +69,19 @@ var ssleuthUI = {
 		}
 		var panelVbox = window.document.getElementById("ssleuth-panel-vbox"); 
 		ssleuthPanel.appendChild(panelVbox); 
-
-		setUIPreferences(window.document);
+		setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 
 	}, 
 
 	uninit: function(window) {
 		dump("\n SSleuth UI  : uninit \n"); 
 		/* TODO : Cleanup everything! */
 		/* Removing the button deletes the overlay elements as well */
+		prefListener.unregister(); 
 		removeButton(_ssleuthButton(window)); 
 
 		deleteKeyShortcut(window.document); 
 		removePanelMenu(window.document); 
 		removeStyleSheet(); 
-		/* If preferences window is open, close that too */
 	},
 
 	onLocationChange: function(window) {
@@ -93,7 +89,6 @@ var ssleuthUI = {
 		 * successful init. So we need to add the child panel
 		 * for the first time */
 		try {
-			this.win = window; 
 				if (window == null ) {
 					dump("\n UI onLocationchange window is null! \n"); 
 					return; 
@@ -114,6 +109,7 @@ var ssleuthUI = {
 				cipherSuite,
 				securityState,
 				cert,
+				certValid,
 				domMismatch,
 				ev,
 				ratingParams) {
@@ -123,7 +119,7 @@ var ssleuthUI = {
 		showCipherDetails(cipherSuite, ratingParams); 
 		showPFS(cipherSuite.pfs, ratingParams); 
 		showFFState(securityState, ratingParams); 
-		showCertDetails(cert, domMismatch, ev, ratingParams); 
+		showCertDetails(cert, certValid, domMismatch, ev, ratingParams); 
 	}
 
 };
@@ -321,10 +317,10 @@ function panelEvent(event) {
 	if (event.type == "click" && event.button == 2) {
 		/* ssleuth.openPreferences(); */
 	} else {
-		/* The toolbar button, technically being a 'button'
-		 * and the panel as it's child, is automagically opened by firefox.
-		 * Unlike a shortcut-key or the urlbar notifier, we don't
-		 * need to open the panel in this case. */
+		// The toolbar button, technically being a 'button'
+		// and the panel as it's child, is automagically opened by firefox.
+		// Unlike a shortcut-key or the urlbar notifier, we don't
+		// need to open the panel in this case. 
 		try {
 			dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
 			if (!(event.type == "click" && 
@@ -395,9 +391,8 @@ function panelConnectionRank(rank) {
 	var s = []; 
 	var doc = _window().document; 
 
-	/* I don't see any easy CSS hacks
-	 * without having to autogenerate spans in html.
-	 */
+	// I don't see any easy CSS hacks
+	// without having to autogenerate spans in html.
 	for (var i=1; i<=10; i++) {
 		s[i] = doc.getElementById("ssleuth-img-cipher-rank-star-" + String(i)); 
 		s[i].className = "ssleuth-star";
@@ -463,7 +458,7 @@ function showCipherDetails(cipherSuite, rp) {
 
 	doc.getElementById("ssleuth-text-cipher-suite").textContent = 
 		(cipherSuite.name); 
-	/* TODO : Get things to scale */
+
 	var rating = Number(cipherSuite.rank * rp.cipherSuite/10).toFixed(1);
 	doc.getElementById("ssleuth-cipher-suite-rating").textContent =
 		(rating + "/" + rp.cipherSuite); 
@@ -490,7 +485,6 @@ function showPFS(pfs, rp) {
 	pfsRating.textContent = rating + "/" + rp.pfs; 
 
 	// pfsImg.setAttribute("hidden", "false"); 
-	// TODO: scale!
 	if (pfs) {
 		pfsImg.setAttribute("status", "yes"); 
 		pfsTxt.textContent = "Perfect Forward Secrecy : Yes";
@@ -518,7 +512,7 @@ function showFFState(state, rp) {
 	}
 }
 
-function showCertDetails(cert, domMismatch, ev, rp) {
+function showCertDetails(cert, certValid, domMismatch, ev, rp) {
 	var validity = cert.validity.QueryInterface(Ci.nsIX509CertValidity);
 	var doc = _window().document; 
 
@@ -546,7 +540,6 @@ function showCertDetails(cert, domMismatch, ev, rp) {
 	}
 
 	var certValidity = doc.getElementById("ssleuth-text-cert-validity"); 
-	var certValid = isCertValid(cert);
 	certValidity.setAttribute("valid", certValid.toString()); 
 	certValidity.textContent = validity.notBeforeGMT + " till " + validity.notAfterGMT;
 
@@ -568,8 +561,8 @@ function showCertDetails(cert, domMismatch, ev, rp) {
 function createKeyShortcut(doc) {
 	var keyset = doc.createElement("keyset"); 	
 	var key = doc.createElement("key"); 
-	const prefs = 
-		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+	const shortcut = 
+		ssleuthUI.prefs.PREFS["ui.keyshortcut"]; 
 
 	key.setAttribute("id", "ssleuth-panel-keybinding"); 
 	key.addEventListener("command", panelEvent);
@@ -578,7 +571,7 @@ function createKeyShortcut(doc) {
 	 * event listener for 'command'. */
 	key.setAttribute("oncommand", "void(0);");
 
-	var keys = prefs.getCharPref("extensions.ssleuth.ui.keyshortcut").split(" ");
+	var keys = shortcut.split(" ");
 	var len = keys.length; 
 	key.setAttribute("key", keys.splice(len-1, 1)); 
 	key.setAttribute("modifiers", keys.join(" ")); 
@@ -639,9 +632,9 @@ function setPanelFont(panelFont, doc) {
 			titleText[i].className = titleFontClass + " " + configTitle; 
 		}
 
-		/* Exception case : urlbar button text also changes with 
-		 * panel body. In addition, it requires a 'plain' class. 
-		 * A better way to handle this case? */ 
+		// Exception case : urlbar button text also changes with 
+		// panel body. In addition, it requires a 'plain' class. 
+		// A better way to handle this case? 
 		var ubRank = doc.getElementById("ssleuth-ub-rank"); 
 		if (ubRank) 
 			ubRank.className = "plain " + bodyFontClass + " " + configBody;
@@ -680,5 +673,43 @@ function removePanelMenu(doc) {
 	menupopup.parentElement.removeChild(menupopup); 
 }
 
+function forEachOpenWindow(todo)  // Apply a function to all open browser windows
+{
+	var windows = Services.wm.getEnumerator("navigator:browser");
+	while (windows.hasMoreElements())
+		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
+}
 
-Components.utils.import("resource://ssleuth/preferences.js");
+
+var prefListener = new PrefListener(
+	ssleuthDefaultPrefs.PREF_BRANCH,
+	function(branch, name) {
+		switch(name) {
+			case "notifier.location":
+				// Changing the notifier location requires tearing down
+				// everything. Button, panel.. and the panel overlay!
+				ssleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
+				forEachOpenWindow(function(win) {
+					ssleuthUI.uninit(win); 
+				}); 
+			
+				forEachOpenWindow(function(win) {
+					ssleuthUI.init(win); 
+				}); 
+				break;
+			case "panel.fontsize":
+				ssleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
+				forEachOpenWindow(function(win) {
+					setPanelFont(branch.getIntPref(name), win.document); 
+				}); 
+				break;
+			case "ui.keyshortcut":
+				ssleuthUI.prefs.PREFS[name] = branch.getCharPref(name); 
+				forEachOpenWindow(function(win) {
+					deleteKeyShortcut(win.document); 
+					createKeyShortcut(win.document); 
+				}); 
+		}
+	}
+); 
+

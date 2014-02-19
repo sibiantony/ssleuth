@@ -21,10 +21,9 @@ const ssleuthCipherSuites = {
 			ui: "RSA EXPORT", 	notes: "Weak Kx. " },
 	],
 
-	/* No known weaknesses for the algorithms here. Except for the key length.
-	 * RSA secure minimum keyLength>=2048
-	 * ECDSA comparable keyLength>=263 [RFC 4492]
-	 */
+	// No known weaknesses for the algorithms here. Except for the key length.
+	// RSA secure minimum keyLength>=2048
+	// ECDSA comparable keyLength>=263 [RFC 4492]
 	authentication : [
 		{ name: "_RSA_", 	rank: 10, 	minSecureKeyLength: 2048, 
 			ui: "RSA", 		notes: "" },
@@ -38,11 +37,11 @@ const ssleuthCipherSuites = {
 		{ name: "AES_256_GCM",		rank: 10,   notes: "" },
 		{ name: "CAMELLIA_256_CBC", rank: 10,   notes: "" },
 		{ name: "AES_256_CBC",		rank: 10,	notes: "" },
-		{ name: "3DES_EDE_CBC",		rank: 9,	notes: "" },
 		{ name: "AES_128_GCM",		rank: 8,	notes: "" },
 		{ name: "AES_128_CBC",		rank: 8,	notes: "" },
 		{ name: "CAMELLIA_128_CBC", rank: 8,	notes: "" },
 		{ name: "SEED_CBC",			rank: 8,	notes: "" },
+		{ name: "3DES_EDE_CBC",		rank: 8,	notes: "" },
 		{ name: "RC4_128",			rank: 6,	notes: "RC4 considered unsafe. " },
 		{ name: "DES_CBC",			rank: 2,	notes: "Weak" },
 		{ name: "DES40_CBC",		rank: 2,	notes: "Weak" },
