@@ -57,35 +57,31 @@ var ssleuthPreferences = {
 		let application = 
 			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
 		const win = _window(); 
-		// var prefsWindow = win.document.getElementById("ssleuth-preferences"); 
 
-		//if (null == prefsWindow || prefsWindow.closed) {
-		if (null == this.prefsWindow) {
+		//if (null == prefsTab || prefsTab.closed) {
+		if (null == this.prefsTab) {
 			dump("prefs Window is null\n");
 			const instantApply =
 				application.prefs.get("browser.preferences.instantApply");
 			const features =
 				"chrome,titlebar,toolbar,centerscreen" +
 				(instantApply.value ? ",dialog=no" : ",modal");
-			var prefsWindow =
-				/* win.openDialog(
-				"chrome://ssleuth/content/preferences.xul",
-				"ssleuth-preferences-window", features, 
-				{tabIndex: index});*/
+			var prefsTab =
 				win.gBrowser.loadOneTab(
 					"chrome://ssleuth/content/preferences.xul",
-					{inBackground: false, tabIndex: index});
-				this.prefsWindow = prefsWindow; 
+					{inBackground: false});
+				this.prefsTab = prefsTab; 
+				this.prefsTabWin = win; 
 		} else {
-			win.selectedTab = this.prefsWindow; 
+			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
+			this.prefsTabWin.focus();
 		}
-		// prefsWindow.focus();
 	}, 
 
 	closeDialog: function() {
-		const prefsWindow = this.prefsWindow; 
-		if (prefsWindow && !prefsWindow.closed) {
-			prefsWindow.close();
+		const prefsTab = this.prefsTab; 
+		if (prefsTab && !prefsTab.closed) {
+			prefsTab.close();
 		}
 	},
 

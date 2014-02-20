@@ -9,8 +9,8 @@
 	<script><![CDATA[
 		function onLoad() {
 				var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
-					
 				if("arguments" in window && window.arguments.length > 0) {
+						alert("Hi" + window.arguments[0]); 
 						prefTabbox.selectedIndex = window.arguments[0].tabIndex;
 				}
 		}
@@ -153,5 +153,11 @@
 				</tabpanel>
 			</tabpanels>
 		</tabbox>
+	</prefpane>
+	<prefpane id="ssleuth-prefpane-2" label="preferences-2">
+			<preference id="ssleuth-notifier-location" 
+									name="extensions.ssleuth.notifier.location" 
+									type="int"/>
+			<tabbox id="abcd" />
 	</prefpane>
 </prefwindow>
