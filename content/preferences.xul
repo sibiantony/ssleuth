@@ -158,6 +158,35 @@
 			<preference id="ssleuth-notifier-location" 
 									name="extensions.ssleuth.notifier.location" 
 									type="int"/>
-			<tabbox id="abcd" />
+			<tabbox id="abcd" >
+				  <hbox id="header" align="center">
+							<spacer flex="1"/>
+					</hbox>
+					<hbox flex="1">
+						<richlistbox>
+							<richlistitem>
+								<description>Preference item 1</description>
+							</richlistitem>
+							<richlistitem>
+								<description>Preference Item 2</description>
+							</richlistitem>
+						</richlistbox>
+
+						<box id="iview-port-container" class="main-content" flex="1">
+							<!-- view port -->
+							<deck id="iview-port" flex="1" selectedIndex="0">
+								<scrollbox id="idetail-view" flex="1" class="view-pane addon-view" orient="vertical" tabindex="0">
+									<!-- global warnings -->
+									<hbox>
+										<description>hbox here</description>
+									</hbox>
+								</scrollbox>
+
+							</deck>
+
+						</box>
+					</hbox>
+
+			</tabbox>
 	</prefpane>
 </prefwindow>
