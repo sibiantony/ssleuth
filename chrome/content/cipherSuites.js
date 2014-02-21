@@ -2,15 +2,15 @@ var EXPORTED_SYMBOLS = ["ssleuthCipherSuites"];
 
 const ssleuthCipherSuites = {
 	keyExchange : [
-		{ name: "TLS_ECDHE_RSA",	rank: 10,   pfs: 1, notes: "", },
-		{ name: "TLS_ECDHE_ECDSA",  rank: 10,   pfs: 1, notes: "", },
-		{ name: "TLS_ECDH_ECDSA",   rank: 9,	pfs: 0, notes: "", },
-		{ name: "TLS_ECDH_RSA",	 rank: 9,	pfs: 0, notes: "", },
-		{ name: "TLS_DHE_RSA",	  rank: 9,	pfs: 1, notes: "", },
-		{ name: "TLS_DHE_DSS",	  rank: 9,	pfs: 1, notes: "", },
+		{ name: "_ECDHE_RSA",	rank: 10,   pfs: 1, notes: "", },
+		{ name: "_ECDHE_ECDSA",  rank: 10,   pfs: 1, notes: "", },
+		{ name: "_ECDH_ECDSA",   rank: 9,	pfs: 0, notes: "", },
+		{ name: "_ECDH_RSA",	 rank: 9,	pfs: 0, notes: "", },
+		{ name: "_DHE_RSA",	  rank: 9,	pfs: 1, notes: "", },
+		{ name: "_DHE_DSS",	  rank: 9,	pfs: 1, notes: "", },
 		{ name: "TLS_RSA",		  rank: 6,	pfs: 0, notes: "", },
 		{ name: "SSL_RSA",		  rank: 5,	pfs: 0, notes: "", },
-		{ name: "TLS_DHE_RSA_EXPORT",   rank: 5,pfs: 1, notes: "", },
+		{ name: "_DHE_RSA_EXPORT",   rank: 5,pfs: 1, notes: "", },
 		{ name: "TLS_RSA_EXPORT",   rank: 4,	pfs: 0, notes: "", },
 		{ name: "TLS_EMPTY_RENEGOTIATION_INFO_SCSV",	rank: 0,	pfs: 0, notes: "" }
 	],
