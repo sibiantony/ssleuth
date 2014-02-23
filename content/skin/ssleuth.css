@@ -212,6 +212,78 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
     /* Default ff font */
 }
 .ssleuth-pref-text {
+	/* width: -moz-calc(50% - 20px); */
     /* white-space: pre-wrap;*/
-    width: 500px; 
+    /* width: 70%; */
 }
+
+.ssleuth-pref-view-container {
+	font-size:105%; 
+	padding: 0 2em 2em;
+}
+
+.pref-main-content {
+    background-color: -moz-field;
+    border: 1px solid threedshadow;
+    border-radius: 5px;
+    color: -moz-fieldtext;
+    overflow: hidden;
+}
+
+#pref-scroll-box {
+	overflow: auto;
+}
+
+#ssleuth-pref-categories {
+   -moz-appearance: none;
+    -moz-margin-end: -1px;
+    background-color: rgba(0, 0, 0, 0);
+    border: medium none;
+    margin-top: 41px;
+    position: relative;
+}
+.ssleuth-pref-category {
+	  -moz-appearance: none;
+  border-width: 1px;
+  -moz-border-end-width: 0;
+  border-style: solid;
+  border-color: transparent;
+  padding: 10px 4px;
+  -moz-box-align: center;
+  overflow: hidden;
+  min-height: 0;
+  color: WindowText;
+  font-size: 140%;
+}
+
+.ssleuth-pref-category:-moz-locale-dir(ltr) {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.ssleuth-pref-category:-moz-locale-dir(rtl) {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.ssleuth-pref-category[disabled] {
+  border-top: 0;
+  border-bottom: 0;
+  height: 0;
+  opacity: 0;
+  transition-property: height, opacity;
+  transition-duration: 1s, 0.8s;
+}
+
+.ssleuth-pref-category:not([disabled]) {
+  height: 52px;
+  transition-property: height, opacity;
+  transition-duration: 1s, 0.8s;
+}
+
+.ssleuth-pref-category[selected] {
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+  border-color: ThreeDShadow;
+}
+

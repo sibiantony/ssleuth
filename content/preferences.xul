@@ -25,17 +25,33 @@
 									type="int"/>
 		</preferences>
 
-		<tabbox id="ssleuth-preferences-tabbox">
-			<tabs>
-				<tab label="&ssleuth.pref.tab.ssleuthui;"/>
-				<tab label="&ssleuth.pref.tab.ranking;"/>
-				<tab label="&ssleuth.pref.tab.about;" />
-			</tabs>
-			<tabpanels>
-				<tabpanel id="ssleuth-pref-ui">
-					<vbox>
-						<description class="ssleuth-pref-text" 
-													value="At the moment, you will need a browser restart to apply your changes."/>
+	<hbox align="center" 
+				style="margin-bottom: 50px;"/>
+	<hbox flex="1">
+		<listbox id="ssleuth-pref-categories"
+						selectedIndex = "9"
+						onselect="document.getElementById('viewport-panel').selectedIndex
+												= this.selectedIndex">
+			<listitem class="ssleuth-pref-category"
+					image=""
+					label="&ssleuth.pref.tab.ssleuthui;"
+					tooltiptext="Localize"/>
+			<listitem class="ssleuth-pref-category"
+					image=""
+					label="&ssleuth.pref.tab.ranking;"
+					tooltiptext="Localize"/>
+			<listitem class="ssleuth-pref-category"
+					image=""
+					label="&ssleuth.pref.tab.about;"
+					tooltiptext="Localize"/>
+		</listbox>
+
+		<box flex="1" class="pref-main-content">
+			<deck flex="1" id="viewport-panel">
+				<scrollbox id="pref-scroll-box" 
+										flex="1" orient="vertical" tabindex="0"
+										active="true">
+				<vbox class="ssleuth-pref-view-container">
 						<description value="&ssleuth.pref.ui.notifier.label;"
 													style="font-weight:bold"/>
 						<radiogroup id="ssleuth-notifier-location-radio" 
@@ -97,12 +113,13 @@
 							</hbox>
 						</radiogroup>
 						<description value=""/>
-					</vbox>
-				</tabpanel>
+				</vbox>
+				</scrollbox>
 
-				<!-- No locale from below, text to be changed -->
-				<tabpanel id="ssleuth-pref-ranking">
-					<vbox>
+				<scrollbox id="pref-scroll-box" 
+										flex="1" orient="vertical" tabindex="0"
+										active="true">
+				<vbox class="ssleuth-pref-view-container">
 						<description class="ssleuth-pref-text" >
 							As of this version, SSleuth calculates the rank as shown:
 						</description>
@@ -124,21 +141,7 @@
 						<description class="ssleuth-pref-text">
 							This could be made configurable in a future release.
 						</description>
-					</vbox>
-				</tabpanel>
-				<tabpanel id="ssleuth-pref-about">
-					<vbox>
-						<description value="Copyright (C) 2013-2014 Sibi Antony"/>
-						<description class="ssleuth-pref-text" >
-							Your feedback and development/translation support are welcome.
-							See the project page for more details.
-						</description>
-						<!-- spacer flex="1"/ -->
-						<label class="text-link" 
-													href="https://github.com/sibiantony/ssleuth"
-													value="https://github.com/sibiantony/ssleuth"/>
-
-						<description class="ssleuth-pref-text" >
+						<description class="ssleuth-pref-text">
 							SSleuth is free software: You can redistribute it and/or modify 
 							it under the terms of the GNU General Public License as published by 
 							the Free Software Foundation, either version 3 of the License, or 
@@ -149,44 +152,48 @@
 							This software is distributed in the hope that it will be useful, 
 							but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
 						</description>
-					</vbox>
-				</tabpanel>
-			</tabpanels>
-		</tabbox>
-	</prefpane>
-	<prefpane id="ssleuth-prefpane-2" label="preferences-2">
-			<preference id="ssleuth-notifier-location" 
-									name="extensions.ssleuth.notifier.location" 
-									type="int"/>
-			<tabbox id="abcd" >
-				  <hbox id="header" align="center">
-							<spacer flex="1"/>
-					</hbox>
-					<hbox flex="1">
-						<richlistbox>
-							<richlistitem>
-								<description>Preference item 1</description>
-							</richlistitem>
-							<richlistitem>
-								<description>Preference Item 2</description>
-							</richlistitem>
-						</richlistbox>
 
-						<box id="iview-port-container" class="main-content" flex="1">
-							<!-- view port -->
-							<deck id="iview-port" flex="1" selectedIndex="0">
-								<scrollbox id="idetail-view" flex="1" class="view-pane addon-view" orient="vertical" tabindex="0">
-									<!-- global warnings -->
-									<hbox>
-										<description>hbox here</description>
-									</hbox>
-								</scrollbox>
+				</vbox>
+				</scrollbox>
 
-							</deck>
+				<scrollbox id="pref-scroll-box" 
+										flex="1" orient="vertical" tabindex="0"
+										active="true">
+				<vbox class="ssleuth-pref-view-container">
+						<description value="Copyright (C) 2013-2014 Sibi Antony"/>
+						<description class="ssleuth-pref-text" >
+							Your feedback and development/translation support are welcome.
+							See the project page for more details.
+						</description>
+						<label class="text-link" 
+													href="https://github.com/sibiantony/ssleuth"
+													value="https://github.com/sibiantony/ssleuth"/>
 
-						</box>
-					</hbox>
+						<description class="ssleuth-pref-text">
+							SSleuth is free software: You can redistribute it and/or modify 
+							it under the terms of the GNU General Public License as published by 
+							the Free Software Foundation, either version 3 of the License, or 
+							(at your option) any later version.
+						</description>
 
-			</tabbox>
+						<description class="ssleuth-pref-text">
+							This software is distributed in the hope that it will be useful, 
+							but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
+						</description>
+				</vbox>
+				</scrollbox>
+				<!-- Template 
+						<scrollbox id="pref-scroll-box" 
+										flex="1" orient="vertical" tabindex="0"
+										active="true">
+				<vbox class="ssleuth-pref-view-container">
+
+				</vbox>
+				</scrollbox-->
+			</deck>
+		</box>
+	</hbox>
+
+
 	</prefpane>
 </prefwindow>
