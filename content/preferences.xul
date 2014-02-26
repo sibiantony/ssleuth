@@ -141,17 +141,6 @@
 						<description class="ssleuth-pref-text">
 							This could be made configurable in a future release.
 						</description>
-						<description class="ssleuth-pref-text">
-							SSleuth is free software: You can redistribute it and/or modify 
-							it under the terms of the GNU General Public License as published by 
-							the Free Software Foundation, either version 3 of the License, or 
-							(at your option) any later version.
-						</description>
-
-						<description class="ssleuth-pref-text">
-							This software is distributed in the hope that it will be useful, 
-							but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
-						</description>
 
 				</vbox>
 				</scrollbox>

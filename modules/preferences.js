@@ -70,8 +70,17 @@ var ssleuthPreferences = {
 				win.gBrowser.loadOneTab(
 					"chrome://ssleuth/content/preferences.xul",
 					{inBackground: false});
-				this.prefsTab = prefsTab; 
-				this.prefsTabWin = win; 
+			this.prefsTab = prefsTab; 
+			this.prefsTabWin = win; 
+			prefsTab.addEventListener("TabClose", function() {
+						ssleuthPreferences.prefsTab = null; 
+						ssleuthPreferences.prefsTabWin = null; 
+						}, false); 
+			win.addEventListener("unload", function() {
+						ssleuthPreferences.prefsTab = null; 
+						ssleuthPreferences.prefsTabWin = null; 
+						}, false); 
+
 		} else {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
 			this.prefsTabWin.focus();

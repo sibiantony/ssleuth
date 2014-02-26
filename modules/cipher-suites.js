@@ -5,12 +5,14 @@ var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating"];
  */
 const ssleuthCipherSuites = {
 	keyExchange : [
-		{ name: "TLS_ECDHE",	rank: 10,   pfs: 1, 
+		{ name: "_ECDHE_",	rank: 10,   pfs: 1, 
 			ui: "ECDHE", 	notes: "" },
-		{ name: "TLS_ECDH",		rank: 9,	pfs: 0, 
+		{ name: "_ECDH_",		rank: 9,	pfs: 0, 
 			ui: "ECDH", 	notes: "" },
-		{ name: "TLS_DHE",		rank: 9,	pfs: 1, 
+		{ name: "_DHE_",		rank: 9,	pfs: 1, 
 			ui: "DHE", 		notes: "" },
+		{ name: "_DH_",		rank: 9,		pfs: 1, 
+			ui: "DH", 		notes: "" },
 		{ name: "TLS_RSA_WITH",	rank: 6,	pfs: 0, 
 			ui: "RSA", 		notes: "" },
 		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, 
@@ -42,7 +44,7 @@ const ssleuthCipherSuites = {
 		{ name: "CAMELLIA_128_CBC", rank: 8,	notes: "" },
 		{ name: "SEED_CBC",			rank: 8,	notes: "" },
 		{ name: "3DES_EDE_CBC",		rank: 8,	notes: "" },
-		{ name: "RC4_128",			rank: 6,	notes: "RC4 considered unsafe. " },
+		{ name: "RC4_128",			rank: 6,	notes: "RC4 considered unsafe." },
 		{ name: "DES_CBC",			rank: 2,	notes: "Weak" },
 		{ name: "DES40_CBC",		rank: 2,	notes: "Weak" },
 		{ name: "RC2_CBC_40",		rank: 2,	notes: "Weak" },

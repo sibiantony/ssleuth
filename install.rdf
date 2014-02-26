@@ -3,11 +3,11 @@
 			 xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<r:Description about="urn:mozilla:install-manifest">
 		<creator>Sibi Antony</creator>
-		<description>SSleuth restartless Beta</description>
+		<description>SSleuth restartless Alpha</description>
 		<homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
-		<id>ssleuth-test@github</id>
-		<name>SSleuth restartless beta</name>
-		<version>0.2.1</version>
+		<id>ssleuth@github</id>
+		<name>SSleuth restartless Test</name>
+		<version>0.2.1-alpha</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
 		<optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
 

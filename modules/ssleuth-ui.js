@@ -638,7 +638,7 @@ function setPanelFont(panelFont, doc) {
 		var ubRank = doc.getElementById("ssleuth-ub-rank"); 
 		if (ubRank) 
 			ubRank.className = "plain " + bodyFontClass + " " + configBody;
-	} catch(e) { 
+	} catch(e) {
 		dump("setPanelFont error : " + e.message + "\n"); 
 	}
 }
