@@ -5,7 +5,7 @@
 		<creator>Sibi Antony</creator>
 		<description>SSleuth restartless Alpha</description>
 		<homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
-		<id>ssleuth@github</id>
+		<id>ssleuth-test@github</id>
 		<name>SSleuth restartless Test</name>
 		<version>0.2.1-alpha</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>

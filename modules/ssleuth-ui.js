@@ -680,7 +680,6 @@ function forEachOpenWindow(todo)  // Apply a function to all open browser window
 		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
 }
 
-
 var prefListener = new PrefListener(
 	ssleuthDefaultPrefs.PREF_BRANCH,
 	function(branch, name) {

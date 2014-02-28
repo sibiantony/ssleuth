@@ -5,17 +5,33 @@
 <prefwindow type="prefwindow" id="ssleuth-preferences" 
 							xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" 
 							title="&ssleuth.pref.title.label;"
-							onload="onLoad()">
+							onload="onLoad();">
 	<script><![CDATA[
 		function onLoad() {
 				var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
 				if("arguments" in window && window.arguments.length > 0) {
-						alert("Hi" + window.arguments[0]); 
 						prefTabbox.selectedIndex = window.arguments[0].tabIndex;
 				}
+
+				const Cc = Components.classes;
+				const Ci = Components.interfaces;
+				const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+				
+				cxRating = JSON.parse(prefs.getCharPref("extensions.ssleuth.rating.params")); 
+
+				document.getElementById("ssleuth-pref-cipher-suite-weight").value
+						= cxRating.cipherSuite;
+				document.getElementById("ssleuth-pref-pfs-weight").value
+						= cxRating.pfs;
+				document.getElementById("ssleuth-pref-ev-weight").value
+						= cxRating.evCert;
+				document.getElementById("ssleuth-pref-ffstatus-weight").value
+						= cxRating.ffStatus;
+				document.getElementById("ssleuth-pref-certstate-weight").value
+						= cxRating.cerStatus;
 		}
 ]]></script>
-	<prefpane id="ssleuth-prefpane" label="preferences">
+	<prefpane id="ssleuth-prefpane" label="preferences" flex="1">
 		<preferences>
 			<preference id="ssleuth-notifier-location" 
 									name="extensions.ssleuth.notifier.location" 
@@ -44,6 +60,15 @@
 					image=""
 					label="&ssleuth.pref.tab.about;"
 					tooltiptext="Localize"/>
+			<listitem class="ssleuth-pref-category"
+					image=""
+					label="Test 1"
+					tooltiptext="Localize"/>
+			<listitem class="ssleuth-pref-category"
+					image=""
+					label="Test 2"
+					tooltiptext="Localize"/>
+
 		</listbox>
 
 		<box flex="1" class="pref-main-content">
@@ -60,13 +85,11 @@
 							<radio id="ssleuth-notifier-urlbar" 
 									label="&ssleuth.pref.ui.notifier.urlbar;"
 									value="0" 
-									accesskey="U" 
 									selected="true"
 									style="margin-left: 15px;"/>
 							<radio id="ssleuth-notifier-toolbar"
 									label="&ssleuth.pref.ui.notifier.toolbar;"
 									value="1"
-									accesskey="T"
 									style="margin-left: 15px;"/>
 						</radiogroup>
 						<description value="&ssleuth.pref.ui.fontsize;"
@@ -113,6 +136,7 @@
 							</hbox>
 						</radiogroup>
 						<description value=""/>
+						<description value=""/>
 				</vbox>
 				</scrollbox>
 
@@ -120,27 +144,77 @@
 										flex="1" orient="vertical" tabindex="0"
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
-						<description class="ssleuth-pref-text" >
-							As of this version, SSleuth calculates the rank as shown:
-						</description>
-						<description class="ssleuth-pref-text" 
-									style="margin-left: 15px;"
-									value="Cipher suite rank/5 +"/>
-						<description class="ssleuth-pref-text"
-									style="margin-left: 15px;"
-									value="Perfect Forward Secrecy/2 +"/>
-						<description class="ssleuth-pref-text"
-									style="margin-left: 15px;"
-									value="Extended validation certificate/1 +"/>
-						<description class="ssleuth-pref-text"
-									style="margin-left: 15px;"
-									value="Firefox connection status/1 +"/>
-						<description class="ssleuth-pref-text"
-									style="margin-left: 15px;"
-									value="Certificate state/1 = Connection ranking/10"/>
-						<description class="ssleuth-pref-text">
-							This could be made configurable in a future release.
-						</description>
+					<groupbox>
+					<caption label="Connection rating"/>
+					<description value="Here you can configure how the rating is calculated."/> 
+					<grid flex="1">
+
+						<columns>
+							<column/>
+							<column width="80"/>
+						</columns>
+						<rows>
+							<row>
+								<description value="Parameter"/>
+								<description value="Weight"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-cipher-suite-weight" value="Cipher suite"/>
+								<textbox id="ssleuth-pref-cipher-suite-weight" 
+										type="number" decimalplaces="1" flex="1"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-pfs-weight" value="Perfect forward secrecy"/>
+								<textbox id="ssleuth-pref-pfs-weight" type="number" decimalplaces="1" flex="1"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-ev-weight" value="Extended validation"/>
+								<textbox id="ssleuth-pref-ev-weight" type="number" decimalplaces="1" flex="1"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-ffstatus-weight" value="Firefox status"/>
+								<textbox id="ssleuth-pref-ffstatus-weight" type="number" decimalplaces="1" flex="1"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-certstate-weight" value="Certificate state"/>
+								<textbox id="ssleuth-pref-certstate-weight" type="number" decimalplaces="1" flex="1"/>
+							</row>
+						</rows>
+
+					</grid>
+				</groupbox>
+
+				<groupbox>
+					<caption label="Cipher suite rating"/>
+					<description value="Configure how the cipher suite rating is calculated."/> 
+					<grid flex="1">
+
+						<columns>
+							<column/>
+							<column width="80"/>
+						</columns>
+						<rows>
+							<row>
+								<description value="Parameter"/>
+								<description value="Weight"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-cs-kx-weight" value="Key exchange"/>
+								<textbox id="ssleuth-pref-cs-kx-weight" 
+										type="number" decimalplaces="1" flex="1"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-cs-cipher-weight" value="Bulk cipher"/>
+								<textbox id="ssleuth-pref-cs-cipher-weight" type="number" decimalplaces="1" flex="1"/>
+							</row>
+							<row>
+								<label control="ssleuth-pref-cs-hmac-weight" value="HMAC"/>
+								<textbox id="ssleuth-pref-cs-hmac-weight" type="number" decimalplaces="1" flex="1"/>
+							</row>
+						</rows>
+
+					</grid>
+				</groupbox>
 
 				</vbox>
 				</scrollbox>

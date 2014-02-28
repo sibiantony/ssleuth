@@ -243,27 +243,27 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
     position: relative;
 }
 .ssleuth-pref-category {
-	  -moz-appearance: none;
-  border-width: 1px;
-  -moz-border-end-width: 0;
-  border-style: solid;
-  border-color: transparent;
-  padding: 10px 4px;
-  -moz-box-align: center;
-  overflow: hidden;
-  min-height: 0;
-  color: WindowText;
-  font-size: 140%;
+	-moz-appearance: none;
+	border-width: 1px;
+	-moz-border-end-width: 0;
+	border-style: solid;
+	border-color: transparent;
+	padding: 10px 4px;
+	-moz-box-align: center;
+	overflow: hidden;
+	min-height: 0;
+	color: WindowText;
+	font-size: 140%;
 }
 
 .ssleuth-pref-category:-moz-locale-dir(ltr) {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
 }
 
 .ssleuth-pref-category:-moz-locale-dir(rtl) {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
 }
 
 .ssleuth-pref-category[disabled] {
