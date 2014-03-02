@@ -5,32 +5,10 @@
 <prefwindow type="prefwindow" id="ssleuth-preferences" 
 							xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" 
 							title="&ssleuth.pref.title.label;"
-							onload="onLoad();">
-	<script><![CDATA[
-		function onLoad() {
-				var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
-				if("arguments" in window && window.arguments.length > 0) {
-						prefTabbox.selectedIndex = window.arguments[0].tabIndex;
-				}
+							onload="">
+	<script type="application/javascript"
+				  src="chrome://ssleuth/content/preferences-ui.js"/>
 
-				const Cc = Components.classes;
-				const Ci = Components.interfaces;
-				const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-				
-				cxRating = JSON.parse(prefs.getCharPref("extensions.ssleuth.rating.params")); 
-
-				document.getElementById("ssleuth-pref-cipher-suite-weight").value
-						= cxRating.cipherSuite;
-				document.getElementById("ssleuth-pref-pfs-weight").value
-						= cxRating.pfs;
-				document.getElementById("ssleuth-pref-ev-weight").value
-						= cxRating.evCert;
-				document.getElementById("ssleuth-pref-ffstatus-weight").value
-						= cxRating.ffStatus;
-				document.getElementById("ssleuth-pref-certstate-weight").value
-						= cxRating.certStatus;
-		}
-]]></script>
 	<prefpane id="ssleuth-prefpane" label="preferences" flex="1">
 		<preferences>
 			<preference id="ssleuth-notifier-location" 
@@ -58,17 +36,12 @@
 					tooltiptext="Localize"/>
 			<listitem class="ssleuth-pref-category"
 					image=""
+					label="Cipher suites"
+					tooltiptext="Localize"/>
+			<listitem class="ssleuth-pref-category"
+					image=""
 					label="&ssleuth.pref.tab.about;"
 					tooltiptext="Localize"/>
-			<listitem class="ssleuth-pref-category"
-					image=""
-					label="Test 1"
-					tooltiptext="Localize"/>
-			<listitem class="ssleuth-pref-category"
-					image=""
-					label="Test 2"
-					tooltiptext="Localize"/>
-
 		</listbox>
 
 		<box flex="1" class="pref-main-content">
@@ -148,20 +121,21 @@
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
 					<caption label="Connection rating"/>
-					<description value="Here you can configure how the rating is calculated."/> 
+					<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
 					<grid flex="1">
 
 						<columns>
-							<column/>
+							<column width="200"/>
 							<column width="80"/>
 						</columns>
 						<rows>
 							<row align="baseline">
-								<description value="Parameter"/>
-								<description value="Weight"/>
+								<description value="Parameter" style="font-weight:bold;"/>
+								<description value="Weight" style="font-weight:bold;"/>
 							</row>
 							<row align="baseline">
-								<label control="ssleuth-pref-cipher-suite-weight" value="Cipher suite"/>
+								<label control="ssleuth-pref-cipher-suite-weight" 
+									value="Cipher suite"/>
 								<textbox id="ssleuth-pref-cipher-suite-weight" 
 										type="" decimalplaces="1" flex="1"/>
 							</row>
@@ -181,24 +155,32 @@
 								<label control="ssleuth-pref-certstate-weight" value="Certificate state"/>
 								<textbox id="ssleuth-pref-certstate-weight" type="" decimalplaces="1" flex="1"/>
 							</row>
+							<row align="baseline">
+								<description value="Total"/>
+								<description id="ssleuth-pref-cx-rating-total" style="font-weight:bold"/>
+							</row>
 						</rows>
 
 					</grid>
+					<hbox>
+					<button label="Apply" 
+									id="ssleuth-pref-cx-ratings-apply"
+									/>
+					</hbox>
 				</groupbox>
-
 				<groupbox>
 					<caption label="Cipher suite rating"/>
 					<description value="Configure how the cipher suite rating is calculated."/> 
 					<grid flex="1">
 
 						<columns>
-							<column/>
+							<column width="200"/>
 							<column width="80"/>
 						</columns>
 						<rows>
 							<row>
-								<description value="Parameter"/>
-								<description value="Weight"/>
+								<description value="Parameter" style="font-weight:bold;"/>
+								<description value="Weight" style="font-weight:bold;"/>
 							</row>
 							<row>
 								<label control="ssleuth-pref-cs-kx-weight" value="Key exchange"/>
@@ -213,10 +195,27 @@
 								<label control="ssleuth-pref-cs-hmac-weight" value="HMAC"/>
 								<textbox id="ssleuth-pref-cs-hmac-weight" type="number" decimalplaces="1" flex="1"/>
 							</row>
+							<row align="baseline">
+								<description value="Total"/>
+								<description id="ssleuth-pref-cs-rating-total" style="font-weight:bold"/>
+							</row>
+
 						</rows>
 
 					</grid>
+					<hbox>
+					<button label="Apply"
+									id="ssleuth-pref-cs-ratings-apply"
+									/>
+					</hbox>
 				</groupbox>
+
+				</vbox>
+				</scrollbox>
+				<scrollbox id="pref-scroll-box" 
+										flex="1" orient="vertical" tabindex="0"
+										active="true">
+				<vbox class="ssleuth-pref-view-container">
 
 				</vbox>
 				</scrollbox>
@@ -225,15 +224,24 @@
 										flex="1" orient="vertical" tabindex="0"
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
+					<groupbox>
+						<caption label="Project"/>
 						<description value="Copyright (C) 2013-2014 Sibi Antony"/>
 						<description class="ssleuth-pref-text" >
-							Your feedback and development/translation support are welcome.
-							See the project page for more details.
+								Your feedback and development/translation support are welcome.
+								See the project page for more details.
 						</description>
 						<label class="text-link" 
-													href="https://github.com/sibiantony/ssleuth"
-													value="https://github.com/sibiantony/ssleuth"/>
+														href="https://github.com/sibiantony/ssleuth"
+														value="https://github.com/sibiantony/ssleuth"/>
+					</groupbox>
+					<groupbox>
+						<caption label="Thanks to"/>
+							<description value="John Souvestre - Beta tests and suggestions"/>
+					</groupbox>
 
+					<groupbox>
+						<caption label="License"/>
 						<description class="ssleuth-pref-text">
 							SSleuth is free software: You can redistribute it and/or modify 
 							it under the terms of the GNU General Public License as published by 
@@ -245,6 +253,7 @@
 							This software is distributed in the hope that it will be useful, 
 							but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
 						</description>
+					</groupbox>
 				</vbox>
 				</scrollbox>
 				<!-- Template 

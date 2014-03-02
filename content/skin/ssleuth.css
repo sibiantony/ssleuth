@@ -291,3 +291,8 @@ groupbox {
 	margin-top: 20px;	
 	margin-bottom: 5px;
 }
+
+/* Make this with a class */
+grid {
+	font-size: 80%;
+}
