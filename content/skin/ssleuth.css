@@ -218,7 +218,7 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
 }
 
 .ssleuth-pref-view-container {
-	font-size:105%; 
+	font-size:100%; 
 	padding: 0 2em 2em;
 }
 
@@ -287,3 +287,7 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
   border-color: ThreeDShadow;
 }
 
+groupbox {
+	margin-top: 20px;	
+	margin-bottom: 5px;
+}

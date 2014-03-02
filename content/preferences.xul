@@ -28,7 +28,7 @@
 				document.getElementById("ssleuth-pref-ffstatus-weight").value
 						= cxRating.ffStatus;
 				document.getElementById("ssleuth-pref-certstate-weight").value
-						= cxRating.cerStatus;
+						= cxRating.certStatus;
 		}
 ]]></script>
 	<prefpane id="ssleuth-prefpane" label="preferences" flex="1">
@@ -43,7 +43,7 @@
 
 	<hbox align="center" 
 				style="margin-bottom: 50px;"/>
-	<hbox flex="1">
+	<hbox flex="1" style="margin-left: 20px; margin-right: 20px;">
 		<listbox id="ssleuth-pref-categories"
 						selectedIndex = "9"
 						onselect="document.getElementById('viewport-panel').selectedIndex
@@ -77,8 +77,8 @@
 										flex="1" orient="vertical" tabindex="0"
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
-						<description value="&ssleuth.pref.ui.notifier.label;"
-													style="font-weight:bold"/>
+					<groupbox>
+						<caption label="&ssleuth.pref.ui.notifier.label;"/>
 						<radiogroup id="ssleuth-notifier-location-radio" 
 							preference="ssleuth-notifier-location"
 							oncommand="">
@@ -92,8 +92,9 @@
 									value="1"
 									style="margin-left: 15px;"/>
 						</radiogroup>
-						<description value="&ssleuth.pref.ui.fontsize;"
-													style="font-weight:bold"/>
+				</groupbox>
+				<groupbox>
+						<caption label="&ssleuth.pref.ui.fontsize;"/>
 						<radiogroup id="ssleuth-panel-fontsize-radio" 
 							preference="ssleuth-panel-fontsize"
 							oncommand="">
@@ -137,7 +138,8 @@
 						</radiogroup>
 						<description value=""/>
 						<description value=""/>
-				</vbox>
+					</groupbox>
+					</vbox>
 				</scrollbox>
 
 				<scrollbox id="pref-scroll-box" 
@@ -154,30 +156,30 @@
 							<column width="80"/>
 						</columns>
 						<rows>
-							<row>
+							<row align="baseline">
 								<description value="Parameter"/>
 								<description value="Weight"/>
 							</row>
-							<row>
+							<row align="baseline">
 								<label control="ssleuth-pref-cipher-suite-weight" value="Cipher suite"/>
 								<textbox id="ssleuth-pref-cipher-suite-weight" 
-										type="number" decimalplaces="1" flex="1"/>
+										type="" decimalplaces="1" flex="1"/>
 							</row>
-							<row>
+							<row align="baseline">
 								<label control="ssleuth-pref-pfs-weight" value="Perfect forward secrecy"/>
-								<textbox id="ssleuth-pref-pfs-weight" type="number" decimalplaces="1" flex="1"/>
+								<textbox id="ssleuth-pref-pfs-weight" type="" decimalplaces="1" flex="1"/>
 							</row>
-							<row>
+							<row align="baseline">
 								<label control="ssleuth-pref-ev-weight" value="Extended validation"/>
-								<textbox id="ssleuth-pref-ev-weight" type="number" decimalplaces="1" flex="1"/>
+								<textbox id="ssleuth-pref-ev-weight" type="" decimalplaces="1" flex="1"/>
 							</row>
-							<row>
+							<row align="baseline">
 								<label control="ssleuth-pref-ffstatus-weight" value="Firefox status"/>
-								<textbox id="ssleuth-pref-ffstatus-weight" type="number" decimalplaces="1" flex="1"/>
+								<textbox id="ssleuth-pref-ffstatus-weight" type="" decimalplaces="1" flex="1"/>
 							</row>
-							<row>
+							<row align="baseline">
 								<label control="ssleuth-pref-certstate-weight" value="Certificate state"/>
-								<textbox id="ssleuth-pref-certstate-weight" type="number" decimalplaces="1" flex="1"/>
+								<textbox id="ssleuth-pref-certstate-weight" type="" decimalplaces="1" flex="1"/>
 							</row>
 						</rows>
 
