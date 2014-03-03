@@ -144,7 +144,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 				// 2. A page load event can fire even if there is 
 				//  no connectivity and user attempts to reload a page. 
 				//  The hidden=true should prevent stale values from getting 
-				//  displayed */
+				//  displayed 
 				if (ssleuth.urlChanged) {
 					setBoxHidden("https", true); 
 				} 
@@ -260,13 +260,15 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 								cipherSuite.bulkCipher.notes +
 								cipherSuite.HMAC.notes; 
 
+		
+		const csWeighting = ssleuth.prefs.PREFS["rating.ciphersuite.params"];
 		// Calculate ciphersuite rank  - All the cipher suite params ratings
 		// are out of 10, so this will get normalized to 10.
-		cipherSuite.rank = ( cipherSuite.keyExchange.rank * cs.weighting.keyExchange +
-							cipherSuite.bulkCipher.rank * cs.weighting.bulkCipher +
-							cipherSuite.HMAC.rank * cs.weighting.hmac )/cs.weighting.total;
+		cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
+							cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
+							cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
 
-		var ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
+		const ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
 		var certValid = isCertValid(cert); 
 
 		// Get the connection rating. Normalize the params to 10
@@ -278,9 +280,9 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 						ratingParams);
 
 		var connectionRank = Number(rating).toFixed(1); 
-		dump ("\nconnection rank : " + connectionRank + "\n"); 
+		dump ("\nconnection rank : " + connectionRank + " keylength : " + sslStatus.secretKeyLength + "\n"); 
 
-		// Now set the appropriate button
+		// Now invoke the UI to do its job
 		ssleuthUI.fillPanel(connectionRank, 
 					cipherSuite,
 					securityState,
@@ -330,6 +332,11 @@ var prefListener = new PrefListener(
 			case "rating.params": 
 				ssleuth.prefs.PREFS["rating.params"] = 
 						JSON.parse(branch.getCharPref(name));
+				break;
+			case "rating.ciphersuite.params":
+				ssleuth.prefs.PREFS["rating.ciphersuite.params"] =
+						JSON.parse(branch.getCharPref(name));
+				break;
 		}
 	}
 ); 

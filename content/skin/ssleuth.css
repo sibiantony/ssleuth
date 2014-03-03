@@ -267,24 +267,24 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
 }
 
 .ssleuth-pref-category[disabled] {
-  border-top: 0;
-  border-bottom: 0;
-  height: 0;
-  opacity: 0;
-  transition-property: height, opacity;
-  transition-duration: 1s, 0.8s;
+	border-top: 0;
+	border-bottom: 0;
+	height: 0;
+	opacity: 0;
+	transition-property: height, opacity;
+	transition-duration: 1s, 0.8s;
 }
 
 .ssleuth-pref-category:not([disabled]) {
-  height: 52px;
-  transition-property: height, opacity;
-  transition-duration: 1s, 0.8s;
+	height: 52px;
+	transition-property: height, opacity;
+	transition-duration: 1s, 0.8s;
 }
 
 .ssleuth-pref-category[selected] {
-  background-color: -moz-Field;
-  color: -moz-FieldText;
-  border-color: ThreeDShadow;
+	background-color: -moz-Field;
+	color: -moz-FieldText;
+	border-color: ThreeDShadow;
 }
 
 groupbox {

@@ -210,29 +210,30 @@
 					</hbox>
 				</groupbox>
 				
-				<listbox>
-					<listhead>
-						<listheader label="Parameter"/>
-						<listheader label="Weight"/>
-					</listhead>
-					<listcols>
-						<listcol flex="1"/>
-						<listcol flex="1"/>
-					</listcols>
-					<listitem>
-						<listcell label="A"/>
-						<listcell label="B"/>
-					</listitem>
-					<listitem>
-						<listcell>
-							<textbox value="2" type="nummber"/>
-						</listcell>
-						<listcell>
-							<textbox value="1"/>
-						</listcell>
-					</listitem>
-				</listbox>
-										
+				<groupbox>
+					<richlistbox style="font-size:70%;">
+						<listhead>
+							<listheader label="Parameter" flex="1"/>
+							<listheader label="Weight" flex="1"/>
+						</listhead>
+						<!-- listcols>
+							<listcol flex="1"/>
+							<listcol flex="1"/>
+						</listcols-->
+						<richlistitem>
+							<listcell label="A"/>
+							<listcell>
+								<textbox value="1"/>
+							</listcell>
+						</richlistitem>
+						<richlistitem>
+							<listcell label="B"/>
+							<listcell>
+								<textbox value="2"/>
+							</listcell>
+						</richlistitem>
+					</richlistbox>
+				</groupbox>		
 				</vbox>
 				</scrollbox>
 				<scrollbox id="pref-scroll-box" 

@@ -74,7 +74,7 @@ const ssleuthCipherSuites = {
 	}
 }; 
 
-var ssleuthConnectionRating = {
+const ssleuthConnectionRating = {
 	cipherSuite : 5,
 	pfs			: 2,
 	ffStatus	: 1, 

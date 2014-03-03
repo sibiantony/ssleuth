@@ -16,7 +16,8 @@ var ssleuthDefaultPrefs = {
 		"notifier.location" : 0,
 		"panel.fontsize" : 1, 
 		"ui.keyshortcut" : "control shift }",
-		"rating.params"	 : ssleuthConnectionRating
+		"rating.params"	 : ssleuthConnectionRating,
+		"rating.ciphersuite.params"	: ssleuthCipherSuites.weighting
    }
 }; 
 
