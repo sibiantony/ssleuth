@@ -152,12 +152,11 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 			}
 		}
 		
-
 		const cs = ssleuthCipherSuites; 
 		var securityState = "";
 		var cipherName = sslStatus.cipherName; 
 		var cipherSuite = null; 
-		var keyLength = sslStatus.keyLength; 
+		var keyLength = sslStatus.secretKeyLength; 
 		var cert = sslStatus.serverCert;
 		var extendedValidation = false;
 
@@ -280,9 +279,10 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 						ratingParams);
 
 		var connectionRank = Number(rating).toFixed(1); 
-		dump ("\nconnection rank : " + connectionRank + " keylength : " + sslStatus.secretKeyLength + "\n"); 
+		dump ("\nconnection rank : " + connectionRank + 
+				" keylength : " + sslStatus.secretKeyLength + "\n"); 
 
-		// Now invoke the UI to do its job
+		// Invoke the UI to do its job
 		ssleuthUI.fillPanel(connectionRank, 
 					cipherSuite,
 					securityState,
