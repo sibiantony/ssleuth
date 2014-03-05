@@ -1,4 +1,5 @@
-var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating"];
+var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating",
+						"ffToggleDefault"];
 
 /* The cipher suites ratings are in its early stages now.
  * This is subject to change in future.
@@ -81,4 +82,39 @@ const ssleuthConnectionRating = {
 	certStatus	: 1,
 	evCert		: 1,
 	total		: 10
+};
+
+const ffToggleDefault = {
+	rc4Suites : {
+		list : [
+			"ecdh_ecdsa_rc4_128_sha",
+			"ecdh_rsa_rc4_128_sha",
+			"ecdhe_ecdsa_rc4_128_sha",
+			"ecdhe_rsa_rc4_128_sha",
+			"rsa_rc4_128_md5",
+			"rsa_rc4_128_sha"
+		],
+		state : "default"
+	}, 
+	noPFSSuites : {
+		list : [
+			"ecdh_ecdsa_aes_256_sha",
+			"ecdh_ecdsa_des_ede3_sha",
+			"ecdh_ecdsa_rc4_128_sha",
+			"ecdh_rsa_aes_128_sha",
+			"ecdh_rsa_aes_256_sha",
+			"ecdh_rsa_des_ede3_sha",
+			"ecdh_rsa_rc4_128_sha",
+			"rsa_aes_128_sha",
+			"rsa_aes_256_sha",
+			"rsa_camellia_128_sha",
+			"rsa_camellia_256_sha",
+			"rsa_des_ede3_sha",
+			"rsa_fips_des_ede3_sha",
+			"rsa_rc4_128_md5",
+			"rsa_rc4_128_sha",
+			"rsa_seed_sha",
+		],
+		state : "default"
+	}
 }

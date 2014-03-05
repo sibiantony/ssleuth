@@ -325,6 +325,34 @@ function getSignatureKeyLen(cert) {
 	}
 }
 
+function toggleCipherSuites() {
+	const prefs =
+		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+	const br = "security.ssl3."
+
+	for (var suite in ssleuth.prefs.PREFS["suites.toggle"]) {
+		
+		var cs = ssleuth.prefs.PREFS["suites.toggle"][suite]; 
+		switch(cs.state) {
+			case "default" :
+					for(var i=0; i<cs.list.length; i++) {
+						prefs.clearUserPref(br+cs.list[i]);
+					}
+				break;
+			case "enable" : 
+					for(var i=0; i<cs.list.length; i++) {
+						prefs.setBoolPref(br+cs.list[i], true);
+					}
+				break;
+			case "disable" : 
+					for(var i=0; i<cs.list.length; i++) {
+						prefs.setBoolPref(br+cs.list[i], false);
+					}
+				break;
+		}
+	}
+}
+
 var prefListener = new PrefListener(
 	ssleuthDefaultPrefs.PREF_BRANCH,
 	function(branch, name) {
@@ -336,6 +364,11 @@ var prefListener = new PrefListener(
 			case "rating.ciphersuite.params":
 				ssleuth.prefs.PREFS["rating.ciphersuite.params"] =
 						JSON.parse(branch.getCharPref(name));
+				break;
+			case "suites.toggle" :
+				ssleuth.prefs.PREFS["suites.toggle"] = 
+						JSON.parse(branch.getCharPref(name));
+				toggleCipherSuites(); 
 				break;
 		}
 	}

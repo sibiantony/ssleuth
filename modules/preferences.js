@@ -13,11 +13,12 @@ Components.utils.import("resource://ssleuth/cipher-suites.js");
 var ssleuthDefaultPrefs = {
 	PREF_BRANCH : "extensions.ssleuth.", 
 	PREFS : {
-		"notifier.location" : 0,
-		"panel.fontsize" : 1, 
-		"ui.keyshortcut" : "control shift }",
-		"rating.params"	 : ssleuthConnectionRating,
-		"rating.ciphersuite.params"	: ssleuthCipherSuites.weighting
+		"notifier.location" 	: 0,
+		"panel.fontsize" 		: 1, 
+		"ui.keyshortcut" 		: "control shift }",
+		"rating.params"	 		: ssleuthConnectionRating,
+		"rating.ciphersuite.params"	: ssleuthCipherSuites.weighting,
+		"suites.toggle" 		: ffToggleDefault
    }
 }; 
 
