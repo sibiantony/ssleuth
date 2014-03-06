@@ -68,15 +68,19 @@
 			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
 			
 			for (var suite in csList) {
-				var item = document.createElement("listitem");
-				var cell = document.createElement("listcell"); 
-				cell.setAttribute("label", suite);
-				item.appendChild(cell);
+				var item = document.createElement("richlistitem");
+				var hbox = document.createElement("hbox"); 
+				var lb = document.createElement("label");
+				hbox.setAttribute("equalsize", "always"); 
+				hbox.setAttribute("flex", "1"); 
+				lb.setAttribute("value", suite);
+				lb.setAttribute("flex", "1");
+				hbox.appendChild(lb);
 				
-				cell = document.createElement("listcell");
 				// cell.setAttribute("label", csList[suite].state);
 				rg = document.createElement("radiogroup");
 				rg.setAttribute("orient", "horizontal");
+				rg.setAttribute("flex", "1");
 				const rdStates = {	"default" : "Default", 
 									"enabled" : "Enable", 
 									"disabled" : "Disable"};
@@ -89,8 +93,8 @@
 					rg.appendChild(rd); 
 				}
 
-				cell.appendChild(rg); 
-				item.appendChild(cell);
+				hbox.appendChild(rg); 
+				item.appendChild(hbox);
 				csBox.appendChild(item); 
 				
 				var box = document.createElement("listbox");
@@ -104,7 +108,6 @@
 				}
 				csDeck.appendChild(box); 
 			}
-			
 		},
 
 		cxRatingChanged: function() {
@@ -137,7 +140,60 @@
 				.addEventListener("command", prefUI.csRatingApply, false); 
 			document.getElementById("ssleuth-pref-mng-cs-entrybox")
 				.addEventListener("select", prefUI.csMngEntrySelect, false);
+			document.getElementById("ssleuth-pref-mng-cs-entry-new")
+				.addEventListener("command", prefUI.csMngEntryNew, false); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
+				.addEventListener("command", prefUI.csMngEntryEdit, false); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
+				.addEventListener("command", prefUI.csMngEntryRemove, false); 
 		}, 
+
+		csMngEntryNew : function() {
+			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
+			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
+
+			var item = document.createElement("richlistitem");
+			item.setAttribute("selected", "true"); 
+			csBox.setAttribute("selectedIndex", item.tabIndex);
+			csBox.setAttribute("selectedIndex", item.tabIndex);
+
+			var hbox = document.createElement("hbox"); 
+			var tb = document.createElement("textbox");
+			hbox.setAttribute("equalsize", "always"); 
+			hbox.setAttribute("flex", "1"); 
+			// tb.setAttribute("value", suite);
+			tb.setAttribute("flex", "1");
+			hbox.appendChild(tb);
+			item.appendChild(hbox); 
+			csBox.appendChild(item);
+
+			// Deck 
+			try {
+			var box = document.createElement("listbox");
+			// Get the list of security.ssl3.* cipher suites
+			// var pr = Cc["@mozilla.org/preferences-service;1"]
+			           	// .getService(Ci.nsIPrefService);
+			// var branch = pr.getBranch("security.ssl3."); 
+			var chList = prefs.getChildList("security.ssl3.", {}); 
+
+			for (var i=0; i<chList.length; i++) {
+				dump("\n" + chList[i]); 
+				var dItem = document.createElement("listitem"); 
+				var dCell = document.createElement("listcell"); 
+					
+				dCell.setAttribute("label", 
+						chList[i].replace("security.ssl3.", ""));
+				dItem.appendChild(dCell);
+				box.appendChild(dItem);
+			}
+			csDeck.appendChild(box); 
+			} catch(e) { dump("Error : " + e.message + "\n"); }
+		},
+
+		csMngEntryEdit : function() {
+		},
+		csMngEntryRemove : function() {
+		},
 
 		csMngEntrySelect : function() {
 			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 

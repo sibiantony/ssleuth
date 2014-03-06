@@ -211,26 +211,6 @@
 					</hbox>
 				</groupbox>
 				
-				<groupbox>
-					<richlistbox style="font-size:70%;">
-						<listhead>
-							<listheader label="Parameter" flex="1"/>
-							<listheader label="Weight" flex="1"/>
-						</listhead>
-						<richlistitem>
-							<listcell label="A"/>
-							<listcell>
-								<textbox value="1"/>
-							</listcell>
-						</richlistitem>
-						<richlistitem>
-							<listcell label="B"/>
-							<listcell>
-								<textbox value="2"/>
-							</listcell>
-						</richlistitem>
-					</richlistbox>
-				</groupbox>		
 				</vbox>
 				</scrollbox>
 
@@ -243,17 +223,15 @@
 						<caption label="Manage cipher suites toggle list"/>
 						<description value="Manage custom cipher suites list that can be enabled and disabled. The configured lists will appear in the notifier right click menu."/>
 						<description value="Add a new entry in the left side box, and choose the list of cipher suites from the right side box." />
+
 						<hbox flex="1">
-						<listbox id="ssleuth-pref-mng-cs-entrybox" flex="1">
-							<listhead>
-								<listheader label="Name" width="100"/>
-								<listheader label="State"/>
-							</listhead>
-							<listcols id="ssleuth-pref-mng-cs-entry">
-								<listcol flex="1"/>
-								<listcol flex="1"/>
-							</listcols>
-						</listbox>
+						<richlistbox id="ssleuth-pref-mng-cs-entrybox" flex="1">
+							<listheader equalsize="always" id="ssleuth-pref-mng-cs-header"
+									style="border: 0; padding: 0; -moz-appearance: none;">
+								<treecol label="Name" flex="1"/>
+								<treecol label="State" flex="1"/>
+							</listheader>
+						</richlistbox>
 
 						<deck id="ssleuth-pref-mng-cs-deck" flex="1">	
 						</deck>
