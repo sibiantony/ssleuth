@@ -23,12 +23,13 @@
 				style="margin-bottom: 50px;"/>
 	<hbox flex="1" style="margin-left: 20px; margin-right: 20px;">
 		<listbox id="ssleuth-pref-categories"
-						selectedIndex = "9"
+						selectedIndex = "0"
 						onselect="document.getElementById('viewport-panel').selectedIndex
 												= this.selectedIndex">
 			<listitem class="ssleuth-pref-category"
 					image=""
 					label="&ssleuth.pref.tab.ssleuthui;"
+					selected="true"
 					tooltiptext="Localize"/>
 			<listitem class="ssleuth-pref-category"
 					image=""
@@ -216,10 +217,6 @@
 							<listheader label="Parameter" flex="1"/>
 							<listheader label="Weight" flex="1"/>
 						</listhead>
-						<!-- listcols>
-							<listcol flex="1"/>
-							<listcol flex="1"/>
-						</listcols-->
 						<richlistitem>
 							<listcell label="A"/>
 							<listcell>
@@ -236,11 +233,54 @@
 				</groupbox>		
 				</vbox>
 				</scrollbox>
+
 				<scrollbox id="pref-scroll-box" 
 										flex="1" orient="vertical" tabindex="0"
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 
+					<groupbox>
+						<caption label="Manage cipher suites toggle list"/>
+						<description value="Manage custom cipher suites list that can be enabled and disabled. The configured lists will appear in the notifier right click menu."/>
+						<description value="Add a new entry in the left side box, and choose the list of cipher suites from the right side box." />
+						<hbox flex="1">
+						<listbox id="ssleuth-pref-mng-cs-entrybox" flex="1">
+							<listhead>
+								<listheader label="Name" width="100"/>
+								<listheader label="State"/>
+							</listhead>
+							<listcols id="ssleuth-pref-mng-cs-entry">
+								<listcol flex="1"/>
+								<listcol flex="1"/>
+							</listcols>
+						</listbox>
+
+						<deck id="ssleuth-pref-mng-cs-deck" flex="1">	
+						</deck>
+
+						</hbox>
+
+						<hbox>
+							<button label="New" 
+											id="ssleuth-pref-mng-cs-entry-new"
+											/>
+							<button label="Edit" 
+											id="ssleuth-pref-mng-cs-entry-edit"
+											/>
+							<button label="Remove" 
+											id="ssleuth-pref-mng-cs-entry-remove"
+											/>
+						</hbox>
+					</groupbox>
+
+					<groupbox>
+						<caption label="Reset settings"/>
+						<description value="Reset all the cipher suites states to their firefox default values"/>
+						<hbox>
+							<button label="Reset all"/>
+						</hbox>
+					</groupbox>
+		
 				</vbox>
 				</scrollbox>
 

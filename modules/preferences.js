@@ -158,9 +158,4 @@ function _window() {
 						.getService(Components.interfaces.nsIWindowWatcher)
 						.activeWindow; 
 }
-function forEachOpenWindow(todo)  // Apply a function to all open browser windows
-{
-	var windows = Services.wm.getEnumerator("navigator:browser");
-	while (windows.hasMoreElements())
-		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
-}
+

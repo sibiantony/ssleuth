@@ -328,26 +328,35 @@ function getSignatureKeyLen(cert) {
 function toggleCipherSuites() {
 	const prefs =
 		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
-	const br = "security.ssl3."
+	const br = "security.ssl3.";
+	const SUITES_TOGGLE = "suites.toggle"; 
+	const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
 
-	for (var suite in ssleuth.prefs.PREFS["suites.toggle"]) {
+	for (var suite in ssleuth.prefs.PREFS[SUITES_TOGGLE]) {
 		
-		var cs = ssleuth.prefs.PREFS["suites.toggle"][suite]; 
+		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][suite]; 
 		switch(cs.state) {
-			case "default" :
-					for(var i=0; i<cs.list.length; i++) {
-						prefs.clearUserPref(br+cs.list[i]);
-					}
+			case "default" : 
+				// do nothing
+				break; 
+			case "reset" :
+				for (var i=0; i<cs.list.length; i++) {
+					prefs.clearUserPref(br+cs.list[i]);
+				}
+				cs.state = "default"; 
+				ssleuth.prefs.PREFS[SUITES_TOGGLE][suite] = cs; 
+				prefs.setCharPref(PREF_SUITES_TOGGLE, 
+						JSON.stringify(ssleuth.prefs.PREFS[SUITES_TOGGLE])); 
 				break;
-			case "enable" : 
-					for(var i=0; i<cs.list.length; i++) {
-						prefs.setBoolPref(br+cs.list[i], true);
-					}
+			case "enable" :
+				for (var i=0; i<cs.list.length; i++) {
+					prefs.setBoolPref(br+cs.list[i], true);
+				}
 				break;
-			case "disable" : 
-					for(var i=0; i<cs.list.length; i++) {
-						prefs.setBoolPref(br+cs.list[i], false);
-					}
+			case "disable" :
+				for (var i=0; i<cs.list.length; i++) {
+					prefs.setBoolPref(br+cs.list[i], false);
+				}
 				break;
 		}
 	}

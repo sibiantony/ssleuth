@@ -20,6 +20,8 @@
 						.getService(Ci.nsIPrefBranch);
 	const PREF_CX_RATING = "extensions.ssleuth.rating.params"; 
 	const PREF_CS_RATING = "extensions.ssleuth.rating.ciphersuite.params"; 
+	const PREF_SUITES_TGL = "extensions.ssleuth.suites.toggle"; 
+
 	var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
 	var csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
 
@@ -31,6 +33,7 @@
 			}
 
 			prefUI.initRatings(); 
+			prefUI.initMngList(); 
 			prefUI.addListeners(); 
 
 		},
@@ -58,6 +61,51 @@
 			prefUI.cxRatingChanged(); 
 			prefUI.csRatingChanged(); 
 		}, 
+
+		initMngList: function() {
+			var csList = JSON.parse(prefs.getCharPref(PREF_SUITES_TGL));
+			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
+			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
+			
+			for (var suite in csList) {
+				var item = document.createElement("listitem");
+				var cell = document.createElement("listcell"); 
+				cell.setAttribute("label", suite);
+				item.appendChild(cell);
+				
+				cell = document.createElement("listcell");
+				// cell.setAttribute("label", csList[suite].state);
+				rg = document.createElement("radiogroup");
+				rg.setAttribute("orient", "horizontal");
+				const rdStates = {	"default" : "Default", 
+									"enabled" : "Enable", 
+									"disabled" : "Disable"};
+				for (var s in rdStates) {
+					rd = document.createElement("radio"); 
+					rd.setAttribute("label", rdStates[s]);
+					if (csList[suite].state == s) {
+						rd.setAttribute("selected", "true");
+					}
+					rg.appendChild(rd); 
+				}
+
+				cell.appendChild(rg); 
+				item.appendChild(cell);
+				csBox.appendChild(item); 
+				
+				var box = document.createElement("listbox");
+				for (var i=0; i<csList[suite].list.length; i++) {
+					var dItem = document.createElement("listitem"); 
+					var dCell = document.createElement("listcell"); 
+					
+					dCell.setAttribute("label", csList[suite].list[i]);
+					dItem.appendChild(dCell);
+					box.appendChild(dItem);
+				}
+				csDeck.appendChild(box); 
+			}
+			
+		},
 
 		cxRatingChanged: function() {
 			var total = 0; 
@@ -87,7 +135,15 @@
 				.addEventListener("command", prefUI.cxRatingApply, false); 
 			document.getElementById("ssleuth-pref-cs-ratings-apply")
 				.addEventListener("command", prefUI.csRatingApply, false); 
+			document.getElementById("ssleuth-pref-mng-cs-entrybox")
+				.addEventListener("select", prefUI.csMngEntrySelect, false);
 		}, 
+
+		csMngEntrySelect : function() {
+			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
+			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
+			csDeck.selectedIndex = csBox.selectedIndex; 
+		},
 
 		cxRatingApply : function() {
 			cxRating.cipherSuite = 
@@ -108,6 +164,7 @@
 			prefs.setCharPref(PREF_CX_RATING, 
 				JSON.stringify(cxRating)); 
 		},
+
 		csRatingApply : function() {
 			csRating.keyExchange = 
 				document.getElementById("ssleuth-pref-cs-kx-weight").value; 
