@@ -201,7 +201,7 @@
 				item.firstChild.removeChild(rd); 
 			}
 			item.firstChild.replaceChild(tb, lb);
-			tb.setAttribute("value", "<Custom>");
+			tb.setAttribute("value", label);
 			tb.select();
 
 			// == Deck ==

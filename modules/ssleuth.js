@@ -177,14 +177,12 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 			domainNameMatched = "Yes"; 
 		}
 
-		// Certificate signature alg. key size 
-		var signatureKeyLen = getSignatureKeyLen(cert); 
 
 		cipherSuite = {name: cipherName, 
 						rank: cs.cipherSuiteStrength.LOW, 
 						pfs: 0, 
 						notes: "",
-						signatureKeyLen: signatureKeyLen, 
+						signatureKeyLen: 0, 
 						keyExchange: null, 
 						authentication: null, 
 						bulkCipher: null, 
@@ -255,6 +253,10 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 									  };
 		}
 
+		// Certificate signature alg. key size 
+		cipherSuite.signatureKeyLen = getSignatureKeyLen(cert, 
+										cipherSuite.authentication.ui); 
+
 		cipherSuite.notes = cipherSuite.keyExchange.notes +
 								cipherSuite.bulkCipher.notes +
 								cipherSuite.HMAC.notes; 
@@ -304,7 +306,7 @@ function getConnectionRating(csRating, pfs,
 				evCert * rp.evCert )/rp.total); 
 }
 
-function getSignatureKeyLen(cert) {
+function getSignatureKeyLen(cert, auth) {
 	try {
 		var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
 							.createInstance(Components.interfaces.nsIASN1Tree); 
@@ -316,9 +318,20 @@ function getSignatureKeyLen(cert) {
 		// 'bits' or '(' which could get localized.
 		// So simply extract the first occuring digit from the string
 		// corresponding to Subject's Public key. Hope this holds on. 
-		var keySize = certASN1.getDisplayData(12)
-						.split('\n')[0]
-						.match(/\d+/g)[0]; 
+		var keySize = 0; 
+		switch(auth) {
+			case "RSA" : 
+				keySize = certASN1.getDisplayData(12)
+								.split('\n')[0]
+								.match(/\d+/g)[0]; 
+					break; 
+			case "ECDSA" : 
+				keySize = certASN1.getDisplayData(14)
+								.split('\n')[0]
+								.match(/\d+/g)[0]; 
+					break;
+		}
+				
 		return keySize;
 	} catch (e) { 
 		dump("Error getSignatureKeyLen() : " + e.message + "\n"); 
