@@ -225,17 +225,26 @@
 						<description value="Add a new entry in the left side box, and choose the list of cipher suites from the right side box." />
 
 						<hbox flex="1">
-						<richlistbox id="ssleuth-pref-mng-cs-entrybox" flex="1">
-							<listheader equalsize="always" id="ssleuth-pref-mng-cs-header"
-									style="border: 0; padding: 0; -moz-appearance: none;">
-								<treecol label="Name" flex="1"/>
-								<treecol label="State" flex="1"/>
-							</listheader>
-						</richlistbox>
+							<richlistbox id="ssleuth-pref-mng-cs-entrybox" flex="1">
+								<listheader equalsize="always" id="ssleuth-pref-mng-cs-header"
+										style="border: 0; padding: 0; -moz-appearance: none;">
+									<treecol label="Name" flex="1"/>
+									<treecol label="State" flex="1"/>
+								</listheader>
+							</richlistbox>
 
-						<deck id="ssleuth-pref-mng-cs-deck" flex="1">	
-						</deck>
-
+							<vbox flex="1">
+								<deck id="ssleuth-pref-mng-cs-deck" flex="1">	
+								</deck>
+								<hbox id="ssleuth-pref-mng-cs-edit-buttons" hidden="true">
+									<button label="Apply"
+													id="ssleuth-pref-mng-cs-edit-apply"
+													/>
+									<button label="Cancel"
+													id="ssleuth-pref-mng-cs-edit-cancel"
+													/>
+								</hbox>
+							</vbox>
 						</hbox>
 
 						<hbox>

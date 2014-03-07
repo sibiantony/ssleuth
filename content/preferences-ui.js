@@ -153,31 +153,24 @@
 			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
 
 			var item = document.createElement("richlistitem");
-			item.setAttribute("selected", "true"); 
-			csBox.setAttribute("selectedIndex", item.tabIndex);
-			csBox.setAttribute("selectedIndex", item.tabIndex);
 
 			var hbox = document.createElement("hbox"); 
-			var tb = document.createElement("textbox");
+			var lb = document.createElement("label");
 			hbox.setAttribute("equalsize", "always"); 
 			hbox.setAttribute("flex", "1"); 
-			// tb.setAttribute("value", suite);
-			tb.setAttribute("flex", "1");
-			hbox.appendChild(tb);
+
+			lb.setAttribute("flex", "1");
+			lb.setAttribute("value", "<Custom suites>");
+			hbox.appendChild(lb);
 			item.appendChild(hbox); 
 			csBox.appendChild(item);
+			csBox.selectItem(item);	
 
 			// Deck 
-			try {
 			var box = document.createElement("listbox");
-			// Get the list of security.ssl3.* cipher suites
-			// var pr = Cc["@mozilla.org/preferences-service;1"]
-			           	// .getService(Ci.nsIPrefService);
-			// var branch = pr.getBranch("security.ssl3."); 
 			var chList = prefs.getChildList("security.ssl3.", {}); 
 
 			for (var i=0; i<chList.length; i++) {
-				dump("\n" + chList[i]); 
 				var dItem = document.createElement("listitem"); 
 				var dCell = document.createElement("listcell"); 
 					
@@ -186,12 +179,58 @@
 				dItem.appendChild(dCell);
 				box.appendChild(dItem);
 			}
-			csDeck.appendChild(box); 
-			} catch(e) { dump("Error : " + e.message + "\n"); }
+			csDeck.appendChild(box);
+			prefUI.csMngEntryEdit();
+			// prefUI.csMngEntryRemove();
 		},
 
 		csMngEntryEdit : function() {
+			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
+			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
+
+			var item = csBox.selectedItem;
+			var lb = item.firstChild.firstChild; 
+			var label = lb.value; 
+			var rd = lb.nextSibling; 
+
+			// Replace the label/radios and insert a textbox there.
+			var tb = document.createElement("textbox");
+			tb.setAttribute("flex", "1");
+
+			if (rd != null) {
+				item.firstChild.removeChild(rd); 
+			}
+			item.firstChild.replaceChild(tb, lb);
+			tb.setAttribute("value", "<Custom>");
+			tb.select();
+
+			// == Deck ==
+			lb = csDeck.selectedPanel; 
+			var csList = []; 
+			if (lb.hasChildNodes()) {
+				var li = lb.childNodes; 
+				for (var i = 0; i<li.length; i++) {
+					csList[i] = li[i].firstChild.label; 
+					dump("child node : " + csList[i] + "\n"); 
+				}
+			}
+
+		/*		for (var i=0; i<csList[suite].list.length; i++) {
+					var dItem = document.createElement("listitem"); 
+					var dCell = document.createElement("listcell"); 
+					
+					dCell.setAttribute("label", csList[suite].list[i]);
+					dItem.appendChild(dCell);
+					box.appendChild(dItem);
+				}
+		*/
+
+			btnBox = document.getElementById("ssleuth-pref-mng-cs-edit-buttons");
+			btnBox.hidden = "false"; 
+			btnBox.setAttribute("hidden", "false");
+			
 		},
+
 		csMngEntryRemove : function() {
 		},
 

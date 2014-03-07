@@ -30,7 +30,7 @@ var ssleuth = {
 			this.prefs = ssleuthPreferences.readInitPreferences(); 
 			if (!this.prefRegistered) {
 				prefListener.register(false); 
-				this.prefRegistered = true; 	
+				this.prefRegistered = true; 
 			}
 			ssleuthUI.init(window); 
 		} catch(e) {
