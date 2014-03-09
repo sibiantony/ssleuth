@@ -287,12 +287,12 @@ toolbar[iconsize="small"] #ssleuth-tb-button {
 	border-color: ThreeDShadow;
 }
 
-groupbox {
+/* groupbox {
 	margin-top: 20px;	
 	margin-bottom: 5px;
-}
+}*/
 
-/* Make this with a class */
+/* Make this with a class 
 grid {
 	font-size: 80%;
-}
+} */

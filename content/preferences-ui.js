@@ -284,15 +284,23 @@
 			}
 			var newTgl = { name : label, list : csList, state : "default"}; 
 			var i=0; 
-			for (i=0; i<csTglList.length; i++) {
-				if (oldLabel === csTglList[i].name) {
-					break; 
+			if (prefUI.newItemMode) {
+				// Check for duplicates!
+				for (i=0; i<csTglList.length; i++) {
+					if (label === csTglList[i].name) {
+						// Silent return ? Warn the user ?? More UI stuff :(
+						return; 
+					}
+				}
+				csTglList.push(newTgl); 
+			} else {
+				for (i=0; i<csTglList.length; i++) {
+					if (oldLabel === csTglList[i].name) {
+						csTglList[i] = newTgl; 
+						break; 
+					}
 				}
 			}
-			if (!csTglList[i])
-				csTglList.push(newTgl); 
-			else
-				csTglList[i] = newTgl; 
 
 			prefs.setCharPref(PREF_SUITES_TGL, JSON.stringify(csTglList)); 
 			prefUI.csMngEntryEditReset(); 
@@ -364,6 +372,7 @@
 						state = rg.value; 
 						break; 
 			}
+			// dump("Radio event : label : " + label + " state : " + state + "\n"); 
 			for (var i=0; i<csTglList.length; i++) {
 				if (label === csTglList[i].name) {
 					csTglList[i].state = state; 

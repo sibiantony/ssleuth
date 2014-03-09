@@ -345,10 +345,11 @@ function toggleCipherSuites() {
 	const SUITES_TOGGLE = "suites.toggle"; 
 	const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
 
-	//for (var suite in ssleuth.prefs.PREFS[SUITES_TOGGLE]) {
+	dump("Toggle cipher suites\n");
 	for (var t=0; t<ssleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
 		
 		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][t]; 
+		dump("cs. name : " + cs.name + "\n"); 
 		switch(cs.state) {
 			case "default" : 
 				// do nothing

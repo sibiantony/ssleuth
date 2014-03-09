@@ -18,7 +18,7 @@ var ssleuthDefaultPrefs = {
 		"ui.keyshortcut" 		: "control shift }",
 		"rating.params"	 		: ssleuthConnectionRating,
 		"rating.ciphersuite.params"	: ssleuthCipherSuites.weighting,
-		"suites.toggle" 		: ffToggleDefault
+		"suites.toggle" 		: ffToggleDefault,
    }
 }; 
 
