@@ -345,9 +345,10 @@ function toggleCipherSuites() {
 	const SUITES_TOGGLE = "suites.toggle"; 
 	const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
 
-	for (var suite in ssleuth.prefs.PREFS[SUITES_TOGGLE]) {
+	//for (var suite in ssleuth.prefs.PREFS[SUITES_TOGGLE]) {
+	for (var t=0; t<ssleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
 		
-		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][suite]; 
+		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][t]; 
 		switch(cs.state) {
 			case "default" : 
 				// do nothing
@@ -357,18 +358,26 @@ function toggleCipherSuites() {
 					prefs.clearUserPref(br+cs.list[i]);
 				}
 				cs.state = "default"; 
-				ssleuth.prefs.PREFS[SUITES_TOGGLE][suite] = cs; 
+				ssleuth.prefs.PREFS[SUITES_TOGGLE][t] = cs; 
 				prefs.setCharPref(PREF_SUITES_TOGGLE, 
 						JSON.stringify(ssleuth.prefs.PREFS[SUITES_TOGGLE])); 
 				break;
+
+			// Only toggle these if they actually exist! Do not mess up
+			// user profile with non-existing cipher suites. Do a 
+			// check with getPrefType() before setting the prefs.
 			case "enable" :
 				for (var i=0; i<cs.list.length; i++) {
-					prefs.setBoolPref(br+cs.list[i], true);
+					if (prefs.getPrefType(br+cs.list[i]) == prefs.PREF_BOOL) {
+						prefs.setBoolPref(br+cs.list[i], true);
+					}
 				}
 				break;
 			case "disable" :
 				for (var i=0; i<cs.list.length; i++) {
-					prefs.setBoolPref(br+cs.list[i], false);
+					if (prefs.getPrefType(br+cs.list[i]) == prefs.PREF_BOOL) {
+						prefs.setBoolPref(br+cs.list[i], false);
+					}
 				}
 				break;
 		}

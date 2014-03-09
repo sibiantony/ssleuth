@@ -101,8 +101,8 @@ const ssleuthConnectionRating = {
  * are loaded, on every startup these states are checked and cipher suites
  * are enabled/disabled.
  */
-const ffToggleDefault = {
-	"RC4 suites" : {
+const ffToggleDefault = [
+	{	name : "RC4 suites", 
 		list : [
 			"ecdh_ecdsa_rc4_128_sha",
 			"ecdh_rsa_rc4_128_sha",
@@ -113,7 +113,7 @@ const ffToggleDefault = {
 		],
 		state : "default"
 	}, 
-	"Non PFS suites" : {
+	{	name : "Non PFS suites",
 		list : [
 			"ecdh_ecdsa_aes_256_sha",
 			"ecdh_ecdsa_des_ede3_sha",
@@ -134,4 +134,4 @@ const ffToggleDefault = {
 		],
 		state : "default"
 	}
-}
+]

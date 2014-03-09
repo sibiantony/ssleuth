@@ -1,7 +1,7 @@
 (function () {
 
-	// cx = connection rating
-	// cs = cipher suite rating
+	// cx = connection 
+	// cs = cipher suite 
 	var cxRatingIds = [
 		"ssleuth-pref-cipher-suite-weight",
 		"ssleuth-pref-pfs-weight",
@@ -24,8 +24,15 @@
 
 	var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
 	var csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
+	var csTglList = JSON.parse(prefs.getCharPref(PREF_SUITES_TGL));
 
 	var prefUI = {
+		editMode : false,
+		editItem : null, 
+		editListbox : null, 
+		editEntry : null, 
+		newItemMode: false, 
+
 		init : function() {
 			var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
 			if("arguments" in window && window.arguments.length > 0) {
@@ -63,47 +70,58 @@
 		}, 
 
 		initMngList: function() {
-			var csList = JSON.parse(prefs.getCharPref(PREF_SUITES_TGL));
 			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
 			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
 			
-			for (var suite in csList) {
+			// Clear any existing elements - to help with re-init after edits
+			// For items list, keep the header and remove listitems.
+			var li = csBox.firstChild.nextSibling;
+			while (li) {
+				var t = li; 
+				li =  li.nextSibling;
+				csBox.removeChild(t);
+			}
+			while (csDeck.hasChildNodes()) {
+				csDeck.removeChild(csDeck.firstChild); 
+			}
+
+			for (t=0; t<csTglList.length; t++) {
+				var cs = csTglList[t]; 
 				var item = document.createElement("richlistitem");
 				var hbox = document.createElement("hbox"); 
 				var lb = document.createElement("label");
 				hbox.setAttribute("equalsize", "always"); 
 				hbox.setAttribute("flex", "1"); 
-				lb.setAttribute("value", suite);
+				lb.setAttribute("value", cs.name);
 				lb.setAttribute("flex", "1");
 				hbox.appendChild(lb);
 				
-				// cell.setAttribute("label", csList[suite].state);
 				rg = document.createElement("radiogroup");
 				rg.setAttribute("orient", "horizontal");
 				rg.setAttribute("flex", "1");
 				const rdStates = {	"default" : "Default", 
-									"enabled" : "Enable", 
-									"disabled" : "Disable"};
+									"enable" : "Enable", 
+									"disable" : "Disable"};
 				for (var s in rdStates) {
 					rd = document.createElement("radio"); 
 					rd.setAttribute("label", rdStates[s]);
-					if (csList[suite].state == s) {
+					rd.setAttribute("value", s); 
+					if (cs.state == s) {
 						rd.setAttribute("selected", "true");
 					}
 					rg.appendChild(rd); 
 				}
+				rg.addEventListener("command", prefUI.csMngEntryRadioEvent, false); 
 
 				hbox.appendChild(rg); 
 				item.appendChild(hbox);
 				csBox.appendChild(item); 
 				
 				var box = document.createElement("listbox");
-				for (var i=0; i<csList[suite].list.length; i++) {
+				for (var i=0; i<cs.list.length; i++) {
 					var dItem = document.createElement("listitem"); 
-					var dCell = document.createElement("listcell"); 
 					
-					dCell.setAttribute("label", csList[suite].list[i]);
-					dItem.appendChild(dCell);
+					dItem.setAttribute("label", cs.list[i]);
 					box.appendChild(dItem);
 				}
 				csDeck.appendChild(box); 
@@ -146,6 +164,10 @@
 				.addEventListener("command", prefUI.csMngEntryEdit, false); 
 			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
 				.addEventListener("command", prefUI.csMngEntryRemove, false); 
+			document.getElementById("ssleuth-pref-mng-cs-edit-apply")
+				.addEventListener("command", prefUI.csMngEntryEditApply, false); 
+			document.getElementById("ssleuth-pref-mng-cs-edit-cancel")
+				.addEventListener("command", prefUI.csMngEntryEditCancel, false); 
 		}, 
 
 		csMngEntryNew : function() {
@@ -172,14 +194,13 @@
 
 			for (var i=0; i<chList.length; i++) {
 				var dItem = document.createElement("listitem"); 
-				var dCell = document.createElement("listcell"); 
 					
-				dCell.setAttribute("label", 
+				dItem.setAttribute("label", 
 						chList[i].replace("security.ssl3.", ""));
-				dItem.appendChild(dCell);
 				box.appendChild(dItem);
 			}
 			csDeck.appendChild(box);
+			prefUI.newItemMode = true;
 			prefUI.csMngEntryEdit();
 			// prefUI.csMngEntryRemove();
 		},
@@ -189,9 +210,13 @@
 			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
 
 			var item = csBox.selectedItem;
+			if (!item) {
+				return;
+			}
 			var lb = item.firstChild.firstChild; 
 			var label = lb.value; 
 			var rd = lb.nextSibling; 
+
 
 			// Replace the label/radios and insert a textbox there.
 			var tb = document.createElement("textbox");
@@ -205,39 +230,148 @@
 			tb.select();
 
 			// == Deck ==
-			lb = csDeck.selectedPanel; 
+			var deck = csDeck.selectedPanel; 
 			var csList = []; 
-			if (lb.hasChildNodes()) {
-				var li = lb.childNodes; 
+			if (deck.hasChildNodes()) {
+				var li = deck.childNodes; 
 				for (var i = 0; i<li.length; i++) {
-					csList[i] = li[i].firstChild.label; 
-					dump("child node : " + csList[i] + "\n"); 
+					csList[i] = li[i].getAttribute("label");
 				}
 			}
 
-		/*		for (var i=0; i<csList[suite].list.length; i++) {
-					var dItem = document.createElement("listitem"); 
-					var dCell = document.createElement("listcell"); 
-					
-					dCell.setAttribute("label", csList[suite].list[i]);
-					dItem.appendChild(dCell);
-					box.appendChild(dItem);
-				}
-		*/
+			var box = document.createElement("listbox");
+			for (var i=0; i<csList.length; i++) {
+				var dItem = document.createElement("listitem"); 
+				
+				dItem.setAttribute("type", "checkbox");
+				dItem.setAttribute("label", csList[i]);
+				dItem.setAttribute("allowevents", "true");
+				if (!prefUI.newItemMode) 
+					dItem.setAttribute("checked", "true"); 
+				box.appendChild(dItem);
+			}
+			csDeck.replaceChild(box, deck); 
 
-			btnBox = document.getElementById("ssleuth-pref-mng-cs-edit-buttons");
-			btnBox.hidden = "false"; 
-			btnBox.setAttribute("hidden", "false");
-			
+			// Enable edit mode, and apply/cancel.  Disable new/edit/remove/ buttons.
+			document.getElementById("ssleuth-pref-mng-cs-edit-buttons").hidden = false;
+
+			prefUI.editMode = true; 
+			prefUI.editItem = item; 
+			prefUI.editListbox = box; 
+			prefUI.editEntry = label; 
+
+			document.getElementById("ssleuth-pref-mng-cs-entry-new")
+				.setAttribute("disabled", "true"); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
+				.setAttribute("disabled", "true"); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
+				.setAttribute("disabled", "true"); 
+		},
+
+		csMngEntryEditApply: function() {
+			var label = prefUI.editItem.firstChild.firstChild.value;
+			var lb = prefUI.editListbox; 
+			var oldLabel = prefUI.editEntry; 
+			var csList = []; 
+
+			if (lb.hasChildNodes()) {
+				var li = lb.childNodes; 
+				for (var i = 0; i<li.length; i++) {
+					if (li[i].checked) {
+						csList.push(li[i].getAttribute("label"));
+					}
+				}
+			}
+			var newTgl = { name : label, list : csList, state : "default"}; 
+			var i=0; 
+			for (i=0; i<csTglList.length; i++) {
+				if (oldLabel === csTglList[i].name) {
+					break; 
+				}
+			}
+			if (!csTglList[i])
+				csTglList.push(newTgl); 
+			else
+				csTglList[i] = newTgl; 
+
+			prefs.setCharPref(PREF_SUITES_TGL, JSON.stringify(csTglList)); 
+			prefUI.csMngEntryEditReset(); 
+		},
+
+		csMngEntryEditCancel: function() {
+			prefUI.csMngEntryEditReset();
+		},
+
+		csMngEntryEditReset: function() {
+			prefUI.editMode = prefUI.newItemMode = false; 
+			prefUI.editItem = prefUI.editListbox = prefUI.editEntry = null; 
+
+			document.getElementById("ssleuth-pref-mng-cs-entry-new")
+				.setAttribute("disabled", "false"); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
+				.setAttribute("disabled", "false"); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
+				.setAttribute("disabled", "false"); 
+			document.getElementById("ssleuth-pref-mng-cs-edit-buttons")
+				.hidden = true;
+
+			prefUI.initMngList(); 
 		},
 
 		csMngEntryRemove : function() {
+			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
+
+			var item = csBox.selectedItem;
+			if (!item) {
+				return;
+			}
+			var lb = item.firstChild.firstChild; 
+			var label = lb.value; 
+			for (i=0; i<csTglList.length; i++) {
+				if (label === csTglList[i].name) {
+					csTglList.splice(i, 1);
+					break;
+				}
+			}
+			prefs.setCharPref(PREF_SUITES_TGL, JSON.stringify(csTglList)); 
+			prefUI.initMngList(); 
 		},
 
 		csMngEntrySelect : function() {
 			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
 			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
 			csDeck.selectedIndex = csBox.selectedIndex; 
+		},
+
+		csMngEntryRadioEvent : function() {
+			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
+			var item = csBox.selectedItem;
+			if (!item) {
+				return;
+			}
+			var lb = item.firstChild.firstChild; 
+			var label = lb.value; 
+			var rg = lb.nextSibling; 
+			if (rg == null) 
+				return; 
+			var state = "default"; 
+			switch(rg.value) {
+				case "default" : 
+						state = "reset";
+						break; 
+				case "enable" :
+				case "disable" : 
+						state = rg.value; 
+						break; 
+			}
+			for (var i=0; i<csTglList.length; i++) {
+				if (label === csTglList[i].name) {
+					csTglList[i].state = state; 
+					break; 
+				}
+			}
+
+			prefs.setCharPref(PREF_SUITES_TGL, JSON.stringify(csTglList)); 
 		},
 
 		cxRatingApply : function() {

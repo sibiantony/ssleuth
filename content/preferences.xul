@@ -234,30 +234,32 @@
 							</richlistbox>
 
 							<vbox flex="1">
-								<deck id="ssleuth-pref-mng-cs-deck" flex="1">	
-								</deck>
-								<hbox id="ssleuth-pref-mng-cs-edit-buttons" hidden="true">
-									<button label="Apply"
-													id="ssleuth-pref-mng-cs-edit-apply"
-													/>
-									<button label="Cancel"
-													id="ssleuth-pref-mng-cs-edit-cancel"
-													/>
-								</hbox>
+								<deck id="ssleuth-pref-mng-cs-deck" flex="1"/>	
 							</vbox>
 						</hbox>
 
 						<hbox>
-							<button label="New" 
-											id="ssleuth-pref-mng-cs-entry-new"
-											/>
-							<button label="Edit" 
-											id="ssleuth-pref-mng-cs-entry-edit"
-											/>
-							<button label="Remove" 
-											id="ssleuth-pref-mng-cs-entry-remove"
-											/>
+							<hbox>
+								<button label="New" 
+												id="ssleuth-pref-mng-cs-entry-new"
+												/>
+								<button label="Edit" 
+												id="ssleuth-pref-mng-cs-entry-edit"
+												/>
+								<button label="Remove" 
+												id="ssleuth-pref-mng-cs-entry-remove"
+												/>
+							</hbox>
+							<hbox id="ssleuth-pref-mng-cs-edit-buttons" hidden="true">
+								<button label="Apply"
+												id="ssleuth-pref-mng-cs-edit-apply"
+												/>
+								<button label="Cancel"
+												id="ssleuth-pref-mng-cs-edit-cancel"
+												/>
+							</hbox>
 						</hbox>
+
 					</groupbox>
 
 					<groupbox>
