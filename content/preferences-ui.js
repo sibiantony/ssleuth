@@ -260,12 +260,7 @@
 			prefUI.editListbox = box; 
 			prefUI.editEntry = label; 
 
-			document.getElementById("ssleuth-pref-mng-cs-entry-new")
-				.setAttribute("disabled", "true"); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
-				.setAttribute("disabled", "true"); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
-				.setAttribute("disabled", "true"); 
+			prefUI.hideCsMngEntryButtons("true"); 
 		},
 
 		csMngEntryEditApply: function() {
@@ -310,16 +305,20 @@
 			prefUI.csMngEntryEditReset();
 		},
 
+		hideCsMngEntryButtons: function(flag) {
+			document.getElementById("ssleuth-pref-mng-cs-entry-new")
+				.setAttribute("disabled", flag); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
+				.setAttribute("disabled", flag); 
+			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
+				.setAttribute("disabled", flag); 
+		},
+
 		csMngEntryEditReset: function() {
 			prefUI.editMode = prefUI.newItemMode = false; 
 			prefUI.editItem = prefUI.editListbox = prefUI.editEntry = null; 
 
-			document.getElementById("ssleuth-pref-mng-cs-entry-new")
-				.setAttribute("disabled", "false"); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
-				.setAttribute("disabled", "false"); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
-				.setAttribute("disabled", "false"); 
+			prefUI.hideCsMngEntryButtons("false"); 
 			document.getElementById("ssleuth-pref-mng-cs-edit-buttons")
 				.hidden = true;
 
