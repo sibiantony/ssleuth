@@ -3,6 +3,7 @@
 <?xml-stylesheet href="chrome://ssleuth/skin/ssleuth.css" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://ssleuth/locale/preferences.dtd">
 <prefwindow type="prefwindow" id="ssleuth-preferences" 
+							xmlns:html="http://www.w3.org/1999/xhtml"
 							xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" 
 							title="&ssleuth.pref.title.label;"
 							onload="">
@@ -258,6 +259,24 @@
 												id="ssleuth-pref-mng-cs-edit-cancel"
 												/>
 							</hbox>
+						</hbox>
+					</groupbox>
+					<groupbox>
+						<caption label="Please note:"/>
+						<html:ul>
+							<html:li>Default = The cipher suites in the list are reset to their default value once.
+								Following which the states are left untouched.</html:li>
+							<html:li>Enable = The cipher suites in the list are enabled for use.</html:li>
+							<html:li>Disable = The cipher suites in the list are disabled from use.</html:li>
+							<html:li>Please avoid creating multiple lists that has common cipher suites.</html:li>
+							<html:li>The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones.</html:li>
+							<html:li>Duplicate names for list names are not allowed</html:li>
+						</html:ul>
+						<description value="Restore the addon default list"/>
+						<hbox>
+							<button label="Restore lists" 
+											id="ssleuth-pref-mng-cs-entry-restore-default"
+											/>
 						</hbox>
 
 					</groupbox>
