@@ -338,7 +338,7 @@ function getSignatureKeyLen(cert, auth) {
 	}
 }
 
-function toggleCipherSuites() {
+function toggleCipherSuites(prefsOld) {
 	const prefs =
 		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
 	const br = "security.ssl3.";
@@ -349,16 +349,26 @@ function toggleCipherSuites() {
 	for (var t=0; t<ssleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
 		
 		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][t]; 
-		dump("cs. name : " + cs.name + "\n"); 
+		dump("cs. name : " + cs.name + " State : " + cs.state + "\n"); 
 		switch(cs.state) {
 			case "default" : 
-				// do nothing
-				break; 
-			case "reset" :
+				// Check if the element was present before.
+				// Reset only if the old state was 'enable' or 'disable'.
+				var j; 
+				for (j=0; j<prefsOld.length; j++) {
+					if(prefsOld[j].name === cs.name) {
+						break;
+					}
+				}
+				if (j == prefsOld.length) // not found
+					continue; 
+				if (prefsOld[j].state === "default") 
+					continue; 
+				dump("index : " + j + " last state : " + prefsOld[j].state + "\n"); 
+				// Reset once
 				for (var i=0; i<cs.list.length; i++) {
 					prefs.clearUserPref(br+cs.list[i]);
 				}
-				cs.state = "default"; 
 				ssleuth.prefs.PREFS[SUITES_TOGGLE][t] = cs; 
 				prefs.setCharPref(PREF_SUITES_TOGGLE, 
 						JSON.stringify(ssleuth.prefs.PREFS[SUITES_TOGGLE])); 
@@ -398,9 +408,10 @@ var prefListener = new PrefListener(
 						JSON.parse(branch.getCharPref(name));
 				break;
 			case "suites.toggle" :
+				var prefsOld = ssleuth.prefs.PREFS["suites.toggle"]; 
 				ssleuth.prefs.PREFS["suites.toggle"] = 
 						JSON.parse(branch.getCharPref(name));
-				toggleCipherSuites(); 
+				toggleCipherSuites(prefsOld); 
 				break;
 		}
 	}

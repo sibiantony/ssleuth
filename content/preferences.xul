@@ -272,7 +272,7 @@
 							<html:li>The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones.</html:li>
 							<html:li>Duplicate names for list names are not allowed</html:li>
 						</html:ul>
-						<description value="Restore the addon default list"/>
+						<description value="Restore the addon default list. Note that this will remove any user created lists."/>
 						<hbox>
 							<button label="Restore lists" 
 											id="ssleuth-pref-mng-cs-entry-restore-default"
@@ -285,7 +285,8 @@
 						<caption label="Reset settings"/>
 						<description value="Reset all the cipher suites states to their firefox default values"/>
 						<hbox>
-							<button label="Reset all"/>
+							<button label="Reset all"
+											id="ssleuth-pref-cs-reset-all-cs"/>
 						</hbox>
 					</groupbox>
 		

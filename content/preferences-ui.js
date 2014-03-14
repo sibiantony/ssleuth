@@ -42,28 +42,21 @@
 			prefUI.initRatings(); 
 			prefUI.initMngList(); 
 			prefUI.addListeners(); 
-
 		},
 
 		initRatings: function() {
-			document.getElementById("ssleuth-pref-cipher-suite-weight").value
-					= cxRating.cipherSuite;
-			document.getElementById("ssleuth-pref-pfs-weight").value
-					= cxRating.pfs;
-			document.getElementById("ssleuth-pref-ev-weight").value
-					= cxRating.evCert;
-			document.getElementById("ssleuth-pref-ffstatus-weight").value
-					= cxRating.ffStatus;
-			document.getElementById("ssleuth-pref-certstate-weight").value
-					= cxRating.certStatus;
-
-			document.getElementById("ssleuth-pref-cs-kx-weight").value 
-					= csRating.keyExchange;
-			document.getElementById("ssleuth-pref-cs-cipher-weight").value
-					= csRating.bulkCipher;
-			document.getElementById("ssleuth-pref-cs-hmac-weight").value
-					= csRating.hmac;
-
+			for (var [id, val] in Iterator({
+				"ssleuth-pref-cipher-suite-weight" : cxRating.cipherSuite, 
+				"ssleuth-pref-pfs-weight"		: cxRating.pfs,
+				"ssleuth-pref-ev-weight"		: cxRating.evCert,
+				"ssleuth-pref-ffstatus-weight"	: cxRating.ffStatus,
+				"ssleuth-pref-certstate-weight"	: cxRating.certStatus,
+				"ssleuth-pref-cs-kx-weight"		: csRating.keyExchange,
+				"ssleuth-pref-cs-cipher-weight" : csRating.bulkCipher,
+				"ssleuth-pref-cs-hmac-weight"	: csRating.hmac
+				})) {
+					document.getElementById(id).value = val; 
+			}
 			// Set the total value for the first time. 
 			prefUI.cxRatingChanged(); 
 			prefUI.csRatingChanged(); 
@@ -85,6 +78,8 @@
 				csDeck.removeChild(csDeck.firstChild); 
 			}
 
+			// Make sure csTglList is consistent with that in preferences.
+			csTglList = JSON.parse(prefs.getCharPref(PREF_SUITES_TGL));
 			for (t=0; t<csTglList.length; t++) {
 				var cs = csTglList[t]; 
 				var item = document.createElement("richlistitem");
@@ -152,22 +147,24 @@
 				document.getElementById(csRatingIds[i]) 
 					.addEventListener("change", prefUI.csRatingChanged, false); 
 			}
-			document.getElementById("ssleuth-pref-cx-ratings-apply")
-				.addEventListener("command", prefUI.cxRatingApply, false); 
-			document.getElementById("ssleuth-pref-cs-ratings-apply")
-				.addEventListener("command", prefUI.csRatingApply, false); 
+			for (var [id, func] in Iterator({
+				"ssleuth-pref-cx-ratings-apply" : prefUI.cxRatingApply,
+				"ssleuth-pref-cs-ratings-apply" : prefUI.csRatingApply,
+				"ssleuth-pref-mng-cs-entry-new" : prefUI.csMngEntryNew,
+				"ssleuth-pref-mng-cs-entry-edit": prefUI.csMngEntryEdit,
+				"ssleuth-pref-mng-cs-entry-remove" 	: prefUI.csMngEntryRemove,
+				"ssleuth-pref-mng-cs-edit-apply" 	: prefUI.csMngEntryEditApply,
+				"ssleuth-pref-mng-cs-edit-cancel" 	: prefUI.csMngEntryEditCancel,
+				"ssleuth-pref-mng-cs-entry-restore-default" : prefUI.csMngEntryRestoreDefault,
+				"ssleuth-pref-cs-reset-all-cs"		: prefUI.csResetAll
+				}) ) {
+				document.getElementById(id)
+					.addEventListener("command", func, false); 
+			}
 			document.getElementById("ssleuth-pref-mng-cs-entrybox")
 				.addEventListener("select", prefUI.csMngEntrySelect, false);
-			document.getElementById("ssleuth-pref-mng-cs-entry-new")
-				.addEventListener("command", prefUI.csMngEntryNew, false); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
-				.addEventListener("command", prefUI.csMngEntryEdit, false); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
-				.addEventListener("command", prefUI.csMngEntryRemove, false); 
-			document.getElementById("ssleuth-pref-mng-cs-edit-apply")
-				.addEventListener("command", prefUI.csMngEntryEditApply, false); 
-			document.getElementById("ssleuth-pref-mng-cs-edit-cancel")
-				.addEventListener("command", prefUI.csMngEntryEditCancel, false); 
+			document.getElementById("ssleuth-pref-mng-cs-entrybox")
+				.addEventListener("dblclick", prefUI.csMngEntryEdit, false);
 		}, 
 
 		csMngEntryNew : function() {
@@ -175,7 +172,6 @@
 			var csDeck = document.getElementById("ssleuth-pref-mng-cs-deck"); 
 
 			var item = document.createElement("richlistitem");
-
 			var hbox = document.createElement("hbox"); 
 			var lb = document.createElement("label");
 			hbox.setAttribute("equalsize", "always"); 
@@ -202,7 +198,6 @@
 			csDeck.appendChild(box);
 			prefUI.newItemMode = true;
 			prefUI.csMngEntryEdit();
-			// prefUI.csMngEntryRemove();
 		},
 
 		csMngEntryEdit : function() {
@@ -261,6 +256,9 @@
 			prefUI.editEntry = label; 
 
 			prefUI.hideCsMngEntryButtons("true"); 
+			// Disable double click event listener
+			document.getElementById("ssleuth-pref-mng-cs-entrybox")
+				.removeEventListener("dblclick", prefUI.csMngEntryEdit);
 		},
 
 		csMngEntryEditApply: function() {
@@ -306,12 +304,16 @@
 		},
 
 		hideCsMngEntryButtons: function(flag) {
-			document.getElementById("ssleuth-pref-mng-cs-entry-new")
-				.setAttribute("disabled", flag); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-edit")
-				.setAttribute("disabled", flag); 
-			document.getElementById("ssleuth-pref-mng-cs-entry-remove")
-				.setAttribute("disabled", flag); 
+			for each(var id in [
+				"ssleuth-pref-mng-cs-entry-new",
+				"ssleuth-pref-mng-cs-entry-edit",
+				"ssleuth-pref-mng-cs-entry-remove",
+				"ssleuth-pref-mng-cs-entry-restore-default",
+				"ssleuth-pref-cs-reset-all-cs" 
+				]) {
+				document.getElementById(id)
+					.setAttribute("disabled", flag); 
+			}
 		},
 
 		csMngEntryEditReset: function() {
@@ -321,6 +323,9 @@
 			prefUI.hideCsMngEntryButtons("false"); 
 			document.getElementById("ssleuth-pref-mng-cs-edit-buttons")
 				.hidden = true;
+			// Re-enable double click listener
+			document.getElementById("ssleuth-pref-mng-cs-entrybox")
+				.addEventListener("dblclick", prefUI.csMngEntryEdit, false);
 
 			prefUI.initMngList(); 
 		},
@@ -364,7 +369,7 @@
 			var state = "default"; 
 			switch(rg.value) {
 				case "default" : 
-						state = "reset";
+						state = "default";
 						break; 
 				case "enable" :
 				case "disable" : 
@@ -380,6 +385,30 @@
 			}
 
 			prefs.setCharPref(PREF_SUITES_TGL, JSON.stringify(csTglList)); 
+		},
+
+		csMngEntryRestoreDefault : function() {
+			prefs.clearUserPref(PREF_SUITES_TGL);
+			prefUI.initMngList(); 
+		},
+
+		csResetAll : function() {
+			// Now this has to be done clean. 1. User has their own list
+			// 2. There are other cipher suites outside of this list.
+			// While doing a reset, reset the user list to 'default'
+			// 		This will clear everything in it once.
+			// Also need to reset all the other ones. Optimize this?
+			var csList = prefs.getChildList("security.ssl3.", {}); 
+			for (var i=0; i<csList.length; i++) {
+				prefs.clearUserPref(csList[i]); 
+			}
+
+			for (i=0; i<csTglList.length; i++) {
+				csTglList[i].state = "default"; 
+			}
+			prefs.setCharPref(PREF_SUITES_TGL, JSON.stringify(csTglList)); 
+			prefUI.initMngList(); 
+			
 		},
 
 		cxRatingApply : function() {

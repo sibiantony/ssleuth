@@ -25,13 +25,19 @@ var ssleuthUI = {
 		dump ("\nssleuth UI init : \n");
 		try {
 			window.document.loadOverlay("chrome://ssleuth/content/ssleuth.xul", 
-								{observe: function(subject, topic, data) {
-									if (topic == "xul-overlay-merged") {
-										dump("\nXUL overlay merged! \n"); 
-										/* TODO : Keep an eye on this 'window' element!*/
+							{observe: function(subject, topic, data) {
+								if (topic == "xul-overlay-merged") {
+									dump("\nXUL overlay merged! \n"); 
+									/* TODO : Keep an eye on this 'window' element!*/
+									try {
 										ssleuthUI.initSSleuthUI(window); 
+									} catch (e) {
+										dump("ssleuthUI init Error : " + e.message + "\n"); 
+										/* FIXME : window is null during an error */
+										ssleuthUI.uninit(_window());
 									}
-								}});
+								}
+							}});
 		} catch (e) {
 			dump("Failed overlay load : " + e.message + "\n"); 
 		}
@@ -77,10 +83,10 @@ var ssleuthUI = {
 		/* TODO : Cleanup everything! */
 		/* Removing the button deletes the overlay elements as well */
 		prefListener.unregister(); 
+		removePanelMenu(window.document); 
 		removeButton(_ssleuthButton(window)); 
 
 		deleteKeyShortcut(window.document); 
-		removePanelMenu(window.document); 
 		removeStyleSheet(); 
 	},
 
@@ -656,6 +662,34 @@ function createPanelMenu(doc) {
 	menupopup.appendChild(menuitem); 
 	menupopup.appendChild(doc.createElement("menuseparator"));
 
+	var csList = ssleuthUI.prefs.PREFS["suites.toggle"]; 
+	if (csList.length >0) {
+		for (var i=0; i<csList.length; i++) {
+			dump("i : " + i + "csList name " + csList[i].name + "\n"); 
+			menuitem = doc.createElement("menuitem"); 
+			menuitem.setAttribute("label", csList[i].name); 
+
+			var m_popup = doc.createElement("menupopup"); 
+			m_popup.addEventListener("command", function() {}); 
+			var m_item = doc.createElement("menuitem");
+			// m_item.setAttribute("type", "radio"); 
+			m_item.setAttribute("label", "default");
+			m_popup.appendChild(m_item); 
+
+			/* m_item.setAttribute("type", "radio"); 
+			m_item.setAttribute("label", "enable");
+			m_popup.appendChild(m_item); 
+
+			m_item.setAttribute("type", "radio"); 
+			m_item.setAttribute("label", "disable");
+			m_popup.appendChild(m_item); */
+
+			//menuitem.appendChild(m_popup); 
+			menupopup.appendChild(menuitem); 
+		}
+		menupopup.appendChild(doc.createElement("menuseparator"));
+	}
+
 	menuitem = doc.createElement("menuitem"); 
 	menuitem.setAttribute("label", "About"); 
 	menuitem.addEventListener("command", function() {
@@ -708,6 +742,12 @@ var prefListener = new PrefListener(
 					deleteKeyShortcut(win.document); 
 					createKeyShortcut(win.document); 
 				}); 
+
+			// This may not be necessary. Get the preferences when 
+			// 		menu is required.
+			case "suites.toggle":
+				ssleuthUI.prefs.PREFS[name] = 
+					JSON.parse(branch.getCharPref(name)); 
 		}
 	}
 ); 
