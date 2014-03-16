@@ -1,6 +1,6 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuthPreferences", "ssleuthDefaultPrefs",
+var EXPORTED_SYMBOLS = ["ssleuthPreferences", 
 							"PrefListener"]; 
 
 const Cc = Components.classes;
@@ -23,12 +23,13 @@ var ssleuthDefaultPrefs = {
 }; 
 
 var ssleuthPreferences = {
+	prefBranch : ssleuthDefaultPrefs.PREF_BRANCH, 
+	prefService: null, 
 
 	init : function() {
 		this.setDefaultPreferences(); 
-		// Set trigger=false, or else preferences setting
-		// 	will conflict with a UI init. This is because, the overlay will
-		//	not be merged immediately and is notified asynchronously.
+		this.prefService = 
+			Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
 	},
 
 	uninit: function() {
@@ -59,6 +60,7 @@ var ssleuthPreferences = {
 		let application = 
 			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
 		const win = _window(); 
+		dump("preferences openDialog\n"); 
 
 		//if (null == prefsTab || prefsTab.closed) {
 		if (null == this.prefsTab) {
@@ -97,8 +99,7 @@ var ssleuthPreferences = {
 	},
 
 	readInitPreferences: function() {
-		const prefs =
-			Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+		const prefs = ssleuthPreferences.prefService;
 		var sp = ssleuthDefaultPrefs; 
 		for (let [key, val] in Iterator(sp.PREFS)) {
 			switch (typeof val) {
@@ -120,10 +121,10 @@ var ssleuthPreferences = {
 }; 
 
 function PrefListener(branch_name, callback) {
-	var prefService = Components.classes["@mozilla.org/preferences-service;1"]
-		.getService(Components.interfaces.nsIPrefService);
+	var prefService = Cc["@mozilla.org/preferences-service;1"]
+		.getService(Ci.nsIPrefService);
 	this._branch = prefService.getBranch(branch_name);
-	this._branch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+	this._branch.QueryInterface(Ci.nsIPrefBranch2);
 	this._callback = callback;
 }
 
@@ -154,8 +155,6 @@ PrefListener.prototype.unregister = function() {
 
 /* Move to utils ? */
 function _window() {
-	return Cc["@mozilla.org/embedcomp/window-watcher;1"]
-						.getService(Components.interfaces.nsIWindowWatcher)
-						.activeWindow; 
+	return Services.wm.getMostRecentWindow("navigator:browser");
 }
 

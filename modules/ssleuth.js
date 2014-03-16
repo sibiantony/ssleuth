@@ -47,10 +47,9 @@ var ssleuth = {
 	},
 
 	onLocationChange: function(aProgress, aRequest, aURI) {
-		/* FIXME: This might throw error during startup with ff29! */
-		var win = Cc["@mozilla.org/embedcomp/window-watcher;1"]
-						.getService(Components.interfaces.nsIWindowWatcher)
-						.activeWindow; 
+		/* FIXME: This might throw error during startup with ff29! 
+		 * 	Modified - Test! */
+		var win = Services.wm.getMostRecentWindow("navigator:browser"); 
 		if (win == null) {
 			dump("Window is null\n"); 
 			return;
@@ -81,9 +80,8 @@ var ssleuth = {
     },
 
 	onSecurityChange: function(aWebProgress, aRequest, aState) {
-		var win = Cc["@mozilla.org/embedcomp/window-watcher;1"]
-						.getService(Components.interfaces.nsIWindowWatcher)
-						.activeWindow; 
+		var win = Services.wm.getMostRecentWindow("navigator:browser");
+
 		/* Get rid of this !! */
 		var loc = win.content.location;
 
@@ -339,8 +337,7 @@ function getSignatureKeyLen(cert, auth) {
 }
 
 function toggleCipherSuites(prefsOld) {
-	const prefs =
-		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+	const prefs = ssleuthPreferences.prefService;
 	const br = "security.ssl3.";
 	const SUITES_TOGGLE = "suites.toggle"; 
 	const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
@@ -356,6 +353,8 @@ function toggleCipherSuites(prefsOld) {
 				// Reset only if the old state was 'enable' or 'disable'.
 				var j; 
 				for (j=0; j<prefsOld.length; j++) {
+					// FIXME : prefsOld has a reference and not a copy?
+					dump("name : " + prefsOld[j].name + " j : " + j + "state : " + prefsOld[j].state + "\n");
 					if(prefsOld[j].name === cs.name) {
 						break;
 					}
@@ -396,7 +395,7 @@ function toggleCipherSuites(prefsOld) {
 }
 
 var prefListener = new PrefListener(
-	ssleuthDefaultPrefs.PREF_BRANCH,
+	ssleuthPreferences.prefBranch,
 	function(branch, name) {
 		switch(name) {
 			case "rating.params": 

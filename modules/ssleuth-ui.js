@@ -20,6 +20,7 @@ var ssleuthUI = {
 	ssleuthBtnLocation : null, 
 	prefs: null, 
 	prefsRegistered: false, 
+	panelMenuTemplate: null, 
 
 	init: function(window) {
 		dump ("\nssleuth UI init : \n");
@@ -138,9 +139,7 @@ var ssleuthUI = {
  * 	is necessary to get the current active window.
  */
 function _window() {
-	return Cc["@mozilla.org/embedcomp/window-watcher;1"]
-						.getService(Components.interfaces.nsIWindowWatcher)
-						.activeWindow; 
+	return Services.wm.getMostRecentWindow("navigator:browser");
 }
 
 function _ssleuthButton(window) {
@@ -337,20 +336,6 @@ function panelEvent(event) {
 	 	} catch(ex) {
 			dump("Error while panelEvent action : " + ex.message + "\n"); 
 		}
-	}
-}
-
-function menuEvent(event) {
-	dump("\n menuEvent \n"); 
-
-	try {
-		event.preventDefault(); 
-		var doc = _window().document; 
-
-		var ssleuthPanelMenu = doc.getElementById("ssleuth-panel-menu"); 
-		ssleuthPanelMenu.openPopup(_ssleuthButton(_window())); 
-	} catch (e) { 
-		dump("menuEvent error : " + e.message + "\n"); 
 	}
 }
 
@@ -592,15 +577,14 @@ function deleteKeyShortcut(doc) {
 }
 
 function readUIPreferences() {
-	const prefs = 
-		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+	const prefs = ssleuthPreferences.prefService; 
 	ssleuthUI.ssleuthBtnLocation = 
 		prefs.getIntPref("extensions.ssleuth.notifier.location"); 
 }
 
 function setUIPreferences(doc) {
 	const prefs = 
-		Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefBranch);
+		ssleuthPreferences.prefService;
 
 	setPanelFont(prefs.getIntPref("extensions.ssleuth.panel.fontsize"), doc); 
 }
@@ -649,6 +633,62 @@ function setPanelFont(panelFont, doc) {
 	}
 }
 
+function menuEvent(event) {
+	try {
+		event.preventDefault(); 
+		var doc = _window().document; 
+
+		var ssleuthPanelMenu = doc.getElementById("ssleuth-panel-menu"); 
+		var menupopup = ssleuthUI.panelMenuTemplate.cloneNode(true); 
+		//var menupopup = ssleuthUI.panelMenuTemplate; 
+
+		// TODO : Replace with a traverse, and find ssleuth-panel-menu-reset-cs
+		var mi = menupopup.firstChild.nextSibling.nextSibling;
+
+		// This has to be done everytime, as the preferences change.
+		var csList = ssleuthUI.prefs.PREFS["suites.toggle"]; 
+		if (csList.length >0) {
+			for (var i=0; i<csList.length; i++) {
+				// dump("i : " + i + "csList name " + csList[i].name + "\n"); 
+				var menu = doc.createElement("menu"); 
+				menu.setAttribute("label", csList[i].name);
+
+				var m_popup = doc.createElement("menupopup"); 
+				for (var rd of ["Default", "Enable", "Disable"]) {
+					var m_item = doc.createElement("menuitem");
+					m_item.setAttribute("type", "radio"); 
+					m_item.setAttribute("label", rd);
+					m_item.setAttribute("value", rd.toLowerCase());
+					if (csList[i].state === rd.toLowerCase()) {
+						m_item.setAttribute("checked", true); 
+					}
+					m_popup.appendChild(m_item); 
+				}
+				m_popup.addEventListener("command", function(event) {
+					var m = event.currentTarget.parentNode;
+					var csTglList = ssleuthUI.prefs.PREFS["suites.toggle"]; 
+					for (var i=0; i<csTglList.length; i++) {
+						if (m.label === csTglList[i].name) {
+							csTglList[i].state = event.target.value; 
+							// dump("m.value : " + event.target.value + "m.name " + m.label); 
+						}
+					}
+					ssleuthPreferences.prefService
+						.setCharPref("extensions.ssleuth.suites.toggle", JSON.stringify(csTglList));
+				}); 
+
+				menu.appendChild(m_popup);
+				menupopup.insertBefore(menu, mi); 
+			}
+		}
+
+		doc.documentElement.replaceChild(menupopup, ssleuthPanelMenu); 
+		menupopup.openPopup(_ssleuthButton(_window())); 
+	} catch (e) { 
+		dump("menuEvent error : " + e.message + "\n"); 
+	}
+}
+
 function createPanelMenu(doc) {
 	var menupopup = doc.createElement("menupopup"); 	
 	menupopup.setAttribute("id", "ssleuth-panel-menu"); 
@@ -656,46 +696,41 @@ function createPanelMenu(doc) {
 
 	var menuitem = doc.createElement("menuitem"); 
 	menuitem.setAttribute("label", "Preferences"); 
-	menuitem.addEventListener("command", function() {
+	/* menuitem.addEventListener("command", function() {
 		ssleuthPreferences.openDialog(0);
-	});
+	}); */
+	menuitem.setAttribute("oncommand", 
+		"Cu.import('resource://ssleuth/preferences.js');ssleuthPreferences.openDialog(0);"); 
 	menupopup.appendChild(menuitem); 
+
 	menupopup.appendChild(doc.createElement("menuseparator"));
 
-	var csList = ssleuthUI.prefs.PREFS["suites.toggle"]; 
-	if (csList.length >0) {
-		for (var i=0; i<csList.length; i++) {
-			dump("i : " + i + "csList name " + csList[i].name + "\n"); 
-			menuitem = doc.createElement("menuitem"); 
-			menuitem.setAttribute("label", csList[i].name); 
-
-			var m_popup = doc.createElement("menupopup"); 
-			m_popup.addEventListener("command", function() {}); 
-			var m_item = doc.createElement("menuitem");
-			// m_item.setAttribute("type", "radio"); 
-			m_item.setAttribute("label", "default");
-			m_popup.appendChild(m_item); 
-
-			/* m_item.setAttribute("type", "radio"); 
-			m_item.setAttribute("label", "enable");
-			m_popup.appendChild(m_item); 
-
-			m_item.setAttribute("type", "radio"); 
-			m_item.setAttribute("label", "disable");
-			m_popup.appendChild(m_item); */
-
-			//menuitem.appendChild(m_popup); 
-			menupopup.appendChild(menuitem); 
-		}
-		menupopup.appendChild(doc.createElement("menuseparator"));
-	}
 
 	menuitem = doc.createElement("menuitem"); 
-	menuitem.setAttribute("label", "About"); 
+	menuitem.setAttribute("label", "Reset cipher suites"); 
+	menuitem.setAttribute("id", "ssleuth-panel-menu-reset-cs"); 
 	menuitem.addEventListener("command", function() {
-		ssleuthPreferences.openDialog(2);
-	});
+	}); 
 	menupopup.appendChild(menuitem); 
+
+	menuitem = doc.createElement("menuitem"); 
+	menuitem.setAttribute("label", "Custom list"); 
+	menuitem.addEventListener("command", function() {
+	}); 
+	menupopup.appendChild(menuitem); 
+
+	menupopup.appendChild(doc.createElement("menuseparator"));
+	menuitem = doc.createElement("menuitem"); 
+	menuitem.setAttribute("label", "About"); 
+	/* menuitem.addEventListener("command", function() {
+		ssleuthPreferences.openDialog(2);
+	});*/
+	menuitem.setAttribute("oncommand", 
+		"Cu.import('resource://ssleuth/preferences.js');ssleuthPreferences.openDialog(2);"); 
+
+	menupopup.appendChild(menuitem); 
+
+	ssleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
 
 	/* Right place to insert the menupopup? */
 	doc.documentElement.appendChild(menupopup); 
@@ -715,7 +750,7 @@ function forEachOpenWindow(todo)  // Apply a function to all open browser window
 }
 
 var prefListener = new PrefListener(
-	ssleuthDefaultPrefs.PREF_BRANCH,
+	ssleuthPreferences.prefBranch,
 	function(branch, name) {
 		switch(name) {
 			case "notifier.location":

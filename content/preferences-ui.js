@@ -304,7 +304,7 @@
 		},
 
 		hideCsMngEntryButtons: function(flag) {
-			for each(var id in [
+			for (var id of [
 				"ssleuth-pref-mng-cs-entry-new",
 				"ssleuth-pref-mng-cs-entry-edit",
 				"ssleuth-pref-mng-cs-entry-remove",
@@ -366,16 +366,9 @@
 			var rg = lb.nextSibling; 
 			if (rg == null) 
 				return; 
-			var state = "default"; 
-			switch(rg.value) {
-				case "default" : 
-						state = "default";
-						break; 
-				case "enable" :
-				case "disable" : 
-						state = rg.value; 
-						break; 
-			}
+			// states = default, enable, disable
+			var state = rg.value; 
+
 			// dump("Radio event : label : " + label + " state : " + state + "\n"); 
 			for (var i=0; i<csTglList.length; i++) {
 				if (label === csTglList[i].name) {

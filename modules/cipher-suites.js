@@ -87,15 +87,15 @@ const ssleuthConnectionRating = {
 /* The cipher suites preferences are boolean flags, and can be toggled
  * to true/false. However, SSleuth maintains 4 states for a toggle.
  * - 4 states mainly for being nice to other addons doing toggle
- * and to user's own preferences.
+ * and to respect user's own preferences.
  *		1. default - nothing is done in this case.
- * 		2. reset   - clear any existing preferences to their default values
+ * 		2. reset->default   - clear any existing preferences to their default values
  * 		3. enable  - enable the cipher suites in the list
  * 		4. disable - disable the cipher suites in the list
  *
  * By default nothing will be done, unless the user initiates
  *		an enable, disable or reset through UI/config window.
- * "reset" is only a transition state, which means once the reset
+ * "reset->default" is only a transition state, which means once the reset
  *		is done, the state is set to "default".
  * "enable" and "disable" are permanent states, ie. everytime the preferences
  * are loaded, on every startup these states are checked and cipher suites
