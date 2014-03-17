@@ -353,8 +353,6 @@ function toggleCipherSuites(prefsOld) {
 				// Reset only if the old state was 'enable' or 'disable'.
 				var j; 
 				for (j=0; j<prefsOld.length; j++) {
-					// FIXME : prefsOld has a reference and not a copy?
-					dump("name : " + prefsOld[j].name + " j : " + j + "state : " + prefsOld[j].state + "\n");
 					if(prefsOld[j].name === cs.name) {
 						break;
 					}
@@ -407,6 +405,7 @@ var prefListener = new PrefListener(
 						JSON.parse(branch.getCharPref(name));
 				break;
 			case "suites.toggle" :
+				/* TODO : No need for a cloned array here ? Why? */
 				var prefsOld = ssleuth.prefs.PREFS["suites.toggle"]; 
 				ssleuth.prefs.PREFS["suites.toggle"] = 
 						JSON.parse(branch.getCharPref(name));

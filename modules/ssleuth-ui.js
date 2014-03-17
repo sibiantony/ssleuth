@@ -640,13 +640,14 @@ function menuEvent(event) {
 
 		var ssleuthPanelMenu = doc.getElementById("ssleuth-panel-menu"); 
 		var menupopup = ssleuthUI.panelMenuTemplate.cloneNode(true); 
-		//var menupopup = ssleuthUI.panelMenuTemplate; 
 
-		// TODO : Replace with a traverse, and find ssleuth-panel-menu-reset-cs
+		// TODO : Replace with a traverse, and find ssleuth-menu-cs-reset-all
+		// Note that this is the cloned node, and not yet inserted into doc
 		var mi = menupopup.firstChild.nextSibling.nextSibling;
 
 		// This has to be done everytime, as the preferences change.
-		var csList = ssleuthUI.prefs.PREFS["suites.toggle"]; 
+		var csList = JSON.parse(ssleuthPreferences.prefService
+						.getCharPref("extensions.ssleuth.suites.toggle"));
 		if (csList.length >0) {
 			for (var i=0; i<csList.length; i++) {
 				// dump("i : " + i + "csList name " + csList[i].name + "\n"); 
@@ -666,11 +667,10 @@ function menuEvent(event) {
 				}
 				m_popup.addEventListener("command", function(event) {
 					var m = event.currentTarget.parentNode;
-					var csTglList = ssleuthUI.prefs.PREFS["suites.toggle"]; 
+					var csTglList = cloneArray(ssleuthUI.prefs.PREFS["suites.toggle"]); 
 					for (var i=0; i<csTglList.length; i++) {
 						if (m.label === csTglList[i].name) {
 							csTglList[i].state = event.target.value; 
-							// dump("m.value : " + event.target.value + "m.name " + m.label); 
 						}
 					}
 					ssleuthPreferences.prefService
@@ -683,9 +683,51 @@ function menuEvent(event) {
 		}
 
 		doc.documentElement.replaceChild(menupopup, ssleuthPanelMenu); 
-		menupopup.openPopup(_ssleuthButton(_window())); 
-	} catch (e) { 
+		// Add listeners. Since we use the id's to get the element, 
+		// this can only be done after inserting the menupopup into the document. 
+		for (var id of [
+			"ssleuth-menu-open-preferences",
+			"ssleuth-menu-open-about",
+			"ssleuth-menu-cs-reset-all",
+			"ssleuth-menu-cs-custom-list"
+		  ]) {
+			doc.getElementById(id) 
+				.addEventListener("command", menuCommand, false);
+		} 
+
+		menupopup.openPopup(_ssleuthButton(_window()));
+	} catch (e) {
 		dump("menuEvent error : " + e.message + "\n"); 
+	}
+}
+
+function menuCommand(event) {
+	var doc = _window().document; 
+	switch (event.target.id) {
+		case 'ssleuth-menu-cs-reset-all' : 
+			const prefs = ssleuthPreferences.prefService; 
+
+            var csList = prefs.getChildList("security.ssl3.", {}); 
+            for (var i=0; i<csList.length; i++) {
+                prefs.clearUserPref(csList[i]); 
+            }
+
+			var csTglList = cloneArray(ssleuthUI.prefs.PREFS["suites.toggle"]); 
+            for (i=0; i<csTglList.length; i++) {
+                csTglList[i].state = "default";
+            }
+            prefs.setCharPref("extensions.ssleuth.suites.toggle", 
+				JSON.stringify(csTglList));
+			break;
+		case 'ssleuth-menu-cs-custom-list' 	:
+			ssleuthPreferences.openDialog(2); 
+			break;
+		case 'ssleuth-menu-open-preferences' : 
+			ssleuthPreferences.openDialog(0);
+			break;
+		case 'ssleuth-menu-open-about'	:
+			ssleuthPreferences.openDialog(3);
+			break; 
 	}
 }
 
@@ -696,44 +738,35 @@ function createPanelMenu(doc) {
 
 	var menuitem = doc.createElement("menuitem"); 
 	menuitem.setAttribute("label", "Preferences"); 
-	/* menuitem.addEventListener("command", function() {
-		ssleuthPreferences.openDialog(0);
-	}); */
-	menuitem.setAttribute("oncommand", 
-		"Cu.import('resource://ssleuth/preferences.js');ssleuthPreferences.openDialog(0);"); 
+	// addEventLisetener() won't work if we clone the parent nodes.
+	// the remaining option is to go with an in-line listener.
+	menuitem.setAttribute("id", "ssleuth-menu-open-preferences"); 
 	menupopup.appendChild(menuitem); 
 
 	menupopup.appendChild(doc.createElement("menuseparator"));
 
-
 	menuitem = doc.createElement("menuitem"); 
 	menuitem.setAttribute("label", "Reset cipher suites"); 
-	menuitem.setAttribute("id", "ssleuth-panel-menu-reset-cs"); 
-	menuitem.addEventListener("command", function() {
-	}); 
+	menuitem.setAttribute("id", "ssleuth-menu-cs-reset-all"); 
 	menupopup.appendChild(menuitem); 
 
 	menuitem = doc.createElement("menuitem"); 
 	menuitem.setAttribute("label", "Custom list"); 
-	menuitem.addEventListener("command", function() {
-	}); 
+	menuitem.setAttribute("id", "ssleuth-menu-cs-custom-list"); 
 	menupopup.appendChild(menuitem); 
 
 	menupopup.appendChild(doc.createElement("menuseparator"));
-	menuitem = doc.createElement("menuitem"); 
-	menuitem.setAttribute("label", "About"); 
-	/* menuitem.addEventListener("command", function() {
-		ssleuthPreferences.openDialog(2);
-	});*/
-	menuitem.setAttribute("oncommand", 
-		"Cu.import('resource://ssleuth/preferences.js');ssleuthPreferences.openDialog(2);"); 
-
+	menuitem = doc.createElement("menuitem");
+	menuitem.setAttribute("label", "About");
+	
+	menuitem.setAttribute("id", "ssleuth-menu-open-about"); 
 	menupopup.appendChild(menuitem); 
 
 	ssleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
 
 	/* Right place to insert the menupopup? */
 	doc.documentElement.appendChild(menupopup); 
+
 }
 
 function removePanelMenu(doc) {
@@ -777,12 +810,6 @@ var prefListener = new PrefListener(
 					deleteKeyShortcut(win.document); 
 					createKeyShortcut(win.document); 
 				}); 
-
-			// This may not be necessary. Get the preferences when 
-			// 		menu is required.
-			case "suites.toggle":
-				ssleuthUI.prefs.PREFS[name] = 
-					JSON.parse(branch.getCharPref(name)); 
 		}
 	}
 ); 
