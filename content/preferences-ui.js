@@ -34,14 +34,17 @@
 		newItemMode: false, 
 
 		init : function() {
-			var prefTabbox = document.getElementById("ssleuth-preferences-tabbox");
-			if("arguments" in window && window.arguments.length > 0) {
-				prefTabbox.selectedIndex = window.arguments[0].tabIndex;
-			}
+			var index = Application.storage.get("ssleuth.prefwindow.tabindex", 0); 
+			document.getElementById("ssleuth-pref-categories")
+				.selectedIndex = index; 
 
 			prefUI.initRatings(); 
 			prefUI.initMngList(); 
 			prefUI.addListeners(); 
+		},
+
+		focus: function(event) {
+			dump("Focus." +  event.detail + "\n"); 
 		},
 
 		initRatings: function() {
@@ -281,7 +284,7 @@
 				// Check for duplicates!
 				for (i=0; i<csTglList.length; i++) {
 					if (label === csTglList[i].name) {
-						// Silent return ? Warn the user ?? More UI stuff :(
+						// Silent return ? Warn the user ?? More UI stuff!
 						return; 
 					}
 				}
@@ -440,5 +443,7 @@
 
 	};
 	window.addEventListener("load", prefUI.init, false); 
+	window.addEventListener("focus", prefUI.focus, false); 
+	window.addEventListener("ssleuth-prefwindow-focus", prefUI.focus, false); 
 
 }());

@@ -82,7 +82,6 @@ var ssleuth = {
 	onSecurityChange: function(aWebProgress, aRequest, aState) {
 		var win = Services.wm.getMostRecentWindow("navigator:browser");
 
-		/* Get rid of this !! */
 		var loc = win.content.location;
 
 		dump("\nonSecurityChange: " + loc.protocol + "\n"); 
@@ -176,16 +175,17 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 		}
 
 
-		cipherSuite = {name: cipherName, 
-						rank: cs.cipherSuiteStrength.LOW, 
-						pfs: 0, 
-						notes: "",
-						signatureKeyLen: 0, 
-						keyExchange: null, 
-						authentication: null, 
-						bulkCipher: null, 
-						HMAC: null 
-					}; 
+		cipherSuite = { 
+			name: cipherName, 
+			rank: cs.cipherSuiteStrength.LOW, 
+			pfs: 0, 
+			notes: "",
+			signatureKeyLen: 0, 
+			keyExchange: null, 
+			authentication: null, 
+			bulkCipher: null, 
+			HMAC: null 
+		}; 
 						
 		// Key exchange
 		for (var i=0; i<cs.keyExchange.length; i++) {
@@ -346,22 +346,19 @@ function toggleCipherSuites(prefsOld) {
 	for (var t=0; t<ssleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
 		
 		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][t]; 
-		dump("cs. name : " + cs.name + " State : " + cs.state + "\n"); 
 		switch(cs.state) {
 			case "default" : 
 				// Check if the element was present before.
 				// Reset only if the old state was 'enable' or 'disable'.
 				var j; 
 				for (j=0; j<prefsOld.length; j++) {
-					if(prefsOld[j].name === cs.name) {
+					if (prefsOld[j].name === cs.name) 
 						break;
-					}
 				}
 				if (j == prefsOld.length) // not found
 					continue; 
 				if (prefsOld[j].state === "default") 
 					continue; 
-				dump("index : " + j + " last state : " + prefsOld[j].state + "\n"); 
 				// Reset once
 				for (var i=0; i<cs.list.length; i++) {
 					prefs.clearUserPref(br+cs.list[i]);

@@ -59,17 +59,11 @@ var ssleuthPreferences = {
 	openDialog : function(index) {
 		let application = 
 			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
-		const win = _window(); 
-		dump("preferences openDialog\n"); 
+		application.storage.set("ssleuth.prefwindow.tabindex", index); 
 
-		//if (null == prefsTab || prefsTab.closed) {
-		if (null == this.prefsTab) {
-			dump("prefs Window is null\n");
-			const instantApply =
-				application.prefs.get("browser.preferences.instantApply");
-			const features =
-				"chrome,titlebar,toolbar,centerscreen" +
-				(instantApply.value ? ",dialog=no" : ",modal");
+		const win = _window(); 
+
+		if (null == this.prefsTab || this.prefsTabWin.closed) {
 			var prefsTab =
 				win.gBrowser.loadOneTab(
 					"chrome://ssleuth/content/preferences.xul",
@@ -84,11 +78,13 @@ var ssleuthPreferences = {
 						ssleuthPreferences.prefsTab = null; 
 						ssleuthPreferences.prefsTabWin = null; 
 						}, false); 
-
 		} else {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
 			this.prefsTabWin.focus();
 		}
+		var event = new CustomEvent("ssleuth-prefwindow-focus",
+							{"detail": index}); 
+		this.prefsTabWin.dispatchEvent(event); 
 	}, 
 
 	closeDialog: function() {
@@ -117,7 +113,7 @@ var ssleuthPreferences = {
 			}
 		}
 		return sp; 
-	}		
+	}
 }; 
 
 function PrefListener(branch_name, callback) {
