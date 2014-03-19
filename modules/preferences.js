@@ -82,10 +82,18 @@ var ssleuthPreferences = {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
 			this.prefsTabWin.focus();
 		}
-		var event = new CustomEvent("ssleuth-prefwindow-focus",
-							{"detail": index}); 
-		this.prefsTabWin.dispatchEvent(event); 
+		/* var event = new this.prefsTabWin.CustomEvent("ssleuth-prefwindow-focus",
+							{"detail": index}); */
+		// var event = this.prefsTabWin.document.createEvent("CustomEvent");
+		// event.initCustomEvent("ssleuth-prefwindow-focus", true, true, {}); 
+		var prefWin = this.prefsTabWin; 
+
+		this.prefsTab.addEventListener("load", function() {
+			var event = new prefWin.CustomEvent("ssleuth-prefwindow-focus"); 
+			prefWin.dispatchEvent(event);
+		}, false); 
 	}, 
+
 
 	closeDialog: function() {
 		const prefsTab = this.prefsTab; 

@@ -34,17 +34,27 @@
 		newItemMode: false, 
 
 		init : function() {
-			var index = Application.storage.get("ssleuth.prefwindow.tabindex", 0); 
-			document.getElementById("ssleuth-pref-categories")
-				.selectedIndex = index; 
-
 			prefUI.initRatings(); 
 			prefUI.initMngList(); 
 			prefUI.addListeners(); 
 		},
 
 		focus: function(event) {
-			dump("Focus." +  event.detail + "\n"); 
+			// This is really nasty. All these are just to choose a preference 
+			// window tab from the right-click menu! And that, there is no way 
+			// to send a CustomEvent from the extension scope to the preference window scope!
+			var index = Application.storage.get("ssleuth.prefwindow.tabindex", 0); 
+			if (index != -1 && document.getElementById("ssleuth-pref-categories")
+					.selectedIndex != index) {
+				document.getElementById("ssleuth-pref-categories")
+					.selectedIndex = index; 
+				// Set once, and flag it.
+				Application.storage.set("ssleuth.prefwindow.tabindex", -1); 
+			}
+		},
+
+		customevent: function() {
+			dump("Focus. \n"); 
 		},
 
 		initRatings: function() {
@@ -97,14 +107,11 @@
 				rg = document.createElement("radiogroup");
 				rg.setAttribute("orient", "horizontal");
 				rg.setAttribute("flex", "1");
-				const rdStates = {	"default" : "Default", 
-									"enable" : "Enable", 
-									"disable" : "Disable"};
-				for (var s in rdStates) {
+				for (var s of ["Default", "Enable", "Disable"]) {
 					rd = document.createElement("radio"); 
-					rd.setAttribute("label", rdStates[s]);
-					rd.setAttribute("value", s); 
-					if (cs.state == s) {
+					rd.setAttribute("label", s);
+					rd.setAttribute("value", s.toLowerCase()); 
+					if (cs.state == s.toLowerCase()) {
 						rd.setAttribute("selected", "true");
 					}
 					rg.appendChild(rd); 
@@ -444,6 +451,6 @@
 	};
 	window.addEventListener("load", prefUI.init, false); 
 	window.addEventListener("focus", prefUI.focus, false); 
-	window.addEventListener("ssleuth-prefwindow-focus", prefUI.focus, false); 
+	window.addEventListener("ssleuth-prefwindow-focus", prefUI.customevent, false); 
 
 }());

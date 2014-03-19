@@ -650,7 +650,6 @@ function menuEvent(event) {
 						.getCharPref("extensions.ssleuth.suites.toggle"));
 		if (csList.length >0) {
 			for (var i=0; i<csList.length; i++) {
-				// dump("i : " + i + "csList name " + csList[i].name + "\n"); 
 				var menu = doc.createElement("menu"); 
 				menu.setAttribute("label", csList[i].name);
 
@@ -746,7 +745,7 @@ function createPanelMenu(doc) {
 	menupopup.appendChild(doc.createElement("menuseparator"));
 
 	menuitem = doc.createElement("menuitem"); 
-	menuitem.setAttribute("label", "Reset cipher suites"); 
+	menuitem.setAttribute("label", "Reset All"); 
 	menuitem.setAttribute("id", "ssleuth-menu-cs-reset-all"); 
 	menupopup.appendChild(menuitem); 
 
@@ -775,11 +774,11 @@ function removePanelMenu(doc) {
 	menupopup.parentElement.removeChild(menupopup); 
 }
 
-function forEachOpenWindow(todo)  // Apply a function to all open browser windows
-{
+function forEachOpenWindow(todo) {
 	var windows = Services.wm.getEnumerator("navigator:browser");
 	while (windows.hasMoreElements())
-		todo(windows.getNext().QueryInterface(Components.interfaces.nsIDOMWindow));
+		todo(windows.getNext()
+			.QueryInterface(Components.interfaces.nsIDOMWindow));
 }
 
 var prefListener = new PrefListener(
