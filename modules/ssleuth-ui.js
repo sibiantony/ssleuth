@@ -765,7 +765,6 @@ function createPanelMenu(doc) {
 
 	/* Right place to insert the menupopup? */
 	doc.documentElement.appendChild(menupopup); 
-
 }
 
 function removePanelMenu(doc) {

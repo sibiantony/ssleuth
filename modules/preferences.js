@@ -64,7 +64,7 @@ var ssleuthPreferences = {
 		const win = _window(); 
 
 		if (null == this.prefsTab || this.prefsTabWin.closed) {
-			var prefsTab =
+			 var prefsTab =
 				win.gBrowser.loadOneTab(
 					"chrome://ssleuth/content/preferences.xul",
 					{inBackground: false});
@@ -77,23 +77,16 @@ var ssleuthPreferences = {
 			win.addEventListener("unload", function() {
 						ssleuthPreferences.prefsTab = null; 
 						ssleuthPreferences.prefsTabWin = null; 
-						}, false); 
+						}, false);
 		} else {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
 			this.prefsTabWin.focus();
 		}
-		/* var event = new this.prefsTabWin.CustomEvent("ssleuth-prefwindow-focus",
-							{"detail": index}); */
-		// var event = this.prefsTabWin.document.createEvent("CustomEvent");
-		// event.initCustomEvent("ssleuth-prefwindow-focus", true, true, {}); 
-		var prefWin = this.prefsTabWin; 
-
-		this.prefsTab.addEventListener("load", function() {
-			var event = new prefWin.CustomEvent("ssleuth-prefwindow-focus"); 
-			prefWin.dispatchEvent(event);
-		}, false); 
+		var event = new this.prefsTabWin
+						.CustomEvent("ssleuth-prefwindow-focus",
+							{"bubbles" : false, "cancelable" : true}); 
+		this.prefsTabWin.dispatchEvent(event);
 	}, 
-
 
 	closeDialog: function() {
 		const prefsTab = this.prefsTab; 

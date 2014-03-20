@@ -48,9 +48,12 @@
 					.selectedIndex != index) {
 				document.getElementById("ssleuth-pref-categories")
 					.selectedIndex = index; 
-				// Set once, and flag it.
 				Application.storage.set("ssleuth.prefwindow.tabindex", -1); 
 			}
+		},
+
+		selectIndex: function() {
+			Application.storage.set("ssleuth.prefwindow.tabindex", -1); 
 		},
 
 		customevent: function() {
@@ -133,21 +136,6 @@
 			}
 		},
 
-		cxRatingChanged: function() {
-			var total = 0; 
-			for (i=0; i<cxRatingIds.length; i++) {
-				total += Number(document.getElementById(cxRatingIds[i]).value);
-			}
-			document.getElementById("ssleuth-pref-cx-rating-total").value = total; 
-		},
-		csRatingChanged: function() {
-			var total = 0; 
-			for (i=0; i<csRatingIds.length; i++) {
-				total += Number(document.getElementById(csRatingIds[i]).value); 
-			}
-			document.getElementById("ssleuth-pref-cs-rating-total").value = total; 
-		},
-
 		addListeners: function() {
 			for (i=0; i<cxRatingIds.length; i++) {
 				document.getElementById(cxRatingIds[i])  
@@ -175,7 +163,24 @@
 				.addEventListener("select", prefUI.csMngEntrySelect, false);
 			document.getElementById("ssleuth-pref-mng-cs-entrybox")
 				.addEventListener("dblclick", prefUI.csMngEntryEdit, false);
+			document.getElementById("ssleuth-pref-categories")
+				.addEventListener("select", prefUI.selectIndex, false);
 		}, 
+
+		cxRatingChanged: function() {
+			var total = 0; 
+			for (i=0; i<cxRatingIds.length; i++) {
+				total += Number(document.getElementById(cxRatingIds[i]).value);
+			}
+			document.getElementById("ssleuth-pref-cx-rating-total").value = total; 
+		},
+		csRatingChanged: function() {
+			var total = 0; 
+			for (i=0; i<csRatingIds.length; i++) {
+				total += Number(document.getElementById(csRatingIds[i]).value); 
+			}
+			document.getElementById("ssleuth-pref-cs-rating-total").value = total; 
+		},
 
 		csMngEntryNew : function() {
 			var csBox = document.getElementById("ssleuth-pref-mng-cs-entrybox"); 
@@ -449,8 +454,8 @@
 		},
 
 	};
+	window.addEventListener("ssleuth-prefwindow-focus", prefUI.customevent, false); 
 	window.addEventListener("load", prefUI.init, false); 
 	window.addEventListener("focus", prefUI.focus, false); 
-	window.addEventListener("ssleuth-prefwindow-focus", prefUI.customevent, false); 
 
 }());
