@@ -5,27 +5,27 @@
 
 #ssleuth-tb-button[rank="default"],
 #ssleuth-ub-img[rank="default"] {
-  list-style-image: url("chrome://ssleuth/skin/btn-large-gray.png");
+  list-style-image: url("chrome://ssleuth/skin/btn-small-gray.png");
 }
 
 #ssleuth-tb-button[rank="low"], 
 #ssleuth-ub-img[rank="low"] {
-  list-style-image: url("chrome://ssleuth/skin/btn-large-red.png");
+  list-style-image: url("chrome://ssleuth/skin/btn-small-red.png");
 }
 
 #ssleuth-tb-button[rank="medium"], 
 #ssleuth-ub-img[rank="medium"] {
-  list-style-image: url("chrome://ssleuth/skin/btn-large-orange.png");
+  list-style-image: url("chrome://ssleuth/skin/btn-small-orange.png");
 }
 
 #ssleuth-tb-button[rank="high"],
 #ssleuth-ub-img[rank="high"] {
-  list-style-image: url("chrome://ssleuth/skin/btn-large-blue.png");
+  list-style-image: url("chrome://ssleuth/skin/btn-small-blue.png");
 }
 
 #ssleuth-tb-button[rank="vhigh"],
 #ssleuth-ub-img[rank="vhigh"] {
-  list-style-image: url("chrome://ssleuth/skin/btn-large-green.png");
+  list-style-image: url("chrome://ssleuth/skin/btn-small-green.png");
 }
 
 toolbar[iconsize="small"] #ssleuth-tb-button {

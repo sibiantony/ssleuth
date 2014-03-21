@@ -82,10 +82,25 @@ var ssleuthPreferences = {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
 			this.prefsTabWin.focus();
 		}
-		var event = new this.prefsTabWin
-						.CustomEvent("ssleuth-prefwindow-focus",
-							{"bubbles" : false, "cancelable" : true}); 
-		this.prefsTabWin.dispatchEvent(event);
+		// var event = new this.prefsTab.linkedBrowser.contentWindow
+		//					.CustomEvent("ssleuth-prefwindow-focus");
+		// var event = new this.prefsTabWin
+		//				.CustomEvent("ssleuth-prefwindow-focus");
+							// {"bubbles" : true, "cancelable" : false}); 
+		// this.prefsTabWin.dispatchEvent(event);
+		var pTab = this.prefsTab; 
+		var pWin = this.prefsTabWin; 
+		// var event = new pTab.linkedBrowser.contentWindow.CustomEvent("ssleuth-prefwindow-index",
+		//						{"detail" : index}); 
+		// pTab.linkedBrowser.contentWindow.dispatchEvent(event);
+		pTab.addEventListener("load", function runOnce() {
+			// pTab.removeEventListener("load", runOnce, false); 
+			var event = new pTab.linkedBrowser
+							.contentWindow.CustomEvent("ssleuth-prefwindow-index", 
+								{"detail" : index}); 
+			pTab.linkedBrowser.contentWindow.dispatchEvent(event);
+			pTab.removeEventListener("load", runOnce, false); 
+		}, false); 
 	}, 
 
 	closeDialog: function() {

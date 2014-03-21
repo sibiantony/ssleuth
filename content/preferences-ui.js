@@ -56,8 +56,10 @@
 			Application.storage.set("ssleuth.prefwindow.tabindex", -1); 
 		},
 
-		customevent: function() {
-			dump("Focus. \n"); 
+		customevent: function(e) {
+			dump("Focus. : " + e.detail + "\n"); 
+			document.getElementById("ssleuth-pref-categories")
+					.selectedIndex = e.detail; 
 		},
 
 		initRatings: function() {
@@ -454,8 +456,8 @@
 		},
 
 	};
-	window.addEventListener("ssleuth-prefwindow-focus", prefUI.customevent, false); 
 	window.addEventListener("load", prefUI.init, false); 
-	window.addEventListener("focus", prefUI.focus, false); 
+	// window.addEventListener("focus", prefUI.focus, false); 
+	window.addEventListener("ssleuth-prefwindow-index", prefUI.customevent, true, true); 
 
 }());
