@@ -37,26 +37,11 @@
 			prefUI.initRatings(); 
 			prefUI.initMngList(); 
 			prefUI.addListeners(); 
+			document.getElementById("ssleuth-pref-categories")
+					.selectedIndex = Application.storage.get("ssleuth.prefwindow.tabindex", 0); 
 		},
 
-		focus: function(event) {
-			// This is really nasty. All these are just to choose a preference 
-			// window tab from the right-click menu! And that, there is no way 
-			// to send a CustomEvent from the extension scope to the preference window scope!
-			var index = Application.storage.get("ssleuth.prefwindow.tabindex", 0); 
-			if (index != -1 && document.getElementById("ssleuth-pref-categories")
-					.selectedIndex != index) {
-				document.getElementById("ssleuth-pref-categories")
-					.selectedIndex = index; 
-				Application.storage.set("ssleuth.prefwindow.tabindex", -1); 
-			}
-		},
-
-		selectIndex: function() {
-			Application.storage.set("ssleuth.prefwindow.tabindex", -1); 
-		},
-
-		customevent: function(e) {
+		selectIndex: function(e) {
 			dump("Focus. : " + e.detail + "\n"); 
 			document.getElementById("ssleuth-pref-categories")
 					.selectedIndex = e.detail; 
@@ -165,8 +150,6 @@
 				.addEventListener("select", prefUI.csMngEntrySelect, false);
 			document.getElementById("ssleuth-pref-mng-cs-entrybox")
 				.addEventListener("dblclick", prefUI.csMngEntryEdit, false);
-			document.getElementById("ssleuth-pref-categories")
-				.addEventListener("select", prefUI.selectIndex, false);
 		}, 
 
 		cxRatingChanged: function() {
@@ -457,7 +440,7 @@
 
 	};
 	window.addEventListener("load", prefUI.init, false); 
-	// window.addEventListener("focus", prefUI.focus, false); 
-	window.addEventListener("ssleuth-prefwindow-index", prefUI.customevent, true, true); 
+	window.addEventListener("ssleuth-prefwindow-index", 
+		prefUI.selectIndex, false, true); 
 
 }());

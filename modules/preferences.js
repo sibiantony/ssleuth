@@ -57,9 +57,6 @@ var ssleuthPreferences = {
 	},
 
 	openDialog : function(index) {
-		let application = 
-			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
-		application.storage.set("ssleuth.prefwindow.tabindex", index); 
 
 		const win = _window(); 
 
@@ -82,25 +79,19 @@ var ssleuthPreferences = {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
 			this.prefsTabWin.focus();
 		}
-		// var event = new this.prefsTab.linkedBrowser.contentWindow
-		//					.CustomEvent("ssleuth-prefwindow-focus");
-		// var event = new this.prefsTabWin
-		//				.CustomEvent("ssleuth-prefwindow-focus");
-							// {"bubbles" : true, "cancelable" : false}); 
-		// this.prefsTabWin.dispatchEvent(event);
-		var pTab = this.prefsTab; 
-		var pWin = this.prefsTabWin; 
-		// var event = new pTab.linkedBrowser.contentWindow.CustomEvent("ssleuth-prefwindow-index",
-		//						{"detail" : index}); 
-		// pTab.linkedBrowser.contentWindow.dispatchEvent(event);
-		pTab.addEventListener("load", function runOnce() {
-			// pTab.removeEventListener("load", runOnce, false); 
-			var event = new pTab.linkedBrowser
-							.contentWindow.CustomEvent("ssleuth-prefwindow-index", 
+
+		var event = new this.prefsTab.linkedBrowser
+						.contentWindow.CustomEvent("ssleuth-prefwindow-index", 
 								{"detail" : index}); 
-			pTab.linkedBrowser.contentWindow.dispatchEvent(event);
-			pTab.removeEventListener("load", runOnce, false); 
-		}, false); 
+		this.prefsTab.linkedBrowser.contentWindow.dispatchEvent(event);
+		// This event won't be received for the first time - can't sync with 'load' ?
+		// Doing a load event listener and sending the event will bring other problems
+		// 		- Will not receive the 'load' if the tab is already in focus.
+		// 		- Won't get the first event again, if we remove the event listener from inside.
+		// So send the tab index in a storage for the first time.
+		let application = 
+			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
+		application.storage.set("ssleuth.prefwindow.tabindex", index); 
 	}, 
 
 	closeDialog: function() {
