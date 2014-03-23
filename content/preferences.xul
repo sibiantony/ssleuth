@@ -2,7 +2,7 @@
 <?xml-stylesheet href="chrome://global/skin/global.css"?>
 <?xml-stylesheet href="chrome://ssleuth/skin/ssleuth.css" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://ssleuth/locale/preferences.dtd">
-<prefwindow type="prefwindow" id="ssleuth-preferences" 
+<page id="ssleuth-preferences" 
 							xmlns:html="http://www.w3.org/1999/xhtml"
 							xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" 
 							title="&ssleuth.pref.title.label;"
@@ -22,7 +22,7 @@
 
 	<hbox align="center" 
 				style="margin-bottom: 50px;"/>
-	<hbox flex="1" style="margin-left: 20px; margin-right: 20px;">
+	<hbox flex="1" id="ssleuth-pref-contentbox">
 		<listbox id="ssleuth-pref-categories"
 						selectedIndex = "0"
 						onselect="document.getElementById('viewport-panel').selectedIndex
@@ -46,7 +46,7 @@
 					tooltiptext="Localize"/>
 		</listbox>
 
-		<box flex="1" class="pref-main-content">
+		<box flex="1" class="ssleuth-pref-main-content">
 			<deck flex="1" id="viewport-panel">
 				<scrollbox id="pref-scroll-box" 
 										flex="1" orient="vertical" tabindex="0"
@@ -56,6 +56,7 @@
 						<caption label="&ssleuth.pref.ui.notifier.label;"/>
 						<radiogroup id="ssleuth-notifier-location-radio" 
 							preference="ssleuth-notifier-location"
+							orient="horizontal"
 							oncommand="">
 							<radio id="ssleuth-notifier-urlbar" 
 									label="&ssleuth.pref.ui.notifier.urlbar;"
@@ -72,6 +73,7 @@
 						<caption label="&ssleuth.pref.ui.fontsize;"/>
 						<radiogroup id="ssleuth-panel-fontsize-radio" 
 							preference="ssleuth-panel-fontsize"
+							orient="horizontal"
 							oncommand="">
 							<hbox align="baseline">
 								<radio id="ssleuth-panel-fontsize-default" 
@@ -79,36 +81,42 @@
 										selected="true"
 										style="margin-left: 15px;"
 										label="&ssleuth.pref.ui.fontsize.default;"/>
-								<label value="&ssleuth.pref.ui.fontsize.header;"
-												control="ssleuth-panel-fontsize-default"
-												class="ssleuth-text-title-default"/>
-								<label value="&ssleuth.pref.ui.fontsize.body;"
-												control="ssleuth-panel-fontsize-default"
-												class="ssleuth-text-body-default"/>
+								<hbox style="background-color:-moz-dialog" align="baseline">
+									<label value="&ssleuth.pref.ui.fontsize.header;"
+													control="ssleuth-panel-fontsize-default"
+													class="ssleuth-text-title-default"/>
+									<label value="&ssleuth.pref.ui.fontsize.body;"
+													control="ssleuth-panel-fontsize-default"
+													class="ssleuth-text-body-default"/>
+								</hbox>
 							</hbox>
 							<hbox align="baseline">
-								<radio id="ssleuth-panel-fontsize-large" 
+								<radio id="ssleuth-panel-fontsize-medium" 
 										value="1" 
 										style="margin-left: 15px;"
-										label="&ssleuth.pref.ui.fontsize.large;"/>
-								<label value="&ssleuth.pref.ui.fontsize.header;"
-												control="ssleuth-panel-fontsize-large"
-												class="ssleuth-text-title-large"/>
-								<label value="&ssleuth.pref.ui.fontsize.body;"
-												control="ssleuth-panel-fontsize-large"
-												class="ssleuth-text-body-large"/>
+										label="&ssleuth.pref.ui.fontsize.medium;"/>
+								<hbox style="background-color:-moz-dialog" align="baseline">
+									<label value="&ssleuth.pref.ui.fontsize.header;"
+													control="ssleuth-panel-fontsize-medium"
+													class="ssleuth-text-title-medium"/>
+									<label value="&ssleuth.pref.ui.fontsize.body;"
+													control="ssleuth-panel-fontsize-medium"
+													class="ssleuth-text-body-medium"/>
+								</hbox>
 							</hbox>
 							<hbox align="baseline">
-								<radio id="ssleuth-panel-fontsize-larger"
+								<radio id="ssleuth-panel-fontsize-large"
 										value="2"
 										style="margin-left: 15px;"
-										label="&ssleuth.pref.ui.fontsize.larger;"/>
-								<label value="&ssleuth.pref.ui.fontsize.header;"
-												control="ssleuth-panel-fontsize-larger"
-												class="ssleuth-text-title-larger"/>
-								<label value="&ssleuth.pref.ui.fontsize.body;"
-												control="ssleuth-panel-fontsize-larger"
-												class="ssleuth-text-body-larger"/>
+										label="&ssleuth.pref.ui.fontsize.large;"/>
+								<hbox style="background-color:-moz-dialog" align="baseline">
+									<label value="&ssleuth.pref.ui.fontsize.header;"
+													control="ssleuth-panel-fontsize-large"
+													class="ssleuth-text-title-large"/>
+									<label value="&ssleuth.pref.ui.fontsize.body;"
+													control="ssleuth-panel-fontsize-large"
+													class="ssleuth-text-body-large"/>
+								</hbox>
 							</hbox>
 						</radiogroup>
 						<description value=""/>
@@ -343,4 +351,5 @@
 
 
 	</prefpane>
-</prefwindow>
+<!-- /prefwindow-->
+</page>

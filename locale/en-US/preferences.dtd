@@ -9,8 +9,8 @@
 
 <!ENTITY ssleuth.pref.ui.fontsize "SSleuth Panel font size">
 <!ENTITY ssleuth.pref.ui.fontsize.default "Small: ">
+<!ENTITY ssleuth.pref.ui.fontsize.medium "Medium: ">
 <!ENTITY ssleuth.pref.ui.fontsize.large "Large: ">
-<!ENTITY ssleuth.pref.ui.fontsize.larger "Larger: ">
 
 <!ENTITY ssleuth.pref.ui.fontsize.body "Body">
 <!ENTITY ssleuth.pref.ui.fontsize.header "Header">

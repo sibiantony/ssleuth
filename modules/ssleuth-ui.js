@@ -595,20 +595,20 @@ function setPanelFont(panelFont, doc) {
 	var configBody, configTitle; 
 
 	/* 0 = default
-	 *  1 = large
-	 *  2 = larger */
+	 *  1 = medium
+	 *  2 = large */
 	switch(panelFont) {
 		case 0 :
 			configBody = "ssleuth-text-body-default"; 
 			configTitle = "ssleuth-text-title-default"; 
 			break;
 		case 1 : 
-			configBody = "ssleuth-text-body-large"; 
-			configTitle = "ssleuth-text-title-large"; 
+			configBody = "ssleuth-text-body-medium"; 
+			configTitle = "ssleuth-text-title-medium"; 
 			break;
 		case 2 : 
-			configBody = "ssleuth-text-body-larger"; 
-			configTitle = "ssleuth-text-title-larger"; 
+			configBody = "ssleuth-text-body-large"; 
+			configTitle = "ssleuth-text-title-large"; 
 			break;
 	}
 	try {
