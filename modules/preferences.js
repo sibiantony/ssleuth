@@ -10,6 +10,14 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 
+var ssleuthPanelInfo = {
+	checksumAlg	: false, 
+	bulkCipher	: true, 
+	certSig		: true,
+	certValidity : true, 
+	certChecksum : false
+}; 
+
 var ssleuthDefaultPrefs = {
 	PREF_BRANCH : "extensions.ssleuth.", 
 	PREFS : {
@@ -19,6 +27,7 @@ var ssleuthDefaultPrefs = {
 		"rating.params"	 		: ssleuthConnectionRating,
 		"rating.ciphersuite.params"	: ssleuthCipherSuites.weighting,
 		"suites.toggle" 		: ffToggleDefault,
+		"panel.info"			: ssleuthPanelInfo
    }
 }; 
 

@@ -463,6 +463,14 @@ function showCipherDetails(cipherSuite, rp) {
 		(cipherSuite.bulkCipher.name + " " + cipherSuite.bulkCipher.notes); 
 	doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent = 
 		(cipherSuite.HMAC.name + " " + cipherSuite.HMAC.notes); 
+
+	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
+	doc.getElementById("ssleuth-text-authentication").hidden 
+		= !(panelInfo.certSig); 
+	doc.getElementById("ssleuth-text-bulk-cipher").hidden
+		= !(panelInfo.bulkCipher); 
+	doc.getElementById("ssleuth-text-hmac").hidden
+		= !(panelInfo.checksumAlg); 
 }
 
 function showPFS(pfs, rp) {
@@ -547,6 +555,12 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
 	} else {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 
 	}
+
+	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
+	doc.getElementById("ssleuth-text-cert-validity-box").hidden 
+		= !(panelInfo.certValidity); 
+	/* doc.getElementById("ssleuth-text-cert-validity-box").hidden 
+		= !(panelInfo.certValidity); */
 }
 	 
 function createKeyShortcut(doc) {
@@ -808,6 +822,9 @@ var prefListener = new PrefListener(
 					deleteKeyShortcut(win.document); 
 					createKeyShortcut(win.document); 
 				}); 
+			case "panel.info" :
+				ssleuthUI.prefs.PREFS[name] = 
+					JSON.parse(branch.getCharPref(name)); 
 		}
 	}
 ); 

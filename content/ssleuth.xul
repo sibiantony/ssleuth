@@ -70,7 +70,7 @@
 							<description id="ssleuth-text-cipher-suite-bulkcipher"
 														class="ssleuth-text-body-class"/>
 						</hbox>
-						<hbox id="ssleuth-text-hmac" hidden="true">
+						<hbox id="ssleuth-text-hmac">
 							<description id="ssleuth-text-hmac-label"
 														value="&ssleuth.cipher.suite.hmac.label;"
 														class="ssleuth-text-body-class"/>
@@ -192,7 +192,7 @@
 							</vbox>
 						</hbox>
 
-						<hbox align="baseline">
+						<hbox id="ssleuth-text-cert-validity-box" align="baseline">
 							<description id="ssleuth-text-cert-validity-text" 
 														value="&ssleuth.cert.validity.label;"
 														class="ssleuth-text-body-class"/>

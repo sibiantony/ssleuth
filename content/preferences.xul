@@ -61,12 +61,10 @@
 							<radio id="ssleuth-notifier-urlbar" 
 									label="&ssleuth.pref.ui.notifier.urlbar;"
 									value="0" 
-									selected="true"
-									style="margin-left: 15px;"/>
+									selected="true"/>
 							<radio id="ssleuth-notifier-toolbar"
 									label="&ssleuth.pref.ui.notifier.toolbar;"
-									value="1"
-									style="margin-left: 15px;"/>
+									value="1"/>
 						</radiogroup>
 				</groupbox>
 				<groupbox>
@@ -79,7 +77,6 @@
 								<radio id="ssleuth-panel-fontsize-default" 
 										value="0" 
 										selected="true"
-										style="margin-left: 15px;"
 										label="&ssleuth.pref.ui.fontsize.default;"/>
 								<hbox style="background-color:-moz-dialog" align="baseline">
 									<label value="&ssleuth.pref.ui.fontsize.header;"
@@ -119,8 +116,19 @@
 								</hbox>
 							</hbox>
 						</radiogroup>
-						<description value=""/>
-						<description value=""/>
+					</groupbox>
+					<groupbox>
+							<caption label="Panel information"/>
+							<checkbox id="ssleuth-pref-show-cs-checksum-alg"
+									label="Cipher suite : Show checksum algorithm"/>
+							<checkbox id="ssleuth-pref-show-cs-bulk-cipher"
+									label="Cipher suite : Show Bulk cipher"/>
+							<checkbox id="ssleuth-pref-show-cs-cert-sig"
+									label="Cipher suite : Show certificate signature"/>
+							<checkbox id="ssleuth-pref-show-cert-validity"
+									label="Certificate : Show validity"/>
+							<checkbox id="ssleuth-pref-show-cert-checksum"
+									label="Certificate : Show checksum"/>
 					</groupbox>
 					</vbox>
 				</scrollbox>

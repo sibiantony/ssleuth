@@ -21,10 +21,12 @@
 	const PREF_CX_RATING = "extensions.ssleuth.rating.params"; 
 	const PREF_CS_RATING = "extensions.ssleuth.rating.ciphersuite.params"; 
 	const PREF_SUITES_TGL = "extensions.ssleuth.suites.toggle"; 
+	const PREF_PANEL_INFO = "extensions.ssleuth.panel.info"; 
 
 	var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
 	var csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
 	var csTglList = JSON.parse(prefs.getCharPref(PREF_SUITES_TGL));
+	var panelInfo = JSON.parse(prefs.getCharPref(PREF_PANEL_INFO)); 
 
 	var prefUI = {
 		editMode : false,
@@ -34,6 +36,7 @@
 		newItemMode: false, 
 
 		init : function() {
+			prefUI.initUIOptions();
 			prefUI.initRatings(); 
 			prefUI.initMngList(); 
 			prefUI.addListeners(); 
@@ -42,9 +45,20 @@
 		},
 
 		selectIndex: function(e) {
-			dump("Focus. : " + e.detail + "\n"); 
 			document.getElementById("ssleuth-pref-categories")
 					.selectedIndex = e.detail; 
+		},
+
+		initUIOptions: function() {
+			for (var [id, val] in Iterator({
+				"ssleuth-pref-show-cs-checksum-alg"		: panelInfo.checksumAlg,
+				"ssleuth-pref-show-cs-bulk-cipher" 		: panelInfo.bulkCipher,
+				"ssleuth-pref-show-cs-cert-sig"			: panelInfo.certSig, 
+				"ssleuth-pref-show-cert-validity"		: panelInfo.certValidity, 
+				"ssleuth-pref-show-cert-checksum"		: panelInfo.certChecksum, 
+				})) {
+					document.getElementById(id).checked = val; 
+			}
 		},
 
 		initRatings: function() {
@@ -141,8 +155,13 @@
 				"ssleuth-pref-mng-cs-edit-apply" 	: prefUI.csMngEntryEditApply,
 				"ssleuth-pref-mng-cs-edit-cancel" 	: prefUI.csMngEntryEditCancel,
 				"ssleuth-pref-mng-cs-entry-restore-default" : prefUI.csMngEntryRestoreDefault,
-				"ssleuth-pref-cs-reset-all-cs"		: prefUI.csResetAll
-				}) ) {
+				"ssleuth-pref-cs-reset-all-cs"		: prefUI.csResetAll,
+				"ssleuth-pref-show-cs-checksum-alg"		: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cs-bulk-cipher" 		: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cs-cert-sig"			: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cert-validity"		: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cert-checksum"		: prefUI.panelInfoCheck, 
+			}) ) {
 				document.getElementById(id)
 					.addEventListener("command", func, false); 
 			}
@@ -152,9 +171,22 @@
 				.addEventListener("dblclick", prefUI.csMngEntryEdit, false);
 		}, 
 
+		panelInfoCheck: function() {
+			panelInfo.checksumAlg = 
+				document.getElementById("ssleuth-pref-show-cs-checksum-alg").checked;
+			panelInfo.bulkCipher = 
+				document.getElementById("ssleuth-pref-show-cs-bulk-cipher").checked;
+			panelInfo.certSig = 
+				document.getElementById("ssleuth-pref-show-cs-cert-sig").checked;
+			panelInfo.certValidity = 
+				document.getElementById("ssleuth-pref-show-cert-validity").checked;
+			panelInfo.certChecksum = 
+				document.getElementById("ssleuth-pref-show-cert-checksum").checked;
+			prefs.setCharPref(PREF_PANEL_INFO, JSON.stringify(panelInfo)); 
+		},
+
 		cxRatingChanged: function() {
-			var total = 0; 
-			for (i=0; i<cxRatingIds.length; i++) {
+			for (var total=0, i=0; i<cxRatingIds.length; i++) {
 				total += Number(document.getElementById(cxRatingIds[i]).value);
 			}
 			document.getElementById("ssleuth-pref-cx-rating-total").value = total; 
