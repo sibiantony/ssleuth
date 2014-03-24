@@ -12,7 +12,7 @@
 				 on top of the toolbar the first time -->
 		<box id="ssleuth-panel-vbox">
 			<vbox id="ssleuth-panel-vbox-https" 
-					flex="2" width="350" height="250" hidden="true">
+					flex="2" width="320" height="250" hidden="true">
 				<hbox id="ssleuth-img-cipher-rank-star" align="baseline" height="20">
 					<image id="ssleuth-img-cipher-rank-star-1" class="ssleuth-star"/>
 					<image id="ssleuth-img-cipher-rank-star-2" class="ssleuth-star"/>
@@ -210,7 +210,7 @@
 				</hbox>
 			</vbox>
 
-			<vbox id="ssleuth-panel-vbox-http" width="350" height="100" 
+			<vbox id="ssleuth-panel-vbox-http" width="330" height="100" 
 						hidden="true" flex="2">
 				<hbox align="baseline" flex="1">
 					<image id="ssleuth-img-http-omg" class="ssleuth-img-state"/>

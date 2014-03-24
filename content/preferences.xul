@@ -144,64 +144,55 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-					<caption label="Connection rating"/>
-					<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
-					<hbox align="baseline">
-						<richlistbox width="1000" suppressOnSelect="true" selectedIndex="-1">
-							<listheader equalsize="always" 
-									style="border: 0; padding: 0; -moz-appearance: none;">
-								<treecol label="Cipher suite" flex="1"/>
-								<treecol label="Forward secrecy" flex="1"/>
-								<treecol label="Extended validation" flex="1"/>
-								<treecol label="Firefox status" flex="1"/>
-								<treecol label="Certificate state" flex="1"/>
-								<treecol label="Total" flex="1"/>
-							</listheader>
-							<richlistitem>
-								<hbox equalsize="always" flex="1" align="baseline">
-									<textbox flex="1" type="number" id="ssleuth-pref-cipher-suite-weight" decimalplaces="1"/>
-									<textbox flex="1" type="number" id="ssleuth-pref-pfs-weight" decimalplaces="1"/>
-									<textbox flex="1" type="number" id="ssleuth-pref-ev-weight" decimalplaces="1"/>
-									<textbox flex="1" type="number" id="ssleuth-pref-ffstatus-weight" decimalplaces="1"/>
-									<textbox flex="1" type="number" id="ssleuth-pref-certstate-weight" decimalplaces="1"/>
-									<label flex="1" id="ssleuth-pref-cx-rating-total" style="font-weight:bold"/>
-								</hbox>
-							</richlistitem>
-						</richlistbox>
-					</hbox>
-
-					<hbox>
-						<button label="Apply" 
-										id="ssleuth-pref-cx-ratings-apply"
-										/>
-						<button label="Reset"
-										id="ssleuth-pref-cx-ratings-reset"
-										/>
-					</hbox>
+						<caption label="Connection rating"/>
+						<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
+						<vbox align="baseline">
+							<hbox width="800" equalsize="always" align="baseline">
+								<label value="Cipher suite" flex="1"/>
+								<label value="Forward secrecy" flex="1"/>
+								<label value="Extended validation" flex="1"/>
+								<label value="Firefox status" flex="1"/>
+								<label value="Certificate state" flex="1"/>
+								<label value="Total" flex="1"/>
+							</hbox>
+							<hbox width="800" equalsize="always" align="baseline">
+								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cipher-suite-weight" decimalplaces="1"/></box>
+								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-pfs-weight" decimalplaces="1"/></box>
+								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-ev-weight" decimalplaces="1"/></box>
+								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-ffstatus-weight" decimalplaces="1"/></box>
+								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-certstate-weight" decimalplaces="1"/></box>
+								<label flex="1" id="ssleuth-pref-cx-rating-total" style="font-weight:bold"/>
+							</hbox>
+							<description value=""/>
+							<hbox>
+								<button label="Apply" 
+												id="ssleuth-pref-cx-ratings-apply"
+												/>
+								<button label="Reset"
+												id="ssleuth-pref-cx-ratings-reset"
+												/>
+							</hbox>
+							<description value=""/>
+					</vbox>
 				</groupbox>
 
 				<groupbox>
 					<caption label="Cipher suite rating"/>
 					<description value="Configure how the cipher suite rating is calculated."/> 
 					<vbox align="baseline">
-						<richlistbox width="1000" suppressOnSelect="true" selectedIndex="-1">
-							<listheader equalsize="always" 
-									style="border: 0; padding: 0; -moz-appearance: none;">
-								<treecol label="Key exchange" flex="1"/>
-								<treecol label="Bulk cipher" flex="1"/>
-								<treecol label="HMAC" flex="1"/>
-								<treecol label="Total" flex="1"/>
-							</listheader>
-						</richlistbox>
-						<!-- richlistitem-->
-						<hbox width="1000" equalsize="always" align="baseline">
-							<textbox flex="1" type="number" id="ssleuth-pref-cs-kx-weight" decimalplaces="1"/>
-							<textbox flex="1" type="number" id="ssleuth-pref-cs-cipher-weight" decimalplaces="1"/>
-							<textbox flex="1" type="number" id="ssleuth-pref-cs-hmac-weight" decimalplaces="1"/>
-							<label flex="1" id="ssleuth-pref-cs-rating-total" style="font-weight:bold"/>
+						<hbox width="400" equalsize="always" align="baseline">
+							<label value="Key exchange" flex="1"/>
+							<label value="Bulk cipher" flex="1"/>
+							<label value="HMAC" flex="1"/>
+							<label value="Total" flex="1"/>
 						</hbox>
-							<!-- /richlistitem>
-						</richlistbox-->
+						<hbox width="400" equalsize="always" align="baseline">
+							<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cs-kx-weight" decimalplaces="1"/></box>
+							<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cs-cipher-weight" decimalplaces="1"/></box>
+							<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cs-hmac-weight" decimalplaces="1"/></box>
+							<label flex="1" id="ssleuth-pref-cs-rating-total" style="font-weight:bold;"/>
+						</hbox>
+						<description value=""/>
 					</vbox>
 
 					<hbox>
@@ -213,7 +204,6 @@
 										/>
 					</hbox>
 				</groupbox>
-				
 				</vbox>
 				</scrollbox>
 
