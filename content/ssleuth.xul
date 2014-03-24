@@ -159,6 +159,10 @@
 
 						</hbox>
 
+						<description id="ssleuth-text-cert-domain-mismatch" 
+													value="&ssleuth.cert.domain.mismatch.label;"
+													class="ssleuth-text-body-class"/>
+
 						<hbox align="baseline">
 							<description id="ssleuth-text-cert-cn-label" 
 														value="&ssleuth.cert.cn.label;"
@@ -200,13 +204,8 @@
 														class="ssleuth-text-body-class"/>
 						</hbox>
 
-						<hbox align="baseline">
-							<description id="ssleuth-text-cert-domain" 
-														value="&ssleuth.cert.domain.matched.label;"
-														class="ssleuth-text-body-class"/>
-							<description id="ssleuth-text-cert-domain-matched"
-														class="ssleuth-text-body-class"/>
-						</hbox>
+						<description id="ssleuth-text-cert-fingerprint"
+													class="ssleuth-text-body-class"/>
 					</vbox>
 				</hbox>
 			</vbox>

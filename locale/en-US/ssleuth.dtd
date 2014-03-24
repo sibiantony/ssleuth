@@ -14,7 +14,7 @@
 <!ENTITY ssleuth.cert.issuedto.label "Issued to: ">
 <!ENTITY ssleuth.cert.issuedby.label "Issued by: ">
 <!ENTITY ssleuth.cert.validity.label "Validity: ">
-<!ENTITY ssleuth.cert.domain.matched.label "Domain name matched: " >
+<!ENTITY ssleuth.cert.domain.mismatch.label "Certificate domain name does not match." >
 
 <!ENTITY ssleuth.http.noenc.warning "Your connection to this site is not encrypted.">
 <!ENTITY ssleuth.http.attempt.enc "You can attempt connecting to the secure version of the site if available.">

@@ -11,11 +11,13 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 
 var ssleuthPanelInfo = {
-	checksumAlg	: false, 
-	bulkCipher	: true, 
-	certSig		: true,
-	certValidity : true, 
-	certChecksum : false
+	checksumAlg		: false,
+	bulkCipher		: true,
+	keyExchange 	: false,
+	certSig			: true,
+	certValidity 	: true,
+	validityTime	: false,
+	certFingerprint : false
 }; 
 
 var ssleuthDefaultPrefs = {

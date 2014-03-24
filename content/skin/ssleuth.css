@@ -174,9 +174,9 @@
     font-weight: bold; 
 } 
 
-#ssleuth-text-cert-domain-matched[match="No"] {
-    color : #a02121; 
-    font-weight: bold; 
+#ssleuth-text-cert-domain-mismatch {
+	color: #a02121;
+	/* font-weight: bold;*/
 }
 
 #ssleuth-text-cipher-rank-numeric {

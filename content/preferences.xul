@@ -123,12 +123,18 @@
 									label="Cipher suite : Show checksum algorithm"/>
 							<checkbox id="ssleuth-pref-show-cs-bulk-cipher"
 									label="Cipher suite : Show Bulk cipher"/>
+							<checkbox id="ssleuth-pref-show-cs-key-exchange"
+									label="Cipher suite : Show Key exchange algorithm"/>
 							<checkbox id="ssleuth-pref-show-cs-cert-sig"
-									label="Cipher suite : Show certificate signature"/>
+									label="Cipher suite : Show signature algorithm"/>
 							<checkbox id="ssleuth-pref-show-cert-validity"
 									label="Certificate : Show validity"/>
-							<checkbox id="ssleuth-pref-show-cert-checksum"
-									label="Certificate : Show checksum"/>
+							<checkbox id="ssleuth-pref-show-cert-validity-time"
+									label="Certificate : Show GMT/UTC time in validity"/>
+							<checkbox id="ssleuth-pref-show-cert-fingerprint"
+									label="Certificate : Show SHA-1 fingerprint"/>
+							<checkbox id="ssleuth-pref-show-urlbar-icon"
+									label="Certificate : Show icon in URL bar notifier"/>
 					</groupbox>
 					</vbox>
 				</scrollbox>
@@ -140,91 +146,71 @@
 					<groupbox>
 					<caption label="Connection rating"/>
 					<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
-					<grid flex="1">
+					<hbox align="baseline">
+						<richlistbox width="1000" suppressOnSelect="true" selectedIndex="-1">
+							<listheader equalsize="always" 
+									style="border: 0; padding: 0; -moz-appearance: none;">
+								<treecol label="Cipher suite" flex="1"/>
+								<treecol label="Forward secrecy" flex="1"/>
+								<treecol label="Extended validation" flex="1"/>
+								<treecol label="Firefox status" flex="1"/>
+								<treecol label="Certificate state" flex="1"/>
+								<treecol label="Total" flex="1"/>
+							</listheader>
+							<richlistitem>
+								<hbox equalsize="always" flex="1" align="baseline">
+									<textbox flex="1" type="number" id="ssleuth-pref-cipher-suite-weight" decimalplaces="1"/>
+									<textbox flex="1" type="number" id="ssleuth-pref-pfs-weight" decimalplaces="1"/>
+									<textbox flex="1" type="number" id="ssleuth-pref-ev-weight" decimalplaces="1"/>
+									<textbox flex="1" type="number" id="ssleuth-pref-ffstatus-weight" decimalplaces="1"/>
+									<textbox flex="1" type="number" id="ssleuth-pref-certstate-weight" decimalplaces="1"/>
+									<label flex="1" id="ssleuth-pref-cx-rating-total" style="font-weight:bold"/>
+								</hbox>
+							</richlistitem>
+						</richlistbox>
+					</hbox>
 
-						<columns>
-							<column width="200"/>
-							<column width="80"/>
-						</columns>
-						<rows>
-							<row align="baseline">
-								<description value="Parameter" style="font-weight:bold;"/>
-								<description value="Weight" style="font-weight:bold;"/>
-							</row>
-							<row align="baseline">
-								<label control="ssleuth-pref-cipher-suite-weight" 
-									value="Cipher suite"/>
-								<textbox id="ssleuth-pref-cipher-suite-weight" 
-										type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row align="baseline">
-								<label control="ssleuth-pref-pfs-weight" value="Perfect forward secrecy"/>
-								<textbox id="ssleuth-pref-pfs-weight" type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row align="baseline">
-								<label control="ssleuth-pref-ev-weight" value="Extended validation"/>
-								<textbox id="ssleuth-pref-ev-weight" type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row align="baseline">
-								<label control="ssleuth-pref-ffstatus-weight" value="Firefox status"/>
-								<textbox id="ssleuth-pref-ffstatus-weight" type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row align="baseline">
-								<label control="ssleuth-pref-certstate-weight" value="Certificate state"/>
-								<textbox id="ssleuth-pref-certstate-weight" type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row align="baseline">
-								<description value="Total"/>
-								<description id="ssleuth-pref-cx-rating-total" style="font-weight:bold"/>
-							</row>
-						</rows>
-
-					</grid>
 					<hbox>
-					<button label="Apply" 
-									id="ssleuth-pref-cx-ratings-apply"
-									/>
+						<button label="Apply" 
+										id="ssleuth-pref-cx-ratings-apply"
+										/>
+						<button label="Reset"
+										id="ssleuth-pref-cx-ratings-reset"
+										/>
 					</hbox>
 				</groupbox>
+
 				<groupbox>
 					<caption label="Cipher suite rating"/>
 					<description value="Configure how the cipher suite rating is calculated."/> 
-					<grid flex="1">
+					<vbox align="baseline">
+						<richlistbox width="1000" suppressOnSelect="true" selectedIndex="-1">
+							<listheader equalsize="always" 
+									style="border: 0; padding: 0; -moz-appearance: none;">
+								<treecol label="Key exchange" flex="1"/>
+								<treecol label="Bulk cipher" flex="1"/>
+								<treecol label="HMAC" flex="1"/>
+								<treecol label="Total" flex="1"/>
+							</listheader>
+						</richlistbox>
+						<!-- richlistitem-->
+						<hbox width="1000" equalsize="always" align="baseline">
+							<textbox flex="1" type="number" id="ssleuth-pref-cs-kx-weight" decimalplaces="1"/>
+							<textbox flex="1" type="number" id="ssleuth-pref-cs-cipher-weight" decimalplaces="1"/>
+							<textbox flex="1" type="number" id="ssleuth-pref-cs-hmac-weight" decimalplaces="1"/>
+							<label flex="1" id="ssleuth-pref-cs-rating-total" style="font-weight:bold"/>
+						</hbox>
+							<!-- /richlistitem>
+						</richlistbox-->
+					</vbox>
 
-						<columns>
-							<column width="200"/>
-							<column width="80"/>
-						</columns>
-						<rows>
-							<row>
-								<description value="Parameter" style="font-weight:bold;"/>
-								<description value="Weight" style="font-weight:bold;"/>
-							</row>
-							<row>
-								<label control="ssleuth-pref-cs-kx-weight" value="Key exchange"/>
-								<textbox id="ssleuth-pref-cs-kx-weight" 
-										type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row>
-								<label control="ssleuth-pref-cs-cipher-weight" value="Bulk cipher"/>
-								<textbox id="ssleuth-pref-cs-cipher-weight" type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row>
-								<label control="ssleuth-pref-cs-hmac-weight" value="HMAC"/>
-								<textbox id="ssleuth-pref-cs-hmac-weight" type="" decimalplaces="1" flex="1"/>
-							</row>
-							<row align="baseline">
-								<description value="Total"/>
-								<description id="ssleuth-pref-cs-rating-total" style="font-weight:bold"/>
-							</row>
-
-						</rows>
-
-					</grid>
 					<hbox>
-					<button label="Apply"
-									id="ssleuth-pref-cs-ratings-apply"
-									/>
+						<button label="Apply"
+										id="ssleuth-pref-cs-ratings-apply"
+										/>
+						<button label="Reset"
+										id="ssleuth-pref-cs-ratings-reset"
+										/>
 					</hbox>
 				</groupbox>
 				

@@ -9,7 +9,6 @@
 		<name>SSleuth restartless Test</name>
 		<version>0.2.1-alpha</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
-		<!-- optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL-->
 
 		<bootstrap>true</bootstrap>
 		<type>2</type>

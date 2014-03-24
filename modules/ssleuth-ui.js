@@ -471,6 +471,8 @@ function showCipherDetails(cipherSuite, rp) {
 		= !(panelInfo.bulkCipher); 
 	doc.getElementById("ssleuth-text-hmac").hidden
 		= !(panelInfo.checksumAlg); 
+	doc.getElementById("ssleuth-text-key-exchange").hidden
+		= !(panelInfo.keyExchange); 
 }
 
 function showPFS(pfs, rp) {
@@ -515,6 +517,7 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
 	var validity = cert.validity.QueryInterface(Ci.nsIX509CertValidity);
 	var doc = _window().document; 
 
+	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
 	doc.getElementById("ssleuth-text-cert-common-name").textContent = cert.commonName; 
 	var certRating = doc.getElementById("ssleuth-cert-status-rating"); 
 	var evRating = doc.getElementById("ssleuth-cert-ev-rating"); 
@@ -540,12 +543,13 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
 
 	var certValidity = doc.getElementById("ssleuth-text-cert-validity"); 
 	certValidity.setAttribute("valid", certValid.toString()); 
-	certValidity.textContent = validity.notBeforeGMT + " till " + validity.notAfterGMT;
 
-	var domainMatched = doc.getElementById("ssleuth-text-cert-domain-matched"); 
-	var domMatchText = (!domMismatch)? "Yes" : "No"; 
-	domainMatched.textContent = domMatchText; 
-	domainMatched.setAttribute("match", domMatchText); 
+	if (panelInfo.validityTime) 
+		certValidity.textContent = validity.notBeforeGMT + " till " + validity.notAfterGMT;
+	else 
+		certValidity.textContent = validity.notBeforeLocalDay + " till " + validity.notAfterLocalDay;
+
+	doc.getElementById("ssleuth-text-cert-domain-mismatch").hidden = !domMismatch;
 
 	var rating = (Number(certValid && !domMismatch) * rp.certStatus).toFixed(1);
 	certRating.textContent = rating + "/" + rp.certStatus; 
@@ -556,11 +560,13 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
 		doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 
 	}
 
-	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
+	doc.getElementById("ssleuth-text-cert-fingerprint")
+		.textContent = cert.sha1Fingerprint; 
+
 	doc.getElementById("ssleuth-text-cert-validity-box").hidden 
 		= !(panelInfo.certValidity); 
-	/* doc.getElementById("ssleuth-text-cert-validity-box").hidden 
-		= !(panelInfo.certValidity); */
+	doc.getElementById("ssleuth-text-cert-fingerprint").hidden 
+		= !(panelInfo.certFingerprint); 
 }
 	 
 function createKeyShortcut(doc) {

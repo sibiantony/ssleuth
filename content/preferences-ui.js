@@ -50,18 +50,23 @@
 		},
 
 		initUIOptions: function() {
+			panelInfo = JSON.parse(prefs.getCharPref(PREF_PANEL_INFO)); 
 			for (var [id, val] in Iterator({
 				"ssleuth-pref-show-cs-checksum-alg"		: panelInfo.checksumAlg,
 				"ssleuth-pref-show-cs-bulk-cipher" 		: panelInfo.bulkCipher,
+				"ssleuth-pref-show-cs-key-exchange" 	: panelInfo.keyExchange,
 				"ssleuth-pref-show-cs-cert-sig"			: panelInfo.certSig, 
 				"ssleuth-pref-show-cert-validity"		: panelInfo.certValidity, 
-				"ssleuth-pref-show-cert-checksum"		: panelInfo.certChecksum, 
+				"ssleuth-pref-show-cert-validity-time"	: panelInfo.validityTime, 
+				"ssleuth-pref-show-cert-fingerprint"	: panelInfo.certFingerprint, 
 				})) {
 					document.getElementById(id).checked = val; 
 			}
 		},
 
 		initRatings: function() {
+			cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
+			csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
 			for (var [id, val] in Iterator({
 				"ssleuth-pref-cipher-suite-weight" : cxRating.cipherSuite, 
 				"ssleuth-pref-pfs-weight"		: cxRating.pfs,
@@ -148,7 +153,9 @@
 			}
 			for (var [id, func] in Iterator({
 				"ssleuth-pref-cx-ratings-apply" : prefUI.cxRatingApply,
+				"ssleuth-pref-cx-ratings-reset" : prefUI.cxRatingReset, 
 				"ssleuth-pref-cs-ratings-apply" : prefUI.csRatingApply,
+				"ssleuth-pref-cs-ratings-reset" : prefUI.csRatingReset,
 				"ssleuth-pref-mng-cs-entry-new" : prefUI.csMngEntryNew,
 				"ssleuth-pref-mng-cs-entry-edit": prefUI.csMngEntryEdit,
 				"ssleuth-pref-mng-cs-entry-remove" 	: prefUI.csMngEntryRemove,
@@ -158,9 +165,11 @@
 				"ssleuth-pref-cs-reset-all-cs"		: prefUI.csResetAll,
 				"ssleuth-pref-show-cs-checksum-alg"		: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cs-bulk-cipher" 		: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cs-key-exchange"		: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cs-cert-sig"			: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cert-validity"		: prefUI.panelInfoCheck, 
-				"ssleuth-pref-show-cert-checksum"		: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cert-validity-time"	: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cert-fingerprint"	: prefUI.panelInfoCheck, 
 			}) ) {
 				document.getElementById(id)
 					.addEventListener("command", func, false); 
@@ -176,12 +185,16 @@
 				document.getElementById("ssleuth-pref-show-cs-checksum-alg").checked;
 			panelInfo.bulkCipher = 
 				document.getElementById("ssleuth-pref-show-cs-bulk-cipher").checked;
+			panelInfo.keyExchange = 
+				document.getElementById("ssleuth-pref-show-cs-key-exchange").checked;
 			panelInfo.certSig = 
 				document.getElementById("ssleuth-pref-show-cs-cert-sig").checked;
 			panelInfo.certValidity = 
 				document.getElementById("ssleuth-pref-show-cert-validity").checked;
-			panelInfo.certChecksum = 
-				document.getElementById("ssleuth-pref-show-cert-checksum").checked;
+			panelInfo.validityTime = 
+				document.getElementById("ssleuth-pref-show-cert-validity-time").checked;
+			panelInfo.certFingerprint = 
+				document.getElementById("ssleuth-pref-show-cert-fingerprint").checked;
 			prefs.setCharPref(PREF_PANEL_INFO, JSON.stringify(panelInfo)); 
 		},
 
@@ -456,6 +469,11 @@
 				JSON.stringify(cxRating)); 
 		},
 
+		cxRatingReset : function() {
+			prefs.clearUserPref(PREF_CX_RATING); 
+			prefUI.initRatings(); 
+		}, 
+
 		csRatingApply : function() {
 			csRating.keyExchange = 
 				document.getElementById("ssleuth-pref-cs-kx-weight").value; 
@@ -468,6 +486,11 @@
 								Number(csRating.hmac);
 			prefs.setCharPref(PREF_CS_RATING, 
 				JSON.stringify(csRating)); 
+		},
+
+		csRatingReset : function() {
+			prefs.clearUserPref(PREF_CS_RATING);
+			prefUI.initRatings();
 		},
 
 	};
