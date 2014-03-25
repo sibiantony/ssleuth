@@ -7,13 +7,13 @@ var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating",
 const ssleuthCipherSuites = {
 	keyExchange : [
 		{ name: "_ECDHE_",	rank: 10,   pfs: 1, 
-			ui: "ECDHE", 	notes: "" },
+			ui: "Elliptic curve Diffie-Hellman", 	notes: "" },
 		{ name: "_ECDH_",		rank: 9,	pfs: 0, 
-			ui: "ECDH", 	notes: "" },
+			ui: "Elliptic curve Diffie-Hellman", 	notes: "" },
 		{ name: "_DHE_",		rank: 9,	pfs: 1, 
-			ui: "DHE", 		notes: "" },
+			ui: "Diffie-Hellman", 		notes: "" },
 		{ name: "_DH_",		rank: 9,		pfs: 1, 
-			ui: "DH", 		notes: "" },
+			ui: "Diffie-Hellman", 		notes: "" },
 		{ name: "TLS_RSA_WITH",	rank: 6,	pfs: 0, 
 			ui: "RSA", 		notes: "" },
 		{ name: "SSL_RSA_WITH",	rank: 5,	pfs: 0, 
@@ -28,6 +28,7 @@ const ssleuthCipherSuites = {
 	// RSA secure minimum keyLength>=2048
 	// ECDSA comparable keyLength>=263 [RFC 4492]
 	authentication : [
+		// Do not modify ui values. Used in extracting key length from certificate.
 		{ name: "_RSA_", 	rank: 10, 	minSecureKeyLength: 2048, 
 			ui: "RSA", 		notes: "" },
 		{ name: "_ECDSA_", 	rank: 10, 	minSecureKeyLength: 263, 
@@ -37,27 +38,32 @@ const ssleuthCipherSuites = {
 	],
 
 	bulkCipher : [
-		{ name: "AES_256_GCM",		rank: 10,   notes: "" },
-		{ name: "CAMELLIA_256_CBC", rank: 10,   notes: "" },
-		{ name: "AES_256_CBC",		rank: 10,	notes: "" },
-		{ name: "AES_128_GCM",		rank: 8,	notes: "" },
-		{ name: "AES_128_CBC",		rank: 8,	notes: "" },
-		{ name: "CAMELLIA_128_CBC", rank: 8,	notes: "" },
-		{ name: "SEED_CBC",			rank: 8,	notes: "" },
-		{ name: "3DES_EDE_CBC",		rank: 8,	notes: "" },
-		{ name: "RC4_128",			rank: 6,	notes: "RC4 considered unsafe." },
-		{ name: "DES_CBC",			rank: 2,	notes: "Weak" },
-		{ name: "DES40_CBC",		rank: 2,	notes: "Weak" },
-		{ name: "RC2_CBC_40",		rank: 2,	notes: "Weak" },
-		{ name: "RC4_40",			rank: 2,	notes: "Weak" },
+		{ name: "AES_256_GCM",		rank: 10,   ui: "AES GCM", 		notes: "" },
+		{ name: "CAMELLIA_256_CBC", rank: 10,   ui: "CAMELLIA CBC", notes: "" },
+		{ name: "AES_256_CBC",		rank: 10,	ui: "AES CBC", 		notes: "" },
+		{ name: "AES_128_GCM",		rank: 8,	ui: "AES GCM", 		notes: "" },
+		{ name: "AES_128_CBC",		rank: 8,	ui: "AES CBC", 		notes: "" },
+		{ name: "CAMELLIA_128_CBC", rank: 8,	ui: "CAMELLIA CBC", notes: "" },
+		{ name: "SEED_CBC",			rank: 8,	ui: "SEED CBC", 	notes: "" },
+		{ name: "3DES_EDE_CBC",		rank: 8,	ui: "3DES EDE CBC", notes: "" },
+		{ name: "RC4_128",			rank: 6,	
+			ui: "RC4", 			notes: "Considered unsafe." },
+		{ name: "DES_CBC",			rank: 2,	
+			ui: "DES CBC", 		notes: "Weak" },
+		{ name: "DES40_CBC",		rank: 2,	
+			ui: "DES CBC", 		notes: "Weak" },
+		{ name: "RC2_CBC_40",		rank: 2,	
+			ui: "RC2 CBC", 		notes: "Weak" },
+		{ name: "RC4_40",			rank: 2,	
+			ui: "RC4",			notes: "Weak" },
 	],
 
 	HMAC : [
-		{ name: "SHA512",	 rank: 10,	notes: ""},
-		{ name: "SHA384",	 rank: 10,	notes: ""},
-		{ name: "SHA256",	 rank: 10,	notes: ""},
-		{ name: "SHA",	 rank:  6,	notes: "SHA-1 reportedly weak. "},
-		{ name: "MD5",	 rank:  2,	notes: "MD5 is broken. "}
+		{ name: "SHA512",	 rank: 10,	ui: "SHA-512", 	notes: ""},
+		{ name: "SHA384",	 rank: 10,	ui: "SHA-384",	notes: ""},
+		{ name: "SHA256",	 rank: 10,	ui: "SHA-256", 	notes: ""},
+		{ name: "SHA",	 rank:  6,	ui: "SHA-1",		notes: "Reportedly weak. "},
+		{ name: "MD5",	 rank:  2,	ui: "MD5",			notes: "Broken. "}
 	],
 
 	cipherSuiteStrength : {

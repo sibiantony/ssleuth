@@ -100,20 +100,14 @@ var ssleuth = {
 }; 
 
 function protocolUnknown() {
-	setButtonRank(-1); 
-	setBoxHidden("http", true); 
-	setBoxHidden("https", true); 
+	ssleuthUI.protocolChange("unknown", ""); 
 }
 
 function protocolHttp(loc) {
 	dump("\nprotocolHttp \n");
-	setButtonRank(-1);
-	setBoxHidden("https", true); 
-	setBoxHidden("http", false); 
 
 	var httpsURL = loc.toString().replace("http://", "https://"); 
-
-	setHttpsLink(httpsURL); 
+	ssleuthUI.protocolChange("http", httpsURL);
 }
 
 function protocolHttps(aWebProgress, aRequest, aState, win) {
@@ -121,177 +115,179 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 	const Cc = Components.classes; 
 	const Ci = Components.interfaces;
 
+	ssleuthUI.protocolChange("https", ""); 
+
 	var secUI = win.gBrowser.securityUI; 
-	setBoxHidden("https", false); 
-	setBoxHidden("http", true); 
-
-	if (secUI) {
-		var sslStatus = secUI.SSLStatus; 
+	if (!secUI) return;
+	
+	var sslStatus = secUI.SSLStatus; 
+	if (!sslStatus) {
+		dump("\nSSLStatus is null : Querying SSLstatus \n");
+		secUI.QueryInterface(Ci.nsISSLStatusProvider); 
+		if (secUI.SSLStatus) {
+			sslStatus = secUI.SSLStatus; 
+		}
 		if (!sslStatus) {
-			dump("\nSSLStatus is null : Querying SSLstatus \n");
-			secUI.QueryInterface(Ci.nsISSLStatusProvider); 
-			if (secUI.SSLStatus) {
-				sslStatus = secUI.SSLStatus; 
-			}
-			if (!sslStatus) {
-				dump("\nSSLStatus is null \n");
-				// 1. A rather annoying behaviour : Firefox do not seem to populate
-				//  SSLStatus if a tab switches to a page with the same URL.
-				//
-				// 2. A page load event can fire even if there is 
-				//  no connectivity and user attempts to reload a page. 
-				//  The hidden=true should prevent stale values from getting 
-				//  displayed 
-				if (ssleuth.urlChanged) {
-					setBoxHidden("https", true); 
-				} 
-				return; 
-			}
-		}
-		
-		const cs = ssleuthCipherSuites; 
-		var securityState = "";
-		var cipherName = sslStatus.cipherName; 
-		var cipherSuite = null; 
-		var keyLength = sslStatus.secretKeyLength; 
-		var cert = sslStatus.serverCert;
-		var extendedValidation = false;
-
-		// Security Info - Firefox states
-		if ((aState & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
-			securityState = "Secure"; 
-		} else if ((aState & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
-			securityState = "Insecure"; 
-		} else if ((aState & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
-			securityState = "Broken"; 
-		}
-
-		if (aState & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
-			extendedValidation = true; 
-		}
-		var domainNameMatched = "No"; 
-		if (!sslStatus.isDomainMismatch) {
-			domainNameMatched = "Yes"; 
-		}
-
-
-		cipherSuite = { 
-			name: cipherName, 
-			rank: cs.cipherSuiteStrength.LOW, 
-			pfs: 0, 
-			notes: "",
-			signatureKeyLen: 0, 
-			keyExchange: null, 
-			authentication: null, 
-			bulkCipher: null, 
-			HMAC: null 
-		}; 
-						
-		// Key exchange
-		for (var i=0; i<cs.keyExchange.length; i++) {
-			if((cipherName.indexOf(cs.keyExchange[i].name) != -1)) {
-				cipherSuite.keyExchange = cs.keyExchange[i];
-				cipherSuite.pfs = cs.keyExchange[i].pfs; 
-				break; 
-			}
-		}
-
-		// Authentication
-		for (i=0; i<cs.authentication.length; i++) {
-			if((cipherName.indexOf(cs.authentication[i].name) != -1)) {
-				cipherSuite.authentication = cs.authentication[i];
-				break; 
-			}
-		}
-
-		// Bulk cipher
-		for (i=0; i<cs.bulkCipher.length; i++) {
-			if((cipherName.indexOf(cs.bulkCipher[i].name) != -1)) {
-				cipherSuite.bulkCipher = cs.bulkCipher[i];
-				break; 
-			}
-		}
-		// HMAC
-		for (i=0; i<cs.HMAC.length; i++) {
-			if((cipherName.indexOf(cs.HMAC[i].name) != -1)) {
-				cipherSuite.HMAC = cs.HMAC[i];
-				break; 
-			}
-		}
-
-		if (!cipherSuite.keyExchange) {
-			cipherSuite.keyExchange = {name: "",
-										rank: 10,
-										pfs: 0, 
-										notes: "Unknown key exchange type"
-									  };
-		}
-
-		if (!cipherSuite.bulkCipher) {
-			cipherSuite.bulkCipher = {name: "",
-										rank: 0,
-										notes: "Unknown Bulk cipher"
-									  }; 
-			// Something's missing in our list.
-			// Get the security strength from Firefox's own flags.
-			// Set cipher rank
-			if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
-				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX; 
-			} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
-				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1; 
-			} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
-				cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1; 
+			dump("\nSSLStatus is null \n");
+			// 1. A rather annoying behaviour : Firefox do not seem to populate
+			//  SSLStatus if a tab switches to a page with the same URL.
+			//
+			// 2. A page load event can fire even if there is 
+			//  no connectivity and user attempts to reload a page. 
+			//  Hide the panel to prevent stale values from getting 
+			//  displayed 
+			if (ssleuth.urlChanged) {
+				ssleuthUI.protocolChange("unknown", "");
 			} 
+			return; 
 		}
-
-		if (!cipherSuite.HMAC) {
-			cipherSuite.HMAC = {name: "",
-										rank: 10,
-										notes: "Unknown MAC Algorithm"
-									  };
-		}
-
-		// Certificate signature alg. key size 
-		cipherSuite.signatureKeyLen = getSignatureKeyLen(cert, 
-										cipherSuite.authentication.ui); 
-
-		cipherSuite.notes = cipherSuite.keyExchange.notes +
-								cipherSuite.bulkCipher.notes +
-								cipherSuite.HMAC.notes; 
-
-		
-		const csWeighting = ssleuth.prefs.PREFS["rating.ciphersuite.params"];
-		// Calculate ciphersuite rank  - All the cipher suite params ratings
-		// are out of 10, so this will get normalized to 10.
-		cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
-							cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
-							cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
-
-		const ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
-		var certValid = isCertValid(cert); 
-
-		// Get the connection rating. Normalize the params to 10
-		var rating = getConnectionRating(cipherSuite.rank, 
-						cipherSuite.pfs * 10, 
-						((securityState == "Secure") ? 1 : 0) * 10,
-						Number(!sslStatus.isDomainMismatch && certValid) * 10,
-						Number(extendedValidation) * 10, 
-						ratingParams);
-
-		var connectionRank = Number(rating).toFixed(1); 
-		dump ("\nconnection rank : " + connectionRank + 
-				" keylength : " + sslStatus.secretKeyLength + "\n"); 
-
-		// Invoke the UI to do its job
-		ssleuthUI.fillPanel(connectionRank, 
-					cipherSuite,
-					securityState,
-					cert,
-					certValid,
-					sslStatus.isDomainMismatch,
-					extendedValidation,
-					ratingParams); 
 	}
+	
+	const cs = ssleuthCipherSuites; 
+	var securityState = "";
+	var cipherName = sslStatus.cipherName; 
+	var cipherSuite = null; 
+	var cert = sslStatus.serverCert;
+	var extendedValidation = false;
+
+	// Security Info - Firefox states
+	if ((aState & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
+		securityState = "Secure"; 
+	} else if ((aState & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
+		securityState = "Insecure"; 
+	} else if ((aState & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
+		securityState = "Broken"; 
+	}
+
+	if (aState & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
+		extendedValidation = true; 
+	}
+	var domainNameMatched = "No"; 
+	if (!sslStatus.isDomainMismatch) {
+		domainNameMatched = "Yes"; 
+	}
+
+
+	cipherSuite = { 
+		name: cipherName, 
+		rank: cs.cipherSuiteStrength.LOW, 
+		pfs: 0, 
+		notes: "",
+		cipherKeyLen: sslStatus.secretKeyLength,
+		signatureKeyLen: 0, 
+		keyExchange: null, 
+		authentication: null, 
+		bulkCipher: null, 
+		HMAC: null 
+	}; 
+					
+	// Key exchange
+	for (var i=0; i<cs.keyExchange.length; i++) {
+		if((cipherName.indexOf(cs.keyExchange[i].name) != -1)) {
+			cipherSuite.keyExchange = cs.keyExchange[i];
+			cipherSuite.pfs = cs.keyExchange[i].pfs; 
+			break; 
+		}
+	}
+
+	// Authentication
+	for (i=0; i<cs.authentication.length; i++) {
+		if((cipherName.indexOf(cs.authentication[i].name) != -1)) {
+			cipherSuite.authentication = cs.authentication[i];
+			break; 
+		}
+	}
+
+	// Bulk cipher
+	for (i=0; i<cs.bulkCipher.length; i++) {
+		if((cipherName.indexOf(cs.bulkCipher[i].name) != -1)) {
+			cipherSuite.bulkCipher = cs.bulkCipher[i];
+			break; 
+		}
+	}
+	// HMAC
+	for (i=0; i<cs.HMAC.length; i++) {
+		if((cipherName.indexOf(cs.HMAC[i].name) != -1)) {
+			cipherSuite.HMAC = cs.HMAC[i];
+			break; 
+		}
+	}
+
+	if (!cipherSuite.keyExchange) {
+		cipherSuite.keyExchange = {name: "",
+									rank: 10,
+									pfs: 0, 
+									ui: "",
+									notes: "Unknown key exchange type"
+								  };
+	}
+
+	if (!cipherSuite.bulkCipher) {
+		cipherSuite.bulkCipher = {name: "",
+									rank: 0,
+									ui: "", 
+									notes: "Unknown Bulk cipher"
+								  }; 
+		// Something's missing in our list.
+		// Get the security strength from Firefox's own flags.
+		// Set cipher rank
+		if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
+			cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX; 
+		} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
+			cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1; 
+		} else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
+			cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1; 
+		} 
+	}
+
+	if (!cipherSuite.HMAC) {
+		cipherSuite.HMAC = {name: "",
+									rank: 10,
+									ui: "",
+									notes: "Unknown MAC Algorithm"
+								  };
+	}
+
+	// Certificate signature alg. key size 
+	cipherSuite.signatureKeyLen = getSignatureKeyLen(cert, 
+									cipherSuite.authentication.ui); 
+
+	cipherSuite.notes = cipherSuite.keyExchange.notes +
+							cipherSuite.bulkCipher.notes +
+							cipherSuite.HMAC.notes; 
+
+	
+	const csWeighting = ssleuth.prefs.PREFS["rating.ciphersuite.params"];
+	// Calculate ciphersuite rank  - All the cipher suite params ratings
+	// are out of 10, so this will get normalized to 10.
+	cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
+						cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
+						cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
+
+	const ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
+	var certValid = isCertValid(cert); 
+
+	// Get the connection rating. Normalize the params to 10
+	var rating = getConnectionRating(cipherSuite.rank, 
+					cipherSuite.pfs * 10, 
+					((securityState == "Secure") ? 1 : 0) * 10,
+					Number(!sslStatus.isDomainMismatch && certValid) * 10,
+					Number(extendedValidation) * 10, 
+					ratingParams);
+
+	var connectionRank = Number(rating).toFixed(1); 
+	dump ("\nconnection rank : " + connectionRank + 
+			" keylength : " + sslStatus.secretKeyLength + "\n"); 
+
+	// Invoke the UI to do its job
+	ssleuthUI.fillPanel(connectionRank, 
+				cipherSuite,
+				securityState,
+				cert,
+				certValid,
+				sslStatus.isDomainMismatch,
+				extendedValidation,
+				ratingParams); 
 }
 
 function getConnectionRating(csRating, pfs,
@@ -312,8 +308,8 @@ function getSignatureKeyLen(cert, auth) {
 
 		// The key size is not available directly as an attribute in any 
 		// interfaces. So we're on our own parsing the cert structure strings. 
-		// Here I didn't want to mess around with strings like 'Modulus' or
-		// 'bits' or '(' which could get localized.
+		// Here I didn't want to mess around with strings in the structure
+		// which could get localized.
 		// So simply extract the first occuring digit from the string
 		// corresponding to Subject's Public key. Hope this holds on. 
 		var keySize = 0; 

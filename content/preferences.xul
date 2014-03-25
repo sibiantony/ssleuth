@@ -10,16 +10,6 @@
 	<script type="application/javascript"
 				  src="chrome://ssleuth/content/preferences-ui.js"/>
 
-	<prefpane id="ssleuth-prefpane" label="preferences" flex="1">
-		<preferences>
-			<preference id="ssleuth-notifier-location" 
-									name="extensions.ssleuth.notifier.location" 
-									type="int"/>
-			<preference id="ssleuth-panel-fontsize" 
-									name="extensions.ssleuth.panel.fontsize" 
-									type="int"/>
-		</preferences>
-
 	<hbox align="center" 
 				style="margin-bottom: 50px;"/>
 	<hbox flex="1" id="ssleuth-pref-contentbox">
@@ -54,29 +44,24 @@
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
 						<caption label="&ssleuth.pref.ui.notifier.label;"/>
-						<radiogroup id="ssleuth-notifier-location-radio" 
-							preference="ssleuth-notifier-location"
-							orient="horizontal"
-							oncommand="">
+						<radiogroup id="ssleuth-pref-notifier-location" 
+							orient="horizontal">
 							<radio id="ssleuth-notifier-urlbar" 
 									label="&ssleuth.pref.ui.notifier.urlbar;"
-									value="0" 
-									selected="true"/>
+									value="0"/>
 							<radio id="ssleuth-notifier-toolbar"
 									label="&ssleuth.pref.ui.notifier.toolbar;"
 									value="1"/>
 						</radiogroup>
-				</groupbox>
-				<groupbox>
+					</groupbox>
+					<groupbox>
 						<caption label="&ssleuth.pref.ui.fontsize;"/>
-						<radiogroup id="ssleuth-panel-fontsize-radio" 
-							preference="ssleuth-panel-fontsize"
+						<radiogroup id="ssleuth-pref-panel-fontsize"
 							orient="horizontal"
 							oncommand="">
 							<hbox align="baseline">
 								<radio id="ssleuth-panel-fontsize-default" 
 										value="0" 
-										selected="true"
 										label="&ssleuth.pref.ui.fontsize.default;"/>
 								<hbox style="background-color:-moz-dialog" align="baseline">
 									<label value="&ssleuth.pref.ui.fontsize.header;"
@@ -119,14 +104,15 @@
 					</groupbox>
 					<groupbox>
 							<caption label="Panel information"/>
-							<checkbox id="ssleuth-pref-show-cs-checksum-alg"
-									label="Cipher suite : Show checksum algorithm"/>
-							<checkbox id="ssleuth-pref-show-cs-bulk-cipher"
-									label="Cipher suite : Show Bulk cipher"/>
 							<checkbox id="ssleuth-pref-show-cs-key-exchange"
 									label="Cipher suite : Show Key exchange algorithm"/>
 							<checkbox id="ssleuth-pref-show-cs-cert-sig"
 									label="Cipher suite : Show signature algorithm"/>
+							<checkbox id="ssleuth-pref-show-cs-bulk-cipher"
+									label="Cipher suite : Show Bulk cipher"/>
+							<checkbox id="ssleuth-pref-show-cs-hmac"
+									label="Cipher suite : Show HMAC"/>
+
 							<checkbox id="ssleuth-pref-show-cert-validity"
 									label="Certificate : Show validity"/>
 							<checkbox id="ssleuth-pref-show-cert-validity-time"
@@ -147,7 +133,7 @@
 						<caption label="Connection rating"/>
 						<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
 						<vbox align="baseline">
-							<hbox width="800" equalsize="always" align="baseline">
+							<hbox width="850" equalsize="always" align="baseline">
 								<label value="Cipher suite" flex="1"/>
 								<label value="Forward secrecy" flex="1"/>
 								<label value="Extended validation" flex="1"/>
@@ -155,15 +141,30 @@
 								<label value="Certificate state" flex="1"/>
 								<label value="Total" flex="1"/>
 							</hbox>
-							<hbox width="800" equalsize="always" align="baseline">
-								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cipher-suite-weight" decimalplaces="1"/></box>
-								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-pfs-weight" decimalplaces="1"/></box>
-								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-ev-weight" decimalplaces="1"/></box>
-								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-ffstatus-weight" decimalplaces="1"/></box>
-								<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-certstate-weight" decimalplaces="1"/></box>
+							<hbox width="850" equalsize="always" align="baseline">
+								<box flex="1">
+									<textbox width="50" type="number" 
+										id="ssleuth-pref-cipher-suite-weight" decimalplaces="1"/>
+								</box>
+								<box flex="1">
+									<textbox width="50" type="number" 
+										id="ssleuth-pref-pfs-weight" decimalplaces="1"/>
+								</box>
+								<box flex="1">
+									<textbox width="50" type="number" 
+										id="ssleuth-pref-ev-weight" decimalplaces="1"/>
+								</box>
+								<box flex="1">
+									<textbox width="50" type="number" 
+										id="ssleuth-pref-ffstatus-weight" decimalplaces="1"/>
+								</box>
+								<box flex="1">
+									<textbox width="50" type="number" 
+										id="ssleuth-pref-certstate-weight" decimalplaces="1"/>
+								</box>
 								<label flex="1" id="ssleuth-pref-cx-rating-total" style="font-weight:bold"/>
 							</hbox>
-							<description value=""/>
+							<!-- description value=""/-->
 							<hbox>
 								<button label="Apply" 
 												id="ssleuth-pref-cx-ratings-apply"
@@ -180,19 +181,28 @@
 					<caption label="Cipher suite rating"/>
 					<description value="Configure how the cipher suite rating is calculated."/> 
 					<vbox align="baseline">
-						<hbox width="400" equalsize="always" align="baseline">
+						<hbox width="500" equalsize="always" align="baseline">
 							<label value="Key exchange" flex="1"/>
 							<label value="Bulk cipher" flex="1"/>
 							<label value="HMAC" flex="1"/>
 							<label value="Total" flex="1"/>
 						</hbox>
-						<hbox width="400" equalsize="always" align="baseline">
-							<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cs-kx-weight" decimalplaces="1"/></box>
-							<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cs-cipher-weight" decimalplaces="1"/></box>
-							<box flex="1"><textbox width="50" type="number" id="ssleuth-pref-cs-hmac-weight" decimalplaces="1"/></box>
+						<hbox width="500" equalsize="always" align="baseline">
+							<box flex="1">
+								<textbox width="50" type="number" 
+									id="ssleuth-pref-cs-kx-weight" decimalplaces="1"/>
+							</box>
+							<box flex="1">
+								<textbox width="50" type="number" 
+									id="ssleuth-pref-cs-cipher-weight" decimalplaces="1"/>
+							</box>
+							<box flex="1">
+								<textbox width="50" type="number" 
+									id="ssleuth-pref-cs-hmac-weight" decimalplaces="1"/>
+							</box>
 							<label flex="1" id="ssleuth-pref-cs-rating-total" style="font-weight:bold;"/>
 						</hbox>
-						<description value=""/>
+						<!-- description value=""/-->
 					</vbox>
 
 					<hbox>
@@ -302,7 +312,7 @@
 					</groupbox>
 					<groupbox>
 						<caption label="Thanks to"/>
-							<description value="John Souvestre - Beta tests and suggestions"/>
+							<description value="John Souvestre - Beta tests"/>
 					</groupbox>
 
 					<groupbox>
@@ -334,6 +344,5 @@
 	</hbox>
 
 
-	</prefpane>
-<!-- /prefwindow-->
+	<!-- /prefpane-->
 </page>

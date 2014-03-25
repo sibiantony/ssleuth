@@ -1,10 +1,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = ["ssleuthUI", 
-						"showCipherDetails",
-						"setButtonRank", 
-						"setBoxHidden",
-						"setHttpsLink"];
+						"showCipherDetails"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -109,6 +106,26 @@ var ssleuthUI = {
 		var ssleuthPanel = _ssleuthPanel(window);
 		if (ssleuthPanel.state == "open") {
 			showPanel(ssleuthPanel, true); 
+		}
+	},
+
+	protocolChange: function(proto, data) {
+		switch(proto) {
+			case "unknown":
+				setButtonRank(-1);
+				setBoxHidden("https", true);
+				setBoxHidden("http", true); 
+				break;
+			case "http":
+				setButtonRank(-1);
+				setBoxHidden("https", true);
+				setBoxHidden("http", false);
+				setHttpsLink(data);
+				break;
+			case "https":
+				setBoxHidden("https", false);
+				setBoxHidden("http", true);
+				break;
 		}
 	},
 
@@ -458,11 +475,12 @@ function showCipherDetails(cipherSuite, rp) {
 		(cipherSuite.keyExchange.ui); 
 	doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
 		(cipherSuite.authentication.ui + " " 
-		+ cipherSuite.signatureKeyLen + " bits"); 
+		+ cipherSuite.signatureKeyLen + " bits."); 
 	doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
-		(cipherSuite.bulkCipher.name + " " + cipherSuite.bulkCipher.notes); 
+		(cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen 
+			+ " bits. " + cipherSuite.bulkCipher.notes); 
 	doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent = 
-		(cipherSuite.HMAC.name + " " + cipherSuite.HMAC.notes); 
+		(cipherSuite.HMAC.ui + ". " + cipherSuite.HMAC.notes); 
 
 	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
 	doc.getElementById("ssleuth-text-authentication").hidden 
@@ -470,7 +488,7 @@ function showCipherDetails(cipherSuite, rp) {
 	doc.getElementById("ssleuth-text-bulk-cipher").hidden
 		= !(panelInfo.bulkCipher); 
 	doc.getElementById("ssleuth-text-hmac").hidden
-		= !(panelInfo.checksumAlg); 
+		= !(panelInfo.HMAC); 
 	doc.getElementById("ssleuth-text-key-exchange").hidden
 		= !(panelInfo.keyExchange); 
 }

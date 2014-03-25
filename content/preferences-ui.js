@@ -18,6 +18,9 @@
 	const Ci = Components.interfaces;
 	const prefs = Cc["@mozilla.org/preferences-service;1"]
 						.getService(Ci.nsIPrefBranch);
+
+	const PREF_NOTIF_LOC = "extensions.ssleuth.notifier.location";
+	const PREF_PANEL_FONT = "extensions.ssleuth.panel.fontsize"; 
 	const PREF_CX_RATING = "extensions.ssleuth.rating.params"; 
 	const PREF_CS_RATING = "extensions.ssleuth.rating.ciphersuite.params"; 
 	const PREF_SUITES_TGL = "extensions.ssleuth.suites.toggle"; 
@@ -50,9 +53,14 @@
 		},
 
 		initUIOptions: function() {
+			document.getElementById("ssleuth-pref-notifier-location").value
+				= prefs.getIntPref(PREF_NOTIF_LOC);
+			document.getElementById("ssleuth-pref-panel-fontsize").value 
+				= prefs.getIntPref(PREF_PANEL_FONT);
+
 			panelInfo = JSON.parse(prefs.getCharPref(PREF_PANEL_INFO)); 
 			for (var [id, val] in Iterator({
-				"ssleuth-pref-show-cs-checksum-alg"		: panelInfo.checksumAlg,
+				"ssleuth-pref-show-cs-hmac"				: panelInfo.HMAC,
 				"ssleuth-pref-show-cs-bulk-cipher" 		: panelInfo.bulkCipher,
 				"ssleuth-pref-show-cs-key-exchange" 	: panelInfo.keyExchange,
 				"ssleuth-pref-show-cs-cert-sig"			: panelInfo.certSig, 
@@ -152,18 +160,20 @@
 					.addEventListener("change", prefUI.csRatingChanged, false); 
 			}
 			for (var [id, func] in Iterator({
-				"ssleuth-pref-cx-ratings-apply" : prefUI.cxRatingApply,
-				"ssleuth-pref-cx-ratings-reset" : prefUI.cxRatingReset, 
-				"ssleuth-pref-cs-ratings-apply" : prefUI.csRatingApply,
-				"ssleuth-pref-cs-ratings-reset" : prefUI.csRatingReset,
-				"ssleuth-pref-mng-cs-entry-new" : prefUI.csMngEntryNew,
-				"ssleuth-pref-mng-cs-entry-edit": prefUI.csMngEntryEdit,
+				"ssleuth-pref-notifier-location"	: prefUI.notifLocChange, 
+				"ssleuth-pref-panel-fontsize"		: prefUI.panelFontChange, 
+				"ssleuth-pref-cx-ratings-apply" 	: prefUI.cxRatingApply,
+				"ssleuth-pref-cx-ratings-reset" 	: prefUI.cxRatingReset, 
+				"ssleuth-pref-cs-ratings-apply" 	: prefUI.csRatingApply,
+				"ssleuth-pref-cs-ratings-reset" 	: prefUI.csRatingReset,
+				"ssleuth-pref-mng-cs-entry-new" 	: prefUI.csMngEntryNew,
+				"ssleuth-pref-mng-cs-entry-edit"	: prefUI.csMngEntryEdit,
 				"ssleuth-pref-mng-cs-entry-remove" 	: prefUI.csMngEntryRemove,
 				"ssleuth-pref-mng-cs-edit-apply" 	: prefUI.csMngEntryEditApply,
 				"ssleuth-pref-mng-cs-edit-cancel" 	: prefUI.csMngEntryEditCancel,
 				"ssleuth-pref-mng-cs-entry-restore-default" : prefUI.csMngEntryRestoreDefault,
 				"ssleuth-pref-cs-reset-all-cs"		: prefUI.csResetAll,
-				"ssleuth-pref-show-cs-checksum-alg"		: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-cs-hmac"			: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cs-bulk-cipher" 		: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cs-key-exchange"		: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cs-cert-sig"			: prefUI.panelInfoCheck, 
@@ -180,9 +190,18 @@
 				.addEventListener("dblclick", prefUI.csMngEntryEdit, false);
 		}, 
 
+		notifLocChange: function() {
+			prefs.setIntPref(PREF_NOTIF_LOC, 
+				document.getElementById("ssleuth-pref-notifier-location").value);
+		},
+		panelFontChange: function() {
+			prefs.setIntPref(PREF_PANEL_FONT,
+				document.getElementById("ssleuth-pref-panel-fontsize").value);
+		},
+
 		panelInfoCheck: function() {
-			panelInfo.checksumAlg = 
-				document.getElementById("ssleuth-pref-show-cs-checksum-alg").checked;
+			panelInfo.HMAC = 
+				document.getElementById("ssleuth-pref-show-cs-hmac").checked;
 			panelInfo.bulkCipher = 
 				document.getElementById("ssleuth-pref-show-cs-bulk-cipher").checked;
 			panelInfo.keyExchange = 
@@ -256,7 +275,6 @@
 			var lb = item.firstChild.firstChild; 
 			var label = lb.value; 
 			var rd = lb.nextSibling; 
-
 
 			// Replace the label/radios and insert a textbox there.
 			var tb = document.createElement("textbox");

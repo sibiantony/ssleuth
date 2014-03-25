@@ -11,12 +11,12 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 
 var ssleuthPanelInfo = {
-	checksumAlg		: false,
+	HMAC			: false,
 	bulkCipher		: true,
-	keyExchange 	: false,
+	keyExchange 	: true,
 	certSig			: true,
 	certValidity 	: true,
-	validityTime	: false,
+	validityTime	: true,
 	certFingerprint : false
 }; 
 

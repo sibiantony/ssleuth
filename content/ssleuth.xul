@@ -210,7 +210,7 @@
 				</hbox>
 			</vbox>
 
-			<vbox id="ssleuth-panel-vbox-http" width="330" height="100" 
+			<vbox id="ssleuth-panel-vbox-http" width="350" height="100" 
 						hidden="true" flex="2">
 				<hbox align="baseline" flex="1">
 					<image id="ssleuth-img-http-omg" class="ssleuth-img-state"/>
