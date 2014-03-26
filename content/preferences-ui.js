@@ -469,20 +469,20 @@
 
 		cxRatingApply : function() {
 			cxRating.cipherSuite = 
-				document.getElementById("ssleuth-pref-cipher-suite-weight").value; 
+				Number(document.getElementById("ssleuth-pref-cipher-suite-weight").value); 
 			cxRating.pfs = 
-				document.getElementById("ssleuth-pref-pfs-weight").value;
+				Number(document.getElementById("ssleuth-pref-pfs-weight").value);
 			cxRating.evCert = 
-				document.getElementById("ssleuth-pref-ev-weight").value;
+				Number(document.getElementById("ssleuth-pref-ev-weight").value);
 			cxRating.ffStatus = 
-				document.getElementById("ssleuth-pref-ffstatus-weight").value;
+				Number(document.getElementById("ssleuth-pref-ffstatus-weight").value);
 			cxRating.certStatus = 
-				document.getElementById("ssleuth-pref-certstate-weight").value;
-			cxRating.total = Number(cxRating.cipherSuite) +
-								Number(cxRating.pfs) +
-								Number(cxRating.evCert) +
-								Number(cxRating.ffStatus) +
-								Number(cxRating.certStatus); 
+				Number(document.getElementById("ssleuth-pref-certstate-weight").value);
+			cxRating.total = cxRating.cipherSuite +
+								cxRating.pfs +
+								cxRating.evCert +
+								cxRating.ffStatus +
+								cxRating.certStatus; 
 			prefs.setCharPref(PREF_CX_RATING, 
 				JSON.stringify(cxRating)); 
 		},
@@ -494,14 +494,14 @@
 
 		csRatingApply : function() {
 			csRating.keyExchange = 
-				document.getElementById("ssleuth-pref-cs-kx-weight").value; 
+				Number(document.getElementById("ssleuth-pref-cs-kx-weight").value); 
 			csRating.bulkCipher = 
-				document.getElementById("ssleuth-pref-cs-cipher-weight").value;
+				Number(document.getElementById("ssleuth-pref-cs-cipher-weight").value);
 			csRating.hmac = 
-				document.getElementById("ssleuth-pref-cs-hmac-weight").value;
-			csRating.total = Number(csRating.keyExchange) +
-								Number(csRating.bulkCipher) +
-								Number(csRating.hmac);
+				Number(document.getElementById("ssleuth-pref-cs-hmac-weight").value);
+			csRating.total = csRating.keyExchange +
+								csRating.bulkCipher +
+								csRating.hmac;
 			prefs.setCharPref(PREF_CS_RATING, 
 				JSON.stringify(csRating)); 
 		},

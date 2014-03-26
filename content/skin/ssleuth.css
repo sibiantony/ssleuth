@@ -1,5 +1,5 @@
 /*  skin/toolbar-button.css  */
-/*#ssleuth-tb-button,*/ #ssleuth-ub-img {
+#ssleuth-tb-button, #ssleuth-ub-img {
   -moz-box-orient: horizontal !important;
 }
 
