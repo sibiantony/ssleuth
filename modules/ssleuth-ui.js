@@ -474,8 +474,9 @@ function showCipherDetails(cipherSuite, rp) {
 	doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
 		(cipherSuite.keyExchange.ui); 
 	doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
-		(cipherSuite.authentication.ui + " " 
-		+ cipherSuite.signatureKeyLen + " bits."); 
+		(cipherSuite.authentication.ui); " " 
+	doc.getElementById("ssleuth-text-cipher-suite-auth-key").textContent =
+		(cipherSuite.signatureKeyLen); 
 	doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
 		(cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen 
 			+ " bits. " + cipherSuite.bulkCipher.notes); 

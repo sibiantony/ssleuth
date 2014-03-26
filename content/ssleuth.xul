@@ -62,6 +62,14 @@
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-auth"
 														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-auth-key-text"
+														value="Server key:"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-auth-key"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-auth-key-bits"
+														value="bits."
+														class="ssleuth-text-body-class"/>
 						</hbox>
 						<hbox id="ssleuth-text-bulk-cipher">
 							<description id="ssleuth-text-bulk-cipher-label"
