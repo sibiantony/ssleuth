@@ -92,8 +92,18 @@
 }
 
 .ssleuth-img-state {
-    margin-top: 4px; 
+}
+.ssleuth-img-state-small {
+    margin-top: 5px; 
 	width: 13px;
+}
+.ssleuth-img-state-medium {
+    margin-top: 5px; 
+	width: 14px;
+}
+.ssleuth-img-state-large {
+    margin-top: 6px; 
+	width: 15px;
 }
 
 #ssleuth-img-cipher-rank[status="low"] {
@@ -191,10 +201,17 @@
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
 }
 
-.ssleuth-text-body-default {
+#ssleuth-text-cipher-suite-kxchange-notes,
+#ssleuth-text-cipher-suite-auth-notes,
+#ssleuth-text-cipher-suite-bulkcipher-notes,
+#ssleuth-text-cipher-suite-hmac-notes {
+	color : #686868; 
+}
+
+.ssleuth-text-body-small {
     font-size: 0.85em; 
 }
-.ssleuth-text-title-default {
+.ssleuth-text-title-small {
     /* Default ff font */
     /* font-weight: bold; */
 }

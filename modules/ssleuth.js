@@ -9,7 +9,6 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js"); 
 Components.utils.import("resource://ssleuth/ssleuth-ui.js");
-Components.utils.import("resource://ssleuth/utils.js");
 Components.utils.import("resource://ssleuth/preferences.js");
 
 var ssleuth = {
@@ -298,6 +297,16 @@ function getConnectionRating(csRating, pfs,
 	return ((csRating * rp.cipherSuite + pfs * rp.pfs +
 				ffStatus * rp.ffStatus + certStatus * rp.certStatus +
 				evCert * rp.evCert )/rp.total); 
+}
+
+function isCertValid(cert) {
+	var usecs = new Date().getTime(); 
+	var valid = false;
+	if (usecs > cert.validity.notBefore/1000 && 
+			usecs < cert.validity.notAfter/1000) {
+		valid = true; 
+	} 
+	return valid; 
 }
 
 function getSignatureKeyLen(cert, auth) {

@@ -479,9 +479,13 @@ function showCipherDetails(cipherSuite, rp) {
 		(cipherSuite.signatureKeyLen); 
 	doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
 		(cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen 
-			+ " bits. " + cipherSuite.bulkCipher.notes); 
+			+ " bits.");
+	doc.getElementById("ssleuth-text-cipher-suite-bulkcipher-notes").textContent =
+		 cipherSuite.bulkCipher.notes; 
 	doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent = 
-		(cipherSuite.HMAC.ui + ". " + cipherSuite.HMAC.notes); 
+		(cipherSuite.HMAC.ui + ".");
+	doc.getElementById("ssleuth-text-cipher-suite-hmac-notes").textContent = 
+		cipherSuite.HMAC.notes; 
 
 	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
 	doc.getElementById("ssleuth-text-authentication").hidden 
@@ -621,44 +625,41 @@ function readUIPreferences() {
 		prefs.getIntPref("extensions.ssleuth.notifier.location"); 
 }
 
-function setUIPreferences(doc) {
+/* function setUIPreferences(doc) {
 	const prefs = 
 		ssleuthPreferences.prefService;
 
 	setPanelFont(prefs.getIntPref("extensions.ssleuth.panel.fontsize"), doc); 
-}
+}*/
 
 function setPanelFont(panelFont, doc) {
 	var bodyFontClass = "ssleuth-text-body-class";
 	var titleFontClass = "ssleuth-text-title-class";
-	var configBody, configTitle; 
+	var imgStateClass = "ssleuth-img-state"; 
 
 	/* 0 = default
 	 *  1 = medium
 	 *  2 = large */
-	switch(panelFont) {
-		case 0 :
-			configBody = "ssleuth-text-body-default"; 
-			configTitle = "ssleuth-text-title-default"; 
-			break;
-		case 1 : 
-			configBody = "ssleuth-text-body-medium"; 
-			configTitle = "ssleuth-text-title-medium"; 
-			break;
-		case 2 : 
-			configBody = "ssleuth-text-body-large"; 
-			configTitle = "ssleuth-text-title-large"; 
-			break;
-	}
+	var configBody = ["ssleuth-text-body-small", "ssleuth-text-body-medium",
+					"ssleuth-text-body-large"];
+	var configTitle = ["ssleuth-text-title-small", "ssleuth-text-title-medium",
+					"ssleuth-text-title-large"];
+	var configImg = ["ssleuth-img-state-small", "ssleuth-img-state-medium", 
+					"ssleuth-img-state-large"]; 
 	try {
 		var bodyText = doc.getElementsByClassName(bodyFontClass); 
 		var titleText = doc.getElementsByClassName(titleFontClass); 
+		var stateImg = doc.getElementsByClassName(imgStateClass);
 
 		for (var i = 0; i < bodyText.length; i++) {
-			bodyText[i].className = bodyFontClass + " " + configBody;
+			bodyText[i].className = bodyFontClass + " " + configBody[panelFont];
 		}
 		for (var i = 0; i < titleText.length; i++) {
-			titleText[i].className = titleFontClass + " " + configTitle; 
+			titleText[i].className = titleFontClass + " " + configTitle[panelFont]; 
+		}
+		for (var i=0; i<stateImg.length; i++) {
+			stateImg[i].className = imgStateClass + " " +
+										configImg[panelFont]; 
 		}
 
 		// Exception case : urlbar button text also changes with 
@@ -666,7 +667,7 @@ function setPanelFont(panelFont, doc) {
 		// A better way to handle this case? 
 		var ubRank = doc.getElementById("ssleuth-ub-rank"); 
 		if (ubRank) 
-			ubRank.className = "plain " + bodyFontClass + " " + configBody;
+			ubRank.className = "plain " + bodyFontClass + " " + configBody[panelFont];
 	} catch(e) {
 		dump("setPanelFont error : " + e.message + "\n"); 
 	}

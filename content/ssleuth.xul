@@ -54,6 +54,8 @@
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-kxchange"
 														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-kxchange-notes"
+														class="ssleuth-text-body-class"/>
 						</hbox>
 
 						<hbox id="ssleuth-text-authentication">
@@ -70,6 +72,8 @@
 							<description id="ssleuth-text-cipher-suite-auth-key-bits"
 														value="bits."
 														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-auth-notes"
+														class="ssleuth-text-body-class"/>
 						</hbox>
 						<hbox id="ssleuth-text-bulk-cipher">
 							<description id="ssleuth-text-bulk-cipher-label"
@@ -77,12 +81,16 @@
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-bulkcipher"
 														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-bulkcipher-notes"
+														class="ssleuth-text-body-class"/>
 						</hbox>
 						<hbox id="ssleuth-text-hmac">
 							<description id="ssleuth-text-hmac-label"
 														value="&ssleuth.cipher.suite.hmac.label;"
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-hmac"
+														class="ssleuth-text-body-class"/>
+							<description id="ssleuth-text-cipher-suite-hmac-notes"
 														class="ssleuth-text-body-class"/>
 						</hbox>
 			
