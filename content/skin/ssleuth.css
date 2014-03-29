@@ -94,15 +94,15 @@
 .ssleuth-img-state {
 }
 .ssleuth-img-state-small {
-    margin-top: 5px; 
+    margin-top: 0.32em; 
 	width: 13px;
 }
 .ssleuth-img-state-medium {
-    margin-top: 5px; 
+    margin-top: 0.32em; 
 	width: 14px;
 }
 .ssleuth-img-state-large {
-    margin-top: 6px; 
+    margin-top: 0.32em;
 	width: 15px;
 }
 

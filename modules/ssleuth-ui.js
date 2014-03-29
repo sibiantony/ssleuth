@@ -1,7 +1,6 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuthUI", 
-						"showCipherDetails"];
+var EXPORTED_SYMBOLS = ["ssleuthUI"] 
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
