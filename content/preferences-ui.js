@@ -63,7 +63,7 @@
 				"ssleuth-pref-show-cs-hmac"				: panelInfo.HMAC,
 				"ssleuth-pref-show-cs-bulk-cipher" 		: panelInfo.bulkCipher,
 				"ssleuth-pref-show-cs-key-exchange" 	: panelInfo.keyExchange,
-				"ssleuth-pref-show-cs-cert-sig"			: panelInfo.certSig, 
+				"ssleuth-pref-show-cs-cert-sig"			: panelInfo.authAlg, 
 				"ssleuth-pref-show-cert-validity"		: panelInfo.certValidity, 
 				"ssleuth-pref-show-cert-validity-time"	: panelInfo.validityTime, 
 				"ssleuth-pref-show-cert-fingerprint"	: panelInfo.certFingerprint, 
@@ -180,6 +180,7 @@
 				"ssleuth-pref-show-cert-validity"		: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cert-validity-time"	: prefUI.panelInfoCheck, 
 				"ssleuth-pref-show-cert-fingerprint"	: prefUI.panelInfoCheck, 
+				"ssleuth-pref-show-panel-info-reset"	: prefUI.panelInfoReset, 
 			}) ) {
 				document.getElementById(id)
 					.addEventListener("command", func, false); 
@@ -206,7 +207,7 @@
 				document.getElementById("ssleuth-pref-show-cs-bulk-cipher").checked;
 			panelInfo.keyExchange = 
 				document.getElementById("ssleuth-pref-show-cs-key-exchange").checked;
-			panelInfo.certSig = 
+			panelInfo.authAlg = 
 				document.getElementById("ssleuth-pref-show-cs-cert-sig").checked;
 			panelInfo.certValidity = 
 				document.getElementById("ssleuth-pref-show-cert-validity").checked;
@@ -215,6 +216,10 @@
 			panelInfo.certFingerprint = 
 				document.getElementById("ssleuth-pref-show-cert-fingerprint").checked;
 			prefs.setCharPref(PREF_PANEL_INFO, JSON.stringify(panelInfo)); 
+		},
+		panelInfoReset: function() {
+			prefs.clearUserPref(PREF_PANEL_INFO); 
+			prefUI.initUIOptions(); 
 		},
 
 		cxRatingChanged: function() {
@@ -310,7 +315,8 @@
 			}
 			csDeck.replaceChild(box, deck); 
 
-			// Enable edit mode, and apply/cancel.  Disable new/edit/remove/ buttons.
+			// Enable edit mode, and apply/cancel.  
+			// Disable new/edit/remove/ buttons.
 			document.getElementById("ssleuth-pref-mng-cs-edit-buttons").hidden = false;
 
 			prefUI.editMode = true; 

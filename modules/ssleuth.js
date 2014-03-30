@@ -1,6 +1,6 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuth"];
+var EXPORTED_SYMBOLS = ["SSleuth"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -11,7 +11,7 @@ Components.utils.import("resource://ssleuth/cipher-suites.js");
 Components.utils.import("resource://ssleuth/ssleuth-ui.js");
 Components.utils.import("resource://ssleuth/preferences.js");
 
-var ssleuth = {
+var SSleuth = {
 	prevURL: null,
 	urlChanged: false,
 	prefs: null, 
@@ -26,12 +26,12 @@ var ssleuth = {
 		try {
 			dump ("\nSSleuth init \n"); 
 			window.gBrowser.addProgressListener(this);
-			this.prefs = ssleuthPreferences.readInitPreferences(); 
+			this.prefs = SSleuthPreferences.readInitPreferences(); 
 			if (!this.prefRegistered) {
 				prefListener.register(false); 
 				this.prefRegistered = true; 
 			}
-			ssleuthUI.init(window); 
+			SSleuthUI.init(window); 
 		} catch(e) {
 			dump("\nError : " + e.message + "\n"); 
 			this.uninit();
@@ -40,7 +40,7 @@ var ssleuth = {
 
 	uninit: function(window) {
 		dump("\nUninit \n");
-		ssleuthUI.uninit(window); 
+		SSleuthUI.uninit(window); 
 		prefListener.unregister(); 
 		window.gBrowser.removeProgressListener(this);
 	},
@@ -53,9 +53,6 @@ var ssleuth = {
 			dump("Window is null\n"); 
 			return;
 		}
-
-		dump("\n============================== \n"); 
-		dump("onLocation change \n"); 
 		if (aURI.spec == this.prevURL) {
 			this.urlChanged = false; 
 			return; 
@@ -63,7 +60,7 @@ var ssleuth = {
 		this.urlChanged = true; 
 		this.prevURL = aURI.spec; 
 
-		ssleuthUI.onLocationChange(win); 
+		SSleuthUI.onLocationChange(win); 
 	},
 	onProgressChange: function() {
 		return;
@@ -71,8 +68,6 @@ var ssleuth = {
 	onStatusChange: function() {
 		return;
 	},
-
-    /* QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]), */
 
 	onStateChange: function(aWebProgress, aRequest, aFlag, aStatus) {
 		return; 
@@ -99,14 +94,14 @@ var ssleuth = {
 }; 
 
 function protocolUnknown() {
-	ssleuthUI.protocolChange("unknown", ""); 
+	SSleuthUI.protocolChange("unknown", ""); 
 }
 
 function protocolHttp(loc) {
 	dump("\nprotocolHttp \n");
 
 	var httpsURL = loc.toString().replace("http://", "https://"); 
-	ssleuthUI.protocolChange("http", httpsURL);
+	SSleuthUI.protocolChange("http", httpsURL);
 }
 
 function protocolHttps(aWebProgress, aRequest, aState, win) {
@@ -114,7 +109,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 	const Cc = Components.classes; 
 	const Ci = Components.interfaces;
 
-	ssleuthUI.protocolChange("https", ""); 
+	SSleuthUI.protocolChange("https", ""); 
 
 	var secUI = win.gBrowser.securityUI; 
 	if (!secUI) return;
@@ -135,8 +130,8 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 			//  no connectivity and user attempts to reload a page. 
 			//  Hide the panel to prevent stale values from getting 
 			//  displayed 
-			if (ssleuth.urlChanged) {
-				ssleuthUI.protocolChange("unknown", "");
+			if (SSleuth.urlChanged) {
+				SSleuthUI.protocolChange("unknown", "");
 			} 
 			return; 
 		}
@@ -256,14 +251,14 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 							cipherSuite.HMAC.notes; 
 
 	
-	const csWeighting = ssleuth.prefs.PREFS["rating.ciphersuite.params"];
+	const csWeighting = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
 	// Calculate ciphersuite rank  - All the cipher suite params ratings
 	// are out of 10, so this will get normalized to 10.
 	cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
 						cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
 						cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
 
-	const ratingParams = ssleuth.prefs.PREFS["rating.params"]; 
+	const ratingParams = SSleuth.prefs.PREFS["rating.params"]; 
 	var certValid = isCertValid(cert); 
 
 	// Get the connection rating. Normalize the params to 10
@@ -275,11 +270,9 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 					ratingParams);
 
 	var connectionRank = Number(rating).toFixed(1); 
-	dump ("\nconnection rank : " + connectionRank + 
-			" keylength : " + sslStatus.secretKeyLength + "\n"); 
 
 	// Invoke the UI to do its job
-	ssleuthUI.fillPanel(connectionRank, 
+	SSleuthUI.fillPanel(connectionRank, 
 				cipherSuite,
 				securityState,
 				cert,
@@ -342,15 +335,14 @@ function getSignatureKeyLen(cert, auth) {
 }
 
 function toggleCipherSuites(prefsOld) {
-	const prefs = ssleuthPreferences.prefService;
+	const prefs = SSleuthPreferences.prefService;
 	const br = "security.ssl3.";
 	const SUITES_TOGGLE = "suites.toggle"; 
-	const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
+	const PREF_SUITES_TOGGLE = "extensions.SSleuth." + SUITES_TOGGLE;
 
-	dump("Toggle cipher suites\n");
-	for (var t=0; t<ssleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
+	for (var t=0; t<SSleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
 		
-		var cs = ssleuth.prefs.PREFS[SUITES_TOGGLE][t]; 
+		var cs = SSleuth.prefs.PREFS[SUITES_TOGGLE][t]; 
 		switch(cs.state) {
 			case "default" : 
 				// Check if the element was present before.
@@ -368,9 +360,9 @@ function toggleCipherSuites(prefsOld) {
 				for (var i=0; i<cs.list.length; i++) {
 					prefs.clearUserPref(br+cs.list[i]);
 				}
-				ssleuth.prefs.PREFS[SUITES_TOGGLE][t] = cs; 
+				SSleuth.prefs.PREFS[SUITES_TOGGLE][t] = cs; 
 				prefs.setCharPref(PREF_SUITES_TOGGLE, 
-						JSON.stringify(ssleuth.prefs.PREFS[SUITES_TOGGLE])); 
+						JSON.stringify(SSleuth.prefs.PREFS[SUITES_TOGGLE])); 
 				break;
 
 			// Only toggle these if they actually exist! Do not mess up
@@ -395,21 +387,21 @@ function toggleCipherSuites(prefsOld) {
 }
 
 var prefListener = new PrefListener(
-	ssleuthPreferences.prefBranch,
+	SSleuthPreferences.prefBranch,
 	function(branch, name) {
 		switch(name) {
 			case "rating.params": 
-				ssleuth.prefs.PREFS["rating.params"] = 
+				SSleuth.prefs.PREFS["rating.params"] = 
 						JSON.parse(branch.getCharPref(name));
 				break;
 			case "rating.ciphersuite.params":
-				ssleuth.prefs.PREFS["rating.ciphersuite.params"] =
+				SSleuth.prefs.PREFS["rating.ciphersuite.params"] =
 						JSON.parse(branch.getCharPref(name));
 				break;
 			case "suites.toggle" :
-				/* TODO : No need for a cloned array here ? Why? */
-				var prefsOld = ssleuth.prefs.PREFS["suites.toggle"]; 
-				ssleuth.prefs.PREFS["suites.toggle"] = 
+				// TODO : No need for a cloned array here ? Why? 
+				var prefsOld = SSleuth.prefs.PREFS["suites.toggle"]; 
+				SSleuth.prefs.PREFS["suites.toggle"] = 
 						JSON.parse(branch.getCharPref(name));
 				toggleCipherSuites(prefsOld); 
 				break;

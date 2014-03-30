@@ -1,6 +1,6 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["Bootstrap", "forEachOpenWindow"];
+var EXPORTED_SYMBOLS = ["Bootstrap"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -11,7 +11,7 @@ Components.utils.import("resource://ssleuth/ssleuth.js");
 
 var Bootstrap = {
 	extensionStartup: function(firstRun, reinstall) {
-		ssleuthPreferences.init(); 
+		SSleuthPreferences.init(); 
 		forEachOpenWindow(initWindow); 
 		Services.wm.addListener(WindowListener); 
 	},
@@ -19,7 +19,7 @@ var Bootstrap = {
 	extensionShutdown: function() {
 		forEachOpenWindow(unloadWindow); 
 		Services.wm.removeListener(WindowListener); 
-		ssleuthPreferences.uninit(); 
+		SSleuthPreferences.uninit(); 
 	},
 
 	extensionUninstall: function() {
@@ -27,17 +27,15 @@ var Bootstrap = {
 };
 
 function initWindow(window) {
-	dump("\nNew window callback"); 
 	try {
-		ssleuth.init(window); 
+		SSleuth.init(window); 
 	} catch(ex) {
 		dump("\nError ssleuth init: " + ex.message + "\n"); 
 	}
 }
 
 function unloadWindow(window) {
-	dump("\nShutdown \n"); 
-	ssleuth.uninit(window); 
+	SSleuth.uninit(window); 
 }
 
 // Apply a function to all open browser windows 
@@ -49,13 +47,11 @@ function forEachOpenWindow(todo)  {
 }
 
 var WindowListener = {
-	onOpenWindow: function(xulWindow)
-	{
+	onOpenWindow: function(xulWindow) {
 		var window = 
 			xulWindow.QueryInterface(Components.interfaces.nsIInterfaceRequestor)
 				.getInterface(Components.interfaces.nsIDOMWindow);
-		function onWindowLoad()
-		{
+		function onWindowLoad() {
 			window.removeEventListener("load",onWindowLoad);
 			if (window.document.documentElement
 					.getAttribute("windowtype") == "navigator:browser")

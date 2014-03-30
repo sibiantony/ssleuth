@@ -107,7 +107,7 @@
 							<checkbox id="ssleuth-pref-show-cs-key-exchange"
 									label="Cipher suite : Show Key exchange algorithm"/>
 							<checkbox id="ssleuth-pref-show-cs-cert-sig"
-									label="Cipher suite : Show signature algorithm"/>
+									label="Cipher suite : Show authentication algorithm"/>
 							<checkbox id="ssleuth-pref-show-cs-bulk-cipher"
 									label="Cipher suite : Show Bulk cipher"/>
 							<checkbox id="ssleuth-pref-show-cs-hmac"
@@ -121,6 +121,10 @@
 									label="Certificate : Show SHA-1 fingerprint"/>
 							<!-- checkbox id="ssleuth-pref-show-urlbar-icon"
 									label="Certificate : Show icon in URL bar notifier"/-->
+							<hbox>
+								<button label="Reset" 
+												id="ssleuth-pref-show-panel-info-reset"/>
+							</hbox>
 					</groupbox>
 					</vbox>
 				</scrollbox>
@@ -346,7 +350,4 @@
 			</deck>
 		</box>
 	</hbox>
-
-
-	<!-- /prefpane-->
 </page>

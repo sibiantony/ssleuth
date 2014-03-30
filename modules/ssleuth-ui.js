@@ -1,6 +1,6 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuthUI"] 
+var EXPORTED_SYMBOLS = ["SSleuthUI"] 
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -11,7 +11,7 @@ Components.utils.import("resource://ssleuth/utils.js");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 Components.utils.import("resource://ssleuth/preferences.js");
 
-var ssleuthUI = {
+var SSleuthUI = {
 	ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
 	ssleuthBtnLocation : null, 
 	prefs: null, 
@@ -22,33 +22,32 @@ var ssleuthUI = {
 		dump ("\nssleuth UI init : \n");
 		try {
 			window.document.loadOverlay("chrome://ssleuth/content/ssleuth.xul", 
-							{observe: function(subject, topic, data) {
-								if (topic == "xul-overlay-merged") {
-									dump("\nXUL overlay merged! \n"); 
-									/* TODO : Keep an eye on this 'window' element!*/
-									try {
-										ssleuthUI.initSSleuthUI(window); 
-									} catch (e) {
-										dump("ssleuthUI init Error : " + e.message + "\n"); 
-										/* FIXME : window is null during an error */
-										ssleuthUI.uninit(_window());
-									}
-								}
-							}});
+					{observe: function(subject, topic, data) {
+						if (topic == "xul-overlay-merged") {
+							// dump("\nXUL overlay merged! \n"); 
+							/* TODO : Keep an eye on this 'window' element!*/
+							try {
+								SSleuthUI.initUI(window); 
+							} catch (e) {
+								dump("SSLeuthUI init Error : " + e.message + "\n"); 
+								/* FIXME : window is null during an error */
+								SSleuthUI.uninit(_window());
+							}
+						}
+					}});
 		} catch (e) {
 			dump("Failed overlay load : " + e.message + "\n"); 
 		}
 	},
 
-	initSSleuthUI: function(window) {
-		/* Verify if things are in good shape! */
-		if(window.document.getElementById("ssleuth-panel-vbox")) {
-			dump("initSSleuthUI : panel elems available!\n"); 
+	initUI: function(window) {
+		// Verify if things are in good shape! 
+		if (window.document.getElementById("ssleuth-panel-vbox")) {
+			dump("initUI : panel elems available!\n"); 
 		} else {
-			dump("** tough luck!\n");
 			this.uninit(); 
 		}
-		this.prefs = ssleuthPreferences.readInitPreferences(); 
+		this.prefs = SSleuthPreferences.readInitPreferences(); 
 		if (!this.prefsRegistered) {
 				prefListener.register(false); 
 				this.prefRegistered = true; 	
@@ -68,7 +67,7 @@ var ssleuthUI = {
 		
 		var ssleuthPanel = _ssleuthPanel(window); 
 		if (ssleuthPanel == null) {
-			dump("\n UI initSSleuthUI ssleuthPanel is null! \n"); 
+			dump("\n UI initUI ssleuthPanel is null! \n"); 
 		}
 		var panelVbox = window.document.getElementById("ssleuth-panel-vbox"); 
 		ssleuthPanel.appendChild(panelVbox); 
@@ -77,20 +76,24 @@ var ssleuthUI = {
 
 	uninit: function(window) {
 		dump("\n SSleuth UI  : uninit \n"); 
-		/* TODO : Cleanup everything! */
-		/* Removing the button deletes the overlay elements as well */
+		// Cleanup everything! 
+		// Removing the button deletes the overlay elements as well 
+		try {
 		prefListener.unregister(); 
 		removePanelMenu(window.document); 
 		removeButton(_ssleuthButton(window)); 
 
 		deleteKeyShortcut(window.document); 
 		removeStyleSheet(); 
+
+		// A preference tab is open ?
+		} catch (e) { dump("Error uninit : " + e.message + "\n"); }
 	},
 
 	onLocationChange: function(window) {
-		/* The document elements are not available until a 
-		 * successful init. So we need to add the child panel
-		 * for the first time */
+		// The document elements are not available until a 
+		// successful init. So we need to add the child panel
+		// for the first time 
 		try {
 				if (window == null ) {
 					dump("\n UI onLocationchange window is null! \n"); 
@@ -100,8 +103,8 @@ var ssleuthUI = {
 			dump("Error onlocation change ssleuthpanel child : " + e.message + "\n"); 
 		}
 
-		/* If the user navigates the tabs with the panel open, 
-		 *  make it appear smooth. */
+		// If the user navigates the tabs with the panel open, 
+		//  make it appear smooth. 
 		var ssleuthPanel = _ssleuthPanel(window);
 		if (ssleuthPanel.state == "open") {
 			showPanel(ssleuthPanel, true); 
@@ -159,7 +162,7 @@ function _window() {
 }
 
 function _ssleuthButton(window) {
-	const ui = ssleuthUI; 
+	const ui = SSleuthUI; 
 	const win = window; 
 	if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
 		return win.document.getElementById("ssleuth-tb-button");
@@ -169,7 +172,7 @@ function _ssleuthButton(window) {
 }
 
 function _ssleuthBtnImg() {
-	const ui = ssleuthUI; 
+	const ui = SSleuthUI; 
 	const win = _window(); 
 	if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
 		return win.document.getElementById("ssleuth-tb-button");
@@ -218,7 +221,7 @@ function createPanel(panelId, position, window) {
 
 function installButton(ssleuthButton, firstRun, document) {
 	try {
-		const ui = ssleuthUI; 
+		const ui = SSleuthUI; 
 		if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
 			// The whole thing helps in remembering the toolbar button location?
 			//
@@ -269,7 +272,7 @@ function installButton(ssleuthButton, firstRun, document) {
 function createButton(window) {
 	try {
 		const document = window.document; 
-		const ui = ssleuthUI; 
+		const ui = SSleuthUI; 
 		var button; 
 		var panelPosition; 
 
@@ -279,9 +282,9 @@ function createButton(window) {
 			button.setAttribute("removable", "true");
 			button.setAttribute("class",
 				"toolbarbutton-1 chromeclass-toolbar-additional");
-			button.setAttribute("type", "menu-button");
+			button.setAttribute("type", "panel");
 			panelPosition = "bottomcenter topright"; 
-			/* For a toolbar button, images can be set directly.*/
+			// For a toolbar button, images can be set directly.
 			button.setAttribute("rank", "default"); 
 
 		} else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
@@ -312,8 +315,8 @@ function createButton(window) {
 			var desc = document.createElement("description"); 
 			desc.setAttribute("id", "ssleuth-ub-rank"); 
 			desc.setAttribute("class", "plain ssleuth-text-body-class"); 
-			/* For some strange reason, the below one doesn't work from
-			 	the style sheet! */
+			// For some strange reason, the below one doesn't work from
+			// 	the style sheet! 
 			desc.setAttribute("style", "padding-left: 4px; padding-right: 2px;"); 
 			button.appendChild(desc); 
 		}
@@ -344,9 +347,10 @@ function panelEvent(event) {
 		// need to open the panel in this case. 
 		try {
 			dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
+			const ui = SSleuthUI; 
 			if (!(event.type == "click" && 
 					event.button == 0 &&
-					ssleuthUI.ssleuthBtnLocation == ssleuthUI.ssleuthLoc.TOOLBAR )) { 
+					ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR )) { 
 				togglePanel(_ssleuthPanel(_window())); 
 			}
 	 	} catch(ex) {
@@ -437,7 +441,7 @@ function setButtonRank(connectionRank) {
 
 	_ssleuthBtnImg().setAttribute("rank", buttonRank); 
 
-	if (ssleuthUI.ssleuthBtnLocation == ssleuthUI.ssleuthLoc.URLBAR) {
+	if (SSleuthUI.ssleuthBtnLocation == SSleuthUI.ssleuthLoc.URLBAR) {
 		var ssleuthUbRank = doc.getElementById("ssleuth-ub-rank");  
 
 		ssleuthUbRank.setAttribute("rank", buttonRank);
@@ -473,9 +477,11 @@ function showCipherDetails(cipherSuite, rp) {
 	doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
 		(cipherSuite.keyExchange.ui); 
 	doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
-		(cipherSuite.authentication.ui); " " 
+		(cipherSuite.authentication.ui + "."); 
+
+	// Need to localize 'bits'. XUL - may not need ids. 
 	doc.getElementById("ssleuth-text-cipher-suite-auth-key").textContent =
-		(cipherSuite.signatureKeyLen); 
+		(cipherSuite.signatureKeyLen + " bits."); 
 	doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
 		(cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen 
 			+ " bits.");
@@ -486,9 +492,9 @@ function showCipherDetails(cipherSuite, rp) {
 	doc.getElementById("ssleuth-text-cipher-suite-hmac-notes").textContent = 
 		cipherSuite.HMAC.notes; 
 
-	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
+	const panelInfo = SSleuthUI.prefs.PREFS["panel.info"]; 
 	doc.getElementById("ssleuth-text-authentication").hidden 
-		= !(panelInfo.certSig); 
+		= !(panelInfo.authAlg); 
 	doc.getElementById("ssleuth-text-bulk-cipher").hidden
 		= !(panelInfo.bulkCipher); 
 	doc.getElementById("ssleuth-text-hmac").hidden
@@ -539,7 +545,7 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
 	var validity = cert.validity.QueryInterface(Ci.nsIX509CertValidity);
 	var doc = _window().document; 
 
-	const panelInfo = ssleuthUI.prefs.PREFS["panel.info"]; 
+	const panelInfo = SSleuthUI.prefs.PREFS["panel.info"]; 
 	doc.getElementById("ssleuth-text-cert-common-name").textContent = cert.commonName; 
 	var certRating = doc.getElementById("ssleuth-cert-status-rating"); 
 	var evRating = doc.getElementById("ssleuth-cert-ev-rating"); 
@@ -595,13 +601,13 @@ function createKeyShortcut(doc) {
 	var keyset = doc.createElement("keyset"); 	
 	var key = doc.createElement("key"); 
 	const shortcut = 
-		ssleuthUI.prefs.PREFS["ui.keyshortcut"]; 
+		SSleuthUI.prefs.PREFS["ui.keyshortcut"]; 
 
 	key.setAttribute("id", "ssleuth-panel-keybinding"); 
 	key.addEventListener("command", panelEvent);
-	/* Mozilla, I have no clue, without pointing 'oncommand' to
-	 * something, the key events won't fire! I already have an 
-	 * event listener for 'command'. */
+	// Mozilla, I have no clue, without pointing 'oncommand' to
+	// something, the key events won't fire! I already have an 
+	// event listener for 'command'.
 	key.setAttribute("oncommand", "void(0);");
 
 	var keys = shortcut.split(" ");
@@ -619,26 +625,17 @@ function deleteKeyShortcut(doc) {
 }
 
 function readUIPreferences() {
-	const prefs = ssleuthPreferences.prefService; 
-	ssleuthUI.ssleuthBtnLocation = 
+	const prefs = SSleuthPreferences.prefService; 
+	SSleuthUI.ssleuthBtnLocation = 
 		prefs.getIntPref("extensions.ssleuth.notifier.location"); 
 }
-
-/* function setUIPreferences(doc) {
-	const prefs = 
-		ssleuthPreferences.prefService;
-
-	setPanelFont(prefs.getIntPref("extensions.ssleuth.panel.fontsize"), doc); 
-}*/
 
 function setPanelFont(panelFont, doc) {
 	var bodyFontClass = "ssleuth-text-body-class";
 	var titleFontClass = "ssleuth-text-title-class";
 	var imgStateClass = "ssleuth-img-state"; 
 
-	/* 0 = default
-	 *  1 = medium
-	 *  2 = large */
+	// 0 = default, 1 = medium, 2 = large
 	var configBody = ["ssleuth-text-body-small", "ssleuth-text-body-medium",
 					"ssleuth-text-body-large"];
 	var configTitle = ["ssleuth-text-title-small", "ssleuth-text-title-medium",
@@ -678,14 +675,14 @@ function menuEvent(event) {
 		var doc = _window().document; 
 
 		var ssleuthPanelMenu = doc.getElementById("ssleuth-panel-menu"); 
-		var menupopup = ssleuthUI.panelMenuTemplate.cloneNode(true); 
+		var menupopup = SSleuthUI.panelMenuTemplate.cloneNode(true); 
 
 		// TODO : Replace with a traverse, and find ssleuth-menu-cs-reset-all
 		// Note that this is the cloned node, and not yet inserted into doc
 		var mi = menupopup.firstChild.nextSibling.nextSibling;
 
 		// This has to be done everytime, as the preferences change.
-		var csList = JSON.parse(ssleuthPreferences.prefService
+		var csList = JSON.parse(SSleuthPreferences.prefService
 						.getCharPref("extensions.ssleuth.suites.toggle"));
 		if (csList.length >0) {
 			for (var i=0; i<csList.length; i++) {
@@ -705,13 +702,13 @@ function menuEvent(event) {
 				}
 				m_popup.addEventListener("command", function(event) {
 					var m = event.currentTarget.parentNode;
-					var csTglList = cloneArray(ssleuthUI.prefs.PREFS["suites.toggle"]); 
+					var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
 					for (var i=0; i<csTglList.length; i++) {
 						if (m.label === csTglList[i].name) {
 							csTglList[i].state = event.target.value; 
 						}
 					}
-					ssleuthPreferences.prefService
+					SSleuthPreferences.prefService
 						.setCharPref("extensions.ssleuth.suites.toggle", JSON.stringify(csTglList));
 				}); 
 
@@ -743,14 +740,14 @@ function menuCommand(event) {
 	var doc = _window().document; 
 	switch (event.target.id) {
 		case 'ssleuth-menu-cs-reset-all' : 
-			const prefs = ssleuthPreferences.prefService; 
+			const prefs = SSleuthPreferences.prefService; 
 
             var csList = prefs.getChildList("security.ssl3.", {}); 
             for (var i=0; i<csList.length; i++) {
                 prefs.clearUserPref(csList[i]); 
             }
 
-			var csTglList = cloneArray(ssleuthUI.prefs.PREFS["suites.toggle"]); 
+			var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
             for (i=0; i<csTglList.length; i++) {
                 csTglList[i].state = "default";
             }
@@ -758,13 +755,13 @@ function menuCommand(event) {
 				JSON.stringify(csTglList));
 			break;
 		case 'ssleuth-menu-cs-custom-list' 	:
-			ssleuthPreferences.openDialog(2); 
+			SSleuthPreferences.openTab(2); 
 			break;
 		case 'ssleuth-menu-open-preferences' : 
-			ssleuthPreferences.openDialog(0);
+			SSleuthPreferences.openTab(0);
 			break;
 		case 'ssleuth-menu-open-about'	:
-			ssleuthPreferences.openDialog(3);
+			SSleuthPreferences.openTab(3);
 			break; 
 	}
 }
@@ -800,7 +797,7 @@ function createPanelMenu(doc) {
 	menuitem.setAttribute("id", "ssleuth-menu-open-about"); 
 	menupopup.appendChild(menuitem); 
 
-	ssleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
+	SSleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
 
 	/* Right place to insert the menupopup? */
 	doc.documentElement.appendChild(menupopup); 
@@ -820,35 +817,35 @@ function forEachOpenWindow(todo) {
 }
 
 var prefListener = new PrefListener(
-	ssleuthPreferences.prefBranch,
+	SSleuthPreferences.prefBranch,
 	function(branch, name) {
 		switch(name) {
 			case "notifier.location":
 				// Changing the notifier location requires tearing down
 				// everything. Button, panel.. and the panel overlay!
-				ssleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
+				SSleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
 				forEachOpenWindow(function(win) {
-					ssleuthUI.uninit(win); 
+					SSleuthUI.uninit(win); 
 				}); 
 			
 				forEachOpenWindow(function(win) {
-					ssleuthUI.init(win); 
+					SSleuthUI.init(win); 
 				}); 
 				break;
 			case "panel.fontsize":
-				ssleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
+				SSleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
 				forEachOpenWindow(function(win) {
 					setPanelFont(branch.getIntPref(name), win.document); 
 				}); 
 				break;
 			case "ui.keyshortcut":
-				ssleuthUI.prefs.PREFS[name] = branch.getCharPref(name); 
+				SSleuthUI.prefs.PREFS[name] = branch.getCharPref(name); 
 				forEachOpenWindow(function(win) {
 					deleteKeyShortcut(win.document); 
 					createKeyShortcut(win.document); 
 				}); 
 			case "panel.info" :
-				ssleuthUI.prefs.PREFS[name] = 
+				SSleuthUI.prefs.PREFS[name] = 
 					JSON.parse(branch.getCharPref(name)); 
 		}
 	}

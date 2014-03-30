@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!-- ?xml-stylesheet href="chrome://ssleuth/skin/ssleuth.css" type="text/css"?-->
 <!DOCTYPE overlay SYSTEM "chrome://ssleuth/locale/ssleuth.dtd">
 <overlay id="ssleuth-panel-overlay" 
 				 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
@@ -68,9 +67,6 @@
 														value="Server key:"
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-auth-key"
-														class="ssleuth-text-body-class"/>
-							<description id="ssleuth-text-cipher-suite-auth-key-bits"
-														value="bits."
 														class="ssleuth-text-body-class"/>
 							<description id="ssleuth-text-cipher-suite-auth-notes"
 														class="ssleuth-text-body-class"/>

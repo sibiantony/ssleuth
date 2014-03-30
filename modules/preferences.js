@@ -1,6 +1,6 @@
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ssleuthPreferences", 
+var EXPORTED_SYMBOLS = ["SSleuthPreferences", 
 							"PrefListener"]; 
 
 const Cc = Components.classes;
@@ -11,10 +11,10 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 
 var ssleuthPanelInfo = {
-	HMAC			: false,
+	keyExchange 	: false,
+	authAlg			: true,
 	bulkCipher		: true,
-	keyExchange 	: true,
-	certSig			: true,
+	HMAC			: true,
 	certValidity 	: true,
 	validityTime	: true,
 	certFingerprint : false
@@ -33,7 +33,7 @@ var ssleuthDefaultPrefs = {
    }
 }; 
 
-var ssleuthPreferences = {
+var SSleuthPreferences = {
 	prefBranch : ssleuthDefaultPrefs.PREF_BRANCH, 
 	prefService: null, 
 
@@ -44,7 +44,7 @@ var ssleuthPreferences = {
 	},
 
 	uninit: function() {
-		this.closeDialog(); 
+		this.closeTab(); 
 	},
 
 	setDefaultPreferences: function() {
@@ -67,7 +67,7 @@ var ssleuthPreferences = {
 		}
 	},
 
-	openDialog : function(index) {
+	openTab : function(index) {
 
 		const win = _window(); 
 
@@ -79,12 +79,12 @@ var ssleuthPreferences = {
 			this.prefsTab = prefsTab; 
 			this.prefsTabWin = win; 
 			prefsTab.addEventListener("TabClose", function() {
-						ssleuthPreferences.prefsTab = null; 
-						ssleuthPreferences.prefsTabWin = null; 
+						SSleuthPreferences.prefsTab = null; 
+						SSleuthPreferences.prefsTabWin = null; 
 						}, false); 
 			win.addEventListener("unload", function() {
-						ssleuthPreferences.prefsTab = null; 
-						ssleuthPreferences.prefsTabWin = null; 
+						SSleuthPreferences.prefsTab = null; 
+						SSleuthPreferences.prefsTabWin = null; 
 						}, false);
 		} else {
 			this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
@@ -95,25 +95,30 @@ var ssleuthPreferences = {
 						.contentWindow.CustomEvent("ssleuth-prefwindow-index", 
 								{"detail" : index}); 
 		this.prefsTab.linkedBrowser.contentWindow.dispatchEvent(event);
-		// This event won't be received for the first time - can't sync with 'load' ?
-		// Doing a load event listener and sending the event will bring other problems
-		// 		- Will not receive the 'load' if the tab is already in focus.
-		// 		- Won't get the first event again, if we remove the event listener from inside.
+		// This event won't be received for the first time - can't sync 
+		// with 'load' ?
+		// Doing a load event listener and sending the event will bring 
+		// other problems
+		// 	- Will not receive the 'load' if the tab is already in focus.
+		// 	- Won't get the first event again, if we remove the event listener 
+		// 		from inside.
 		// So send the tab index in a storage for the first time.
 		let application = 
 			Cc["@mozilla.org/fuel/application;1"].getService(Ci.fuelIApplication);
 		application.storage.set("ssleuth.prefwindow.tabindex", index); 
 	}, 
 
-	closeDialog: function() {
+	closeTab: function() {
 		const prefsTab = this.prefsTab; 
-		if (prefsTab && !prefsTab.closed) {
-			prefsTab.close();
+		if (prefsTab) {
+			_window().gBrowser.removeTab(prefsTab);
+			this.prefsTab = null;
+			this.prefsTabWin = null; 
 		}
 	},
 
 	readInitPreferences: function() {
-		const prefs = ssleuthPreferences.prefService;
+		const prefs = SSleuthPreferences.prefService;
 		var sp = ssleuthDefaultPrefs; 
 		for (let [key, val] in Iterator(sp.PREFS)) {
 			switch (typeof val) {
@@ -147,10 +152,6 @@ PrefListener.prototype.observe = function(subject, topic, data) {
 		this._callback(this._branch, data);
 };
 
-/**
- * @param {boolean=} trigger if true triggers the registered function
- *	 on registration, that is, when this method is called.
- */
 PrefListener.prototype.register = function(trigger) {
 	this._branch.addObserver('', this, false);
 	if (trigger) {
@@ -167,7 +168,7 @@ PrefListener.prototype.unregister = function() {
 		this._branch.removeObserver('', this);
 };
 
-/* Move to utils ? */
+// Move to utils ?
 function _window() {
 	return Services.wm.getMostRecentWindow("navigator:browser");
 }

@@ -3,7 +3,7 @@
   <setting pref-name="preferences" title="Preferences" type="control">
     SSleuth preferences
     <button label="Open Preferences"
-			oncommand="Components.utils.import('resource://ssleuth/preferences.js'); ssleuthPreferences.openDialog(0);"
+			oncommand="Components.utils.import('resource://ssleuth/preferences.js'); SSleuthPreferences.openTab(0);"
 			pref-name="preferences"/>
   </setting>
 </vbox>
