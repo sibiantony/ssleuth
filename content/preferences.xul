@@ -179,9 +179,9 @@
 												id="ssleuth-pref-cx-ratings-reset"
 												/>
 							</hbox>
-							<description value=""/>
 					</vbox>
 				</groupbox>
+				<description value=""/>
 
 				<groupbox>
 					<caption label="Cipher suite rating"/>

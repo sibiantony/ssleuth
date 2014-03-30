@@ -91,20 +91,6 @@
     background: transparent;
 }
 
-.ssleuth-img-state {
-}
-.ssleuth-img-state-small {
-    margin-top: 0.22em; 
-	width: 13px;
-}
-.ssleuth-img-state-medium {
-    margin-top: 0.22em; 
-	width: 14px;
-}
-.ssleuth-img-state-large {
-    margin-top: 0.22em;
-	width: 15px;
-}
 
 #ssleuth-img-cipher-rank[status="low"] {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png");
@@ -208,6 +194,29 @@
 	color : #686868; 
 }
 
+.ssleuth-img-state-small {
+	margin-top: 0.25em; 
+	width: 1.0em;
+}
+.ssleuth-img-state-medium {
+	margin-top: 0.25em; 
+	width: 1.05em;
+}
+.ssleuth-img-state-large {
+	margin-top: 0.25em; 
+	width: 1.2em;
+}
+
+/* .win.gecko .ssleuth-img-state-small {
+    margin-top: 0.2em; 
+}
+.win.gecko .ssleuth-img-state-medium {
+    margin-top: 0.2em; 
+}
+.win.gecko .ssleuth-img-state-large {
+    margin-top: 0.2em;
+} */
+
 .ssleuth-text-body-small {
     font-size: 0.85em; 
 }
@@ -285,7 +294,6 @@
 	border-top-left-radius: 5px;
 	border-bottom-left-radius: 5px;
 }
-
 .ssleuth-pref-category:-moz-locale-dir(rtl) {
 	border-top-right-radius: 5px;
 	border-bottom-right-radius: 5px;
@@ -307,13 +315,7 @@
 }
 
 .ssleuth-pref-category[selected] {
-	background-color: -moz-Field;
-	color: -moz-FieldText;
+	background-color: -moz-field;
+	color: -moz-fieldtext;
 	border-color: ThreeDShadow;
 }
-
-/* Make this with a class 
-grid {
-	font-size: 80%;
-} */
-
