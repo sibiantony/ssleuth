@@ -140,7 +140,6 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 	const cs = ssleuthCipherSuites; 
 	var securityState = "";
 	var cipherName = sslStatus.cipherName; 
-	var cipherSuite = null; 
 	var cert = sslStatus.serverCert;
 	var extendedValidation = false;
 
@@ -161,8 +160,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 		domainNameMatched = "Yes"; 
 	}
 
-
-	cipherSuite = { 
+	var cipherSuite = { 
 		name: cipherName, 
 		rank: cs.cipherSuiteStrength.LOW, 
 		pfs: 0, 

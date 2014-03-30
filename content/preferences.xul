@@ -309,7 +309,7 @@
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
 						<caption label="Project"/>
-						<description value="Copyright (C) 2013-2014 Sibi Antony"/>
+						<description value="Author : Sibi Antony"/>
 						<description class="ssleuth-pref-text" >
 								Your feedback and development/translation support are welcome.
 								See the project page for more details.
