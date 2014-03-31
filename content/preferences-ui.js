@@ -438,7 +438,6 @@
 			// states = default, enable, disable
 			var state = rg.value; 
 
-			// dump("Radio event : label : " + label + " state : " + state + "\n"); 
 			for (var i=0; i<csTglList.length; i++) {
 				if (label === csTglList[i].name) {
 					csTglList[i].state = state; 

@@ -90,15 +90,6 @@
 														class="ssleuth-text-body-class"/>
 						</hbox>
 			
-						<!-- hbox id="ssleuth-text-cipher-details">
-							<description id="ssleuth-text-cipher-suite-rank-label"
-														value="&ssleuth.cipher.suite.rank.label;"
-														class="ssleuth-text-body-class"/>
-							<description id="ssleuth-text-cipher-suite-rank"
-														class="ssleuth-text-body-class"/>
-					 	</hbox-->
-						<!-- description id="ssleuth-text-cipher-suite-note"
-														class="ssleuth-text-body-class"/-->
 					</vbox>
 				</hbox>
 
@@ -168,7 +159,6 @@
 								<description id="ssleuth-cert-ev-rating" 
 											class="ssleuth-text-body-rating"/>
 							</hbox>
-
 						</hbox>
 
 						<description id="ssleuth-text-cert-domain-mismatch" 
@@ -215,7 +205,6 @@
 							<description id="ssleuth-text-cert-validity"
 														class="ssleuth-text-body-class"/>
 						</hbox>
-
 						<description id="ssleuth-text-cert-fingerprint"
 													class="ssleuth-text-body-class"/>
 					</vbox>
@@ -239,7 +228,6 @@
 										crop="center" focus="true"/>
 						<description id="ssleuth-text-http-note"
 													class="ssleuth-text-body-class">
-
 							&ssleuth.http.enc.disclaimer;
 						</description>
 					</vbox>

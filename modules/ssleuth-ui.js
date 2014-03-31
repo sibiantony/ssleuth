@@ -19,13 +19,13 @@ var SSleuthUI = {
 	panelMenuTemplate: null, 
 
 	init: function(window) {
-		dump ("\nssleuth UI init : \n");
+		// dump ("\nssleuth UI init : \n");
 		try {
 			window.document.loadOverlay("chrome://ssleuth/content/ssleuth.xul", 
 					{observe: function(subject, topic, data) {
 						if (topic == "xul-overlay-merged") {
 							// dump("\nXUL overlay merged! \n"); 
-							/* TODO : Keep an eye on this 'window' element!*/
+							// TODO : Keep an eye on this 'window' element!
 							try {
 								SSleuthUI.initUI(window); 
 							} catch (e) {
@@ -37,14 +37,13 @@ var SSleuthUI = {
 					}});
 		} catch (e) {
 			dump("Failed overlay load : " + e.message + "\n"); 
+			SSleuthUI.uninit(_window()); 
 		}
 	},
 
 	initUI: function(window) {
 		// Verify if things are in good shape! 
-		if (window.document.getElementById("ssleuth-panel-vbox")) {
-			dump("initUI : panel elems available!\n"); 
-		} else {
+		if (!window.document.getElementById("ssleuth-panel-vbox")) {
 			this.uninit(); 
 		}
 		this.prefs = SSleuthPreferences.readInitPreferences(); 
@@ -52,7 +51,6 @@ var SSleuthUI = {
 				prefListener.register(false); 
 				this.prefRegistered = true; 	
 		}
-
 		
 		this.ssleuthBtnLocation = this.prefs.PREFS["notifier.location"]; 
 		var ssleuthButton = createButton(window); 
@@ -75,7 +73,7 @@ var SSleuthUI = {
 	}, 
 
 	uninit: function(window) {
-		dump("\n SSleuth UI  : uninit \n"); 
+		// dump("\n SSleuth UI  : uninit \n"); 
 		// Cleanup everything! 
 		// Removing the button deletes the overlay elements as well 
 		try {
@@ -94,14 +92,7 @@ var SSleuthUI = {
 		// The document elements are not available until a 
 		// successful init. So we need to add the child panel
 		// for the first time 
-		try {
-				if (window == null ) {
-					dump("\n UI onLocationchange window is null! \n"); 
-					return; 
-				}
-			} catch (e) {
-			dump("Error onlocation change ssleuthpanel child : " + e.message + "\n"); 
-		}
+		if (!window) return; 
 
 		// If the user navigates the tabs with the panel open, 
 		//  make it appear smooth. 
@@ -206,7 +197,6 @@ function removeStyleSheet() {
 }
 
 function createPanel(panelId, position, window) {
-	dump ("\n createPanel ** \n"); 
 	const doc = window.document; 
 	try {
 		var panel = doc.createElement("panel"); 
@@ -233,7 +223,6 @@ function installButton(ssleuthButton, firstRun, document) {
 			palette.appendChild(toolbarButton);
 			var currentset = toolbar.getAttribute("currentset").split(",");
 			var index = currentset.indexOf(buttonId);
-			dump ("Index : " + index + "\n"); 
 			if (index == -1) {
 				if (firstRun) {
 				// No button yet so add it to the toolbar.
@@ -328,7 +317,6 @@ function createButton(window) {
 }
 
 function removeButton(button) {
-	dump("\n Remove button \n"); 
 	try {
 		button.parentElement.removeChild(button); 
 	} catch (ex) {
@@ -337,7 +325,6 @@ function removeButton(button) {
 }
 
 function panelEvent(event) {
-	dump("\n XUL Panel Event : " + event.type + "\n"); 
 	if (event.type == "click" && event.button == 2) {
 		/* ssleuth.openPreferences(); */
 	} else {
@@ -346,7 +333,7 @@ function panelEvent(event) {
 		// Unlike a shortcut-key or the urlbar notifier, we don't
 		// need to open the panel in this case. 
 		try {
-			dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
+			// dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
 			const ui = SSleuthUI; 
 			if (!(event.type == "click" && 
 					event.button == 0 &&
@@ -354,7 +341,7 @@ function panelEvent(event) {
 				togglePanel(_ssleuthPanel(_window())); 
 			}
 	 	} catch(ex) {
-			dump("Error while panelEvent action : " + ex.message + "\n"); 
+			dump("Error during panelEvent action : " + ex.message + "\n"); 
 		}
 	}
 }
@@ -513,7 +500,6 @@ function showPFS(pfs, rp) {
 	var rating = Number(pfs * rp.pfs).toFixed(1);
 	pfsRating.textContent = rating + "/" + rp.pfs; 
 
-	// pfsImg.setAttribute("hidden", "false"); 
 	if (pfs) {
 		pfsImg.setAttribute("status", "yes"); 
 		pfsTxt.textContent = "Perfect Forward Secrecy : Yes";

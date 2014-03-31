@@ -19,12 +19,11 @@ var SSleuth = {
 
 	init: function(window) {
 
-		dump("\nssleuth init \n"); 
+		// dump("\nSSleuth init \n"); 
 		// Handle exceptions while init(). If the panel
 		// is not properly installed for the buttons, the mainPopupSet 
 		// panel elements will wreak havoc on the browser UI. 
 		try {
-			dump ("\nSSleuth init \n"); 
 			window.gBrowser.addProgressListener(this);
 			this.prefs = SSleuthPreferences.readInitPreferences(); 
 			if (!this.prefRegistered) {
@@ -39,7 +38,7 @@ var SSleuth = {
 	},
 
 	uninit: function(window) {
-		dump("\nUninit \n");
+		// dump("\nUninit \n");
 		SSleuthUI.uninit(window); 
 		prefListener.unregister(); 
 		window.gBrowser.removeProgressListener(this);
@@ -49,10 +48,7 @@ var SSleuth = {
 		/* FIXME: This might throw error during startup with ff29! 
 		 * 	Modified - Test! */
 		var win = Services.wm.getMostRecentWindow("navigator:browser"); 
-		if (win == null) {
-			dump("Window is null\n"); 
-			return;
-		}
+		if (!win) return; 
 		if (aURI.spec == this.prevURL) {
 			this.urlChanged = false; 
 			return; 
@@ -71,21 +67,16 @@ var SSleuth = {
 
 	onStateChange: function(aWebProgress, aRequest, aFlag, aStatus) {
 		return; 
-    },
+  },
 
 	onSecurityChange: function(aWebProgress, aRequest, aState) {
 		var win = Services.wm.getMostRecentWindow("navigator:browser");
-
 		var loc = win.content.location;
 
-		dump("\nonSecurityChange: " + loc.protocol + "\n"); 
+		// dump("\nonSecurityChange: " + loc.protocol + "\n"); 
 		if (loc.protocol == "https:" ) {
-			try {
-				protocolHttps(aWebProgress, aRequest, aState, win);
-			} catch (e) {
-				dump("Failed protocolHttps : " + e.message + "\n"); 
-			}
-		} else if(loc.protocol == "http:" ) {
+			protocolHttps(aWebProgress, aRequest, aState, win);
+		} else if (loc.protocol == "http:" ) {
 			protocolHttp(loc);
 		} else {
 			protocolUnknown(); 
@@ -98,14 +89,12 @@ function protocolUnknown() {
 }
 
 function protocolHttp(loc) {
-	dump("\nprotocolHttp \n");
-
 	var httpsURL = loc.toString().replace("http://", "https://"); 
 	SSleuthUI.protocolChange("http", httpsURL);
 }
 
 function protocolHttps(aWebProgress, aRequest, aState, win) {
-	dump("\nprotocolHttps \n");
+	// dump("\nprotocolHttps \n");
 	const Cc = Components.classes; 
 	const Ci = Components.interfaces;
 
@@ -116,13 +105,12 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 	
 	var sslStatus = secUI.SSLStatus; 
 	if (!sslStatus) {
-		dump("\nSSLStatus is null : Querying SSLstatus \n");
 		secUI.QueryInterface(Ci.nsISSLStatusProvider); 
 		if (secUI.SSLStatus) {
 			sslStatus = secUI.SSLStatus; 
 		}
 		if (!sslStatus) {
-			dump("\nSSLStatus is null \n");
+			// dump("\nSSLStatus is null \n");
 			// 1. A rather annoying behaviour : Firefox do not seem to populate
 			//  SSLStatus if a tab switches to a page with the same URL.
 			//
@@ -301,6 +289,7 @@ function isCertValid(cert) {
 }
 
 function getSignatureKeyLen(cert, auth) {
+	var keySize = '';
 	try {
 		var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
 							.createInstance(Components.interfaces.nsIASN1Tree); 
@@ -312,7 +301,6 @@ function getSignatureKeyLen(cert, auth) {
 		// which could get localized.
 		// So simply extract the first occuring digit from the string
 		// corresponding to Subject's Public key. Hope this holds on. 
-		var keySize = 0; 
 		switch(auth) {
 			case "RSA" : 
 				keySize = certASN1.getDisplayData(12)
@@ -325,11 +313,10 @@ function getSignatureKeyLen(cert, auth) {
 								.match(/\d+/g)[0]; 
 					break;
 		}
-				
-		return keySize;
 	} catch (e) { 
 		dump("Error getSignatureKeyLen() : " + e.message + "\n"); 
 	}
+	return keySize;
 }
 
 function toggleCipherSuites(prefsOld) {
@@ -397,7 +384,7 @@ var prefListener = new PrefListener(
 						JSON.parse(branch.getCharPref(name));
 				break;
 			case "suites.toggle" :
-				// TODO : No need for a cloned array here ? Why? 
+				// TODO : No need for a cloned array here ?
 				var prefsOld = SSleuth.prefs.PREFS["suites.toggle"]; 
 				SSleuth.prefs.PREFS["suites.toggle"] = 
 						JSON.parse(branch.getCharPref(name));

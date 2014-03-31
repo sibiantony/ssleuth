@@ -104,7 +104,7 @@ const ssleuthConnectionRating = {
  * "reset->default" is only a transition state, which means once the reset
  *		is done, the state is set to "default".
  * "enable" and "disable" are permanent states, ie. everytime the preferences
- * are loaded, on every startup these states are checked and cipher suites
+ * are loaded, these states are checked and cipher suites
  * are enabled/disabled.
  */
 const ffToggleDefault = [
