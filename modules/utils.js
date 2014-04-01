@@ -2,9 +2,6 @@
 
 var EXPORTED_SYMBOLS = ["cloneArray"]; 
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/Services.jsm");
-
 function cloneArray(obj) {
 	if (Object.prototype.toString.call(obj) === '[object Array]') {
 		var out = [], i = 0, len = obj.length;

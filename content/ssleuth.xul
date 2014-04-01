@@ -4,9 +4,7 @@
 				 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
 	<popupset id="mainPopupSet">
-		<!-- Box container for the panel. Not sure if mainPopupSet is the
-				 right place for this.
-
+		<!-- Box container for the panel. 
 				 hidden='true' is necessary to prevent XUL loading the elements
 				 on top of the toolbar the first time -->
 		<box id="ssleuth-panel-vbox">
