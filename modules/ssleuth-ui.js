@@ -69,10 +69,13 @@ var SSleuthUI = {
 		loadStyleSheet(); 
 		
 		var ssleuthPanel = _ssleuthPanel(window); 
-		/* if (ssleuthPanel == null) {
+		if (ssleuthPanel == null) {
 			dump("\n UI initUI ssleuthPanel is null! \n"); 
-		} */
+		}
+		dump("initUI : get ssleuthpanel box \n");
+		try {
 		var panelVbox = SSleuthPanel(window); //window.document.getElementById("ssleuth-panel-vbox"); 
+		} catch (e) { dump("error : " + e.message + "\n");}
 		dump("SSleuthpanel type : " + typeof(panelVbox) + "\n");
 		ssleuthPanel.appendChild(panelVbox); 
 		setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 

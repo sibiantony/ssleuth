@@ -7,16 +7,15 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 function SSleuthPanel(win) {
 	try {
-	// var win = Services.wm.getMostRecentWindow("navigator:browser"); 
 	var doc = win.document; 
 
-	dump("SSleuthPanel \n"); 
+	// dump("SSleuthPanel \n"); 
 	// Box container for the panel. 
 	var panelbox = vbox({id: 'ssleuth-panel-vbox'});
-	{
+	/*{
 		let vb = panelbox.appendChild(vbox({
 									id: 'ssleuth-panel-vbox-https', 
-									flex: '2', width: '320', height: '250', hidden: 'true'
+									flex: '2', width: '300', height: '250', hidden: 'true'
 								})); 
 		{
 			let hb = vb.appendChild(hbox({
@@ -36,10 +35,11 @@ function SSleuthPanel(win) {
 		}
 
 		{
-			let hb = vb.appendChild(vbox({align: 'top', 
+			let hb = vb.appendChild(hbox({align: 'top', 
 										width: '300', flex: '2'}));
 			{
-				let vb = hb.appendChild(vbox({align: 'left', 
+				let vb = hb.appendChild(vbox({id: 'ssleuth-hbox-1-vbox-1',
+										align: 'left', 
 										width: '25'})); 
 				vb.appendChild(image({
 											id: 'ssleuth-img-cipher-rank',
@@ -50,7 +50,7 @@ function SSleuthPanel(win) {
 				vb.appendChild(description({
 									id: 'ssleuth-text-cipher-suite-label',
 									value: 'Cipher suite details',
-									class:'ssleuth-text-title-class'})); 
+									class: 'ssleuth-text-title-class'})); 
 				{
 					let hb = vb.appendChild(hbox({
 											id: 'ssleuth-text-cipher-suite-name', 
@@ -106,7 +106,7 @@ function SSleuthPanel(win) {
 												id: 'ssleuth-text-bulk-cipher'})); 
 					hb.appendChild(description({
 												id: 'ssleuth-text-bulk-cipher-label',
-												value: 'Bulk cipher', 
+												value: 'Bulk cipher: ', 
 												class: 'ssleuth-text-body-class'})); 
 					hb.appendChild(description({
 												id: 'ssleuth-text-cipher-suite-bulkcipher',
@@ -120,7 +120,7 @@ function SSleuthPanel(win) {
 												id: 'ssleuth-text-hmac'})); 
 					hb.appendChild(description({
 												id: 'ssleuth-text-hmac-label',
-												value: 'HMAC', 
+												value: 'HMAC: ', 
 												class: 'ssleuth-text-body-class'})); 
 					hb.appendChild(description({
 												id: 'ssleuth-text-cipher-suite-hmac',
@@ -162,18 +162,20 @@ function SSleuthPanel(win) {
 			}
 			{
 				let vb = hb.appendChild(vbox({id: 'ssleuth-ff-connection-status-text-vbox', 
-														align: 'left', width: '25'})); 
+														flex: '2'})); 
 				{
-					let hb = vb.appendChild(hbox({id: 'ssleuth-ff-connection-status-text-hbox',
+					let hb = vb.appendChild(hbox({
+													id: 'ssleuth-ff-connection-status-text-hbox',
 													align: 'baseline'})); 
 					hb.appendChild(description({id: 'ssleuth-text-conn-status', 
-												value:'Connection status', 
+												value:'Connection status (firefox):', 
 												class: 'ssleuth-text-title-class'})); 
 					hb.appendChild(description({id: 'ssleuth-text-ff-connection-status', 
 												class: 'ssleuth-text-title-class'})); 
 					{
 						let chb = hb.appendChild(hbox({ flex: '2', align: 'right'})); 
-						chb.appendChild(description({id : 'ssleuth-ff-connection-status-rating'})); 
+						chb.appendChild(description({id : 'ssleuth-ff-connection-status-rating',
+						class: 'ssleuth-text-body-rating'})); 
 					}
 
 				}
@@ -277,29 +279,34 @@ function SSleuthPanel(win) {
 		
 	}
 	{
-		let vb = panelbox.appendChild(vbox({id: 'ssleuth-panel-vbox-http',
-												width: '350', height: '100', hidden: 'true', flex: '2'})); 
+		// let vb = panelbox.appendChild(vbox({id: 'ssleuth-panel-vbox-http',
+		//										width: '350', height: '100', hidden: 'true', flex: '2'})); 
 		{
-			let hb = vb.appendChild(hbox({align: 'baseline', flex: '1'})); 
+			let hb = panelbox.appendChild(hbox({id: 'ssleuth-panel-vbox-http', 
+											align: 'baseline', flex: '2',
+											width: '350', height: '100', hidden: 'true'})); 
 			hb.appendChild(image({ id: 'ssleuth-img-http-omg', class: 'ssleuth-img-state'})); 
 			{ 
 				let vb = hb.appendChild(vbox({flex: '1'})); 
-				vb.appendChild(description({id: 'ssleuth-text-http-1', 
-										value: 'HTTP text 1',
+				let h1 = vb.appendChild(description({id: 'ssleuth-text-http-1', 
 										class: 'ssleuth-text-title-class'})); 
+				h1.setAttribute("value", "Your connection to this site is not encrypted.");
 				vb.appendChild(description({id : 'ssleuth-text-http-2', 
-										value: 'HTTP text 2',
+										value: 'You can attempt connecting to the secure version of the site if available.',
 										class: 'ssleuth-text-title-class'})); 
 				vb.appendChild(label({id: 'ssleuth-panel-https-link',
 										class:'text-link', crop: 'center', focus: 'true'})); 
-				vb.appendChild(description({id : 'ssleuth-text-http-note', 
-										class: 'ssleuth-text-body-class', 
-										value: 'Disclaimer text'})); 
+				let d1 = vb.appendChild(description({id : 'ssleuth-text-http-note', 
+										class: 'ssleuth-text-body-class'})); 
+				d1.value = "Note: The availability of the above link depends on the site\'s offering of the same content over an https connection."; 
 			}
 		} 
-	}
+	} 
 	return panelbox; 
-	} catch (e) { dump("Error creating panel : " + e.message + "\n"); }
+	*/
+	} catch (e) { 
+		dump("\nError creating panel : " + e.message ); 
+	}
 }
 
 function _doc() {
