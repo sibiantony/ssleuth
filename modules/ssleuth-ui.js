@@ -10,6 +10,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/utils.js");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 Components.utils.import("resource://ssleuth/preferences.js");
+Components.utils.import("resource://ssleuth/panel.js");
 
 var SSleuthUI = {
 	ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
@@ -20,7 +21,7 @@ var SSleuthUI = {
 
 	init: function(window) {
 		// dump ("\nssleuth UI init : \n");
-		try {
+		/* try {
 			window.document.loadOverlay("chrome://ssleuth/content/ssleuth.xul", 
 					{observe: function(subject, topic, data) {
 						if (topic == "xul-overlay-merged") {
@@ -30,7 +31,7 @@ var SSleuthUI = {
 								SSleuthUI.initUI(window); 
 							} catch (e) {
 								dump("SSLeuthUI init Error : " + e.message + "\n"); 
-								/* FIXME : window is null during an error */
+								// FIXME : window is null during an error 
 								SSleuthUI.uninit(_window());
 							}
 						}
@@ -38,14 +39,18 @@ var SSleuthUI = {
 		} catch (e) {
 			dump("Failed overlay load : " + e.message + "\n"); 
 			SSleuthUI.uninit(_window()); 
-		}
+		} */
+
+		SSleuthUI.initUI(window);
 	},
 
 	initUI: function(window) {
 		// Verify if things are in good shape! 
-		if (!window.document.getElementById("ssleuth-panel-vbox")) {
-			this.uninit(); 
-		}
+		// if (!window.document.getElementById("ssleuth-panel-vbox")) {
+		//	this.uninit(); 
+		// }
+		if (!SSleuthPanel) this.uninit(window); 
+
 		this.prefs = SSleuthPreferences.readInitPreferences(); 
 		if (!this.prefsRegistered) {
 				prefListener.register(false); 
@@ -64,16 +69,17 @@ var SSleuthUI = {
 		loadStyleSheet(); 
 		
 		var ssleuthPanel = _ssleuthPanel(window); 
-		if (ssleuthPanel == null) {
+		/* if (ssleuthPanel == null) {
 			dump("\n UI initUI ssleuthPanel is null! \n"); 
-		}
-		var panelVbox = window.document.getElementById("ssleuth-panel-vbox"); 
+		} */
+		var panelVbox = SSleuthPanel(window); //window.document.getElementById("ssleuth-panel-vbox"); 
+		dump("SSleuthpanel type : " + typeof(panelVbox) + "\n");
 		ssleuthPanel.appendChild(panelVbox); 
 		setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 
 	}, 
 
 	uninit: function(window) {
-		// dump("\n SSleuth UI  : uninit \n"); 
+		dump("\n SSleuth UI  : uninit \n"); 
 		// Cleanup everything! 
 		// Removing the button deletes the overlay elements as well 
 		try {
@@ -136,7 +142,9 @@ var SSleuthUI = {
 		showCipherDetails(cipherSuite, ratingParams); 
 		showPFS(cipherSuite.pfs, ratingParams); 
 		showFFState(securityState, ratingParams); 
+	 try {
 		showCertDetails(cert, certValid, domMismatch, ev, ratingParams); 
+		} catch(e) { dump("Error fillpanel : " + e.message + "\n"); }
 	}
 
 };
@@ -204,7 +212,7 @@ function createPanel(panelId, position, window) {
 		panel.setAttribute("position", position); 
 		panel.setAttribute("type", "arrow"); 
 	} catch (e) {
-		dump("\nError creating panel : " + e.message + "\n"); 
+		dump("\nError creating panel, yes : " + e.message + "\n"); 
 	}
 	return panel;
 }
@@ -357,6 +365,7 @@ function setHttpsLink(url) {
 function setBoxHidden(protocol, show) {
 	var doc = _window().document; 
 
+	try {
 	switch (protocol) {
 		case "http" : 
 			doc.getElementById('ssleuth-panel-vbox-http').hidden = show; 
@@ -367,6 +376,7 @@ function setBoxHidden(protocol, show) {
 		 default :
 			dump("\n Unknown container \n"); 
 	}
+	} catch (e) { dump("Error setBoxHidden : " + e.message + "\n"); }
 }
 
 function showPanel(panel, show) {

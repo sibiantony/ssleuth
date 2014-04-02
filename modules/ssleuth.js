@@ -32,7 +32,7 @@ var SSleuth = {
 			}
 			SSleuthUI.init(window); 
 		} catch(e) {
-			dump("\nError : " + e.message + "\n"); 
+			dump("\nError ssleuth init : " + e.message + "\n"); 
 			this.uninit();
 		}
 	},
@@ -94,7 +94,7 @@ function protocolHttp(loc) {
 }
 
 function protocolHttps(aWebProgress, aRequest, aState, win) {
-	// dump("\nprotocolHttps \n");
+	dump("\nprotocolHttps \n");
 	const Cc = Components.classes; 
 	const Ci = Components.interfaces;
 
@@ -110,7 +110,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 			sslStatus = secUI.SSLStatus; 
 		}
 		if (!sslStatus) {
-			// dump("\nSSLStatus is null \n");
+			dump("\nSSLStatus is null \n");
 			// 1. A rather annoying behaviour : Firefox do not seem to populate
 			//  SSLStatus if a tab switches to a page with the same URL.
 			//
@@ -256,6 +256,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
 					ratingParams);
 
 	var connectionRank = Number(rating).toFixed(1); 
+	dump("Connection rank : " + connectionRank + "\n"); 
 
 	// Invoke the UI to do its job
 	SSleuthUI.fillPanel(connectionRank, 
