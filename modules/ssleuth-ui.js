@@ -10,7 +10,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/utils.js");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 Components.utils.import("resource://ssleuth/preferences.js");
-Components.utils.import("resource://ssleuth/panel.js");
+// Components.utils.import("resource://ssleuth/panel.js");
 
 var SSleuthUI = {
   ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
@@ -20,43 +20,17 @@ var SSleuthUI = {
   panelMenuTemplate: null, 
 
   init: function(window) {
-    // dump ("\nssleuth UI init : \n");
-    /* try {
-      window.document.loadOverlay("chrome://ssleuth/content/ssleuth.xul", 
-          {observe: function(subject, topic, data) {
-            if (topic == "xul-overlay-merged") {
-              // dump("\nXUL overlay merged! \n"); 
-              // TODO : Keep an eye on this 'window' element!
-              try {
-                SSleuthUI.initUI(window); 
-              } catch (e) {
-                dump("SSLeuthUI init Error : " + e.message + "\n"); 
-                // FIXME : window is null during an error 
-                SSleuthUI.uninit(_window());
-              }
-            }
-          }});
-    } catch (e) {
-      dump("Failed overlay load : " + e.message + "\n"); 
-      SSleuthUI.uninit(_window()); 
-    } */
-
-    SSleuthUI.initUI(window);
-  },
-
-  initUI: function(window) {
-    // Verify if things are in good shape! 
-    // if (!window.document.getElementById("ssleuth-panel-vbox")) {
-    //  this.uninit(); 
-    // }
-    if (!SSleuthPanel) this.uninit(window); 
+    dump ("\nssleuth UI init : \n");
 
     this.prefs = SSleuthPreferences.readInitPreferences(); 
-    if (!this.prefsRegistered) {
+    /* This will cause problem if UI init happens again! FIXME:
+     * if (!this.prefsRegistered) {
         prefListener.register(false); 
-        this.prefRegistered = true;   
+        this.prefsRegistered = true;   
     }
-    
+    */
+    prefListener.register(false); 
+
     this.ssleuthBtnLocation = this.prefs.PREFS["notifier.location"]; 
     var ssleuthButton = createButton(window); 
     installButton(ssleuthButton,
@@ -69,14 +43,7 @@ var SSleuthUI = {
     loadStyleSheet(); 
     
     var ssleuthPanel = _ssleuthPanel(window); 
-    if (ssleuthPanel == null) {
-      dump("\n UI initUI ssleuthPanel is null! \n"); 
-    }
-    dump("initUI : get ssleuthpanel box \n");
-    try {
-    var panelVbox = SSleuthPanel(window); //window.document.getElementById("ssleuth-panel-vbox"); 
-    } catch (e) { dump("error : " + e.message + "\n");}
-    dump("SSleuthpanel type : " + typeof(panelVbox) + "\n");
+    var panelVbox = SSleuthPanel(window); 
     ssleuthPanel.appendChild(panelVbox); 
     setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 
   }, 
@@ -86,15 +53,16 @@ var SSleuthUI = {
     // Cleanup everything! 
     // Removing the button deletes the overlay elements as well 
     try {
-    prefListener.unregister(); 
-    removePanelMenu(window.document); 
-    removeButton(_ssleuthButton(window)); 
-
-    deleteKeyShortcut(window.document); 
-    removeStyleSheet(); 
+      prefListener.unregister(); 
+      removePanelMenu(window.document); 
+      removeButton(_ssleuthButton(window)); 
+      deleteKeyShortcut(window.document); 
+      removeStyleSheet(); 
 
     // A preference tab is open ?
-    } catch (e) { dump("Error uninit : " + e.message + "\n"); }
+    } catch (e) { 
+      dump("Error uninit : " + e.message + "\n"); 
+    }
   },
 
   onLocationChange: function(window) {
@@ -122,8 +90,12 @@ var SSleuthUI = {
         setButtonRank(-1);
         setBoxHidden("https", true);
         setBoxHidden("http", false);
-        setHttpsLink(data);
+
+        var panelLink = _window().document.getElementById("ssleuth-panel-https-link"); 
+        panelLink.href = data; 
+        panelLink.setAttribute("value", data); 
         break;
+
       case "https":
         setBoxHidden("https", false);
         setBoxHidden("http", true);
@@ -208,16 +180,8 @@ function removeStyleSheet() {
 }
 
 function createPanel(panelId, position, window) {
-  const doc = window.document; 
-  try {
-    var panel = doc.createElement("panel"); 
-    panel.setAttribute("id", panelId); 
-    panel.setAttribute("position", position); 
-    panel.setAttribute("type", "arrow"); 
-  } catch (e) {
-    dump("\nError creating panel, yes : " + e.message + "\n"); 
-  }
-  return panel;
+  return create(window.document, 'panel', {
+                  id: panelId, position: position, type: 'arrow'}); 
 }
 
 function installButton(ssleuthButton, firstRun, document) {
@@ -271,34 +235,30 @@ function installButton(ssleuthButton, firstRun, document) {
 
 function createButton(window) {
   try {
-    const document = window.document; 
+    const doc = window.document; 
     const ui = SSleuthUI; 
     var button; 
     var panelPosition; 
 
     if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
-      button = document.createElement("toolbarbutton");
-      button.setAttribute("id", "ssleuth-tb-button");
-      button.setAttribute("removable", "true");
-      button.setAttribute("class",
-        "toolbarbutton-1 chromeclass-toolbar-additional");
-      button.setAttribute("type", "panel");
+      button = create(doc, 'toolbarbutton', {
+                    id: 'ssleuth-tb-button', 
+                    removable: 'true', 
+                    class : 'toolbarbutton-1 chromeclass-toolbar-additional',
+                    type: 'panel', 
+                    rank: 'default' 
+               }); 
       panelPosition = "bottomcenter topright"; 
-      // For a toolbar button, images can be set directly.
-      button.setAttribute("rank", "default"); 
 
     } else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
-      button = document.createElement("box");
-      button.setAttribute("id", "ssleuth-box-urlbar");
-      button.setAttribute("role", "button"); 
-      button.setAttribute("align", "center"); 
-      button.setAttribute("width", "40"); 
-
-      var img = document.createElement("image"); 
-      img.setAttribute("id", "ssleuth-ub-img"); 
-      img.setAttribute("rank", "default"); 
-      button.appendChild(img); 
-
+      button = create(doc, 'box', {
+                  id: 'ssleuth-box-urlbar',
+                  role: 'button',  
+                  align: 'center',  
+                  width: '40' }); 
+      button.appendChild(create (doc, 'image', {
+                  id: 'ssleuth-ub-img', 
+                  rank: 'default'})); 
       panelPosition = "bottomcenter topleft"; 
     }
 
@@ -312,13 +272,12 @@ function createButton(window) {
       panelPosition, window) ); 
 
     if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
-      var desc = document.createElement("description"); 
-      desc.setAttribute("id", "ssleuth-ub-rank"); 
-      desc.setAttribute("class", "plain ssleuth-text-body-class"); 
-      // For some strange reason, the below one doesn't work from
+      // For some reason, the styles here doesn't work from
       //   the style sheet! 
-      desc.setAttribute("style", "padding-left: 4px; padding-right: 2px;"); 
-      button.appendChild(desc); 
+      button.appendChild(create(doc, 'description', {
+              'id': 'ssleuth-ub-rank', 
+              'class': 'plain ssleuth-text-body-class', 
+              'style': 'padding-left: 4px; padding-right: 2px;'})); 
     }
 
   } catch (ex) {
@@ -357,21 +316,11 @@ function panelEvent(event) {
   }
 }
 
-function setHttpsLink(url) {
-  var doc = _window().document; 
-  var panelLink = doc.getElementById("ssleuth-panel-https-link"); 
-
-  panelLink.href = url; 
-  panelLink.value = url; 
-}
-
 function setBoxHidden(protocol, show) {
   var doc = _window().document; 
-
-  try {
   switch (protocol) {
     case "http" : 
-      doc.getElementById('ssleuth-panel-vbox-http').hidden = show; 
+      doc.getElementById('ssleuth-panel-box-http').hidden = show; 
       break;
      case "https" : 
       doc.getElementById('ssleuth-panel-vbox-https').hidden = show; 
@@ -379,7 +328,6 @@ function setBoxHidden(protocol, show) {
      default :
       dump("\n Unknown container \n"); 
   }
-  } catch (e) { dump("Error setBoxHidden : " + e.message + "\n"); }
 }
 
 function showPanel(panel, show) {
@@ -477,7 +425,7 @@ function showCipherDetails(cipherSuite, rp) {
   doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
     (cipherSuite.keyExchange.ui); 
   doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
-    (cipherSuite.authentication.ui + "."); 
+    (cipherSuite.authentication.ui + ". "); 
 
   // Need to localize 'bits'. XUL - may not need ids. 
   doc.getElementById("ssleuth-text-cipher-suite-auth-key").textContent =
@@ -488,7 +436,7 @@ function showCipherDetails(cipherSuite, rp) {
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher-notes").textContent =
      cipherSuite.bulkCipher.notes; 
   doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent = 
-    (cipherSuite.HMAC.ui + ".");
+    (cipherSuite.HMAC.ui + ". ");
   doc.getElementById("ssleuth-text-cipher-suite-hmac-notes").textContent = 
     cipherSuite.HMAC.notes; 
 
@@ -572,9 +520,11 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
   certValidity.setAttribute("valid", certValid.toString()); 
 
   if (panelInfo.validityTime) 
-    certValidity.textContent = validity.notBeforeGMT + " till " + validity.notAfterGMT;
+    certValidity.textContent = validity.notBeforeGMT + 
+          " till " + validity.notAfterGMT;
   else 
-    certValidity.textContent = validity.notBeforeLocalDay + " till " + validity.notAfterLocalDay;
+    certValidity.textContent = validity.notBeforeLocalDay + 
+          " till " + validity.notAfterLocalDay;
 
   doc.getElementById("ssleuth-text-cert-domain-mismatch").hidden = !domMismatch;
 
@@ -598,22 +548,21 @@ function showCertDetails(cert, certValid, domMismatch, ev, rp) {
    
 function createKeyShortcut(doc) {
   var keyset = doc.createElement("keyset");   
-  var key = doc.createElement("key"); 
   const shortcut = 
     SSleuthUI.prefs.PREFS["ui.keyshortcut"]; 
+  var keys = shortcut.split(" ");
+  var len = keys.length; 
 
-  key.setAttribute("id", "ssleuth-panel-keybinding"); 
-  key.addEventListener("command", panelEvent);
   // Mozilla, I have no clue, without pointing 'oncommand' to
   // something, the key events won't fire! I already have an 
   // event listener for 'command'.
-  key.setAttribute("oncommand", "void(0);");
-
-  var keys = shortcut.split(" ");
-  var len = keys.length; 
-  key.setAttribute("key", keys.splice(len-1, 1)); 
-  key.setAttribute("modifiers", keys.join(" ")); 
-
+  var key = create(doc, 'key', {
+              id: 'ssleuth-panel-keybinding', 
+              oncommand: 'void(0);', 
+              key: keys.splice(len-1, 1), 
+              modifiers: keys.join(" ")
+             }); 
+  key.addEventListener("command", panelEvent);
   keyset.appendChild(key); 
   doc.documentElement.appendChild(keyset);
 }
@@ -685,18 +634,16 @@ function menuEvent(event) {
             .getCharPref("extensions.ssleuth.suites.toggle"));
     if (csList.length >0) {
       for (var i=0; i<csList.length; i++) {
-        var menu = doc.createElement("menu"); 
-        menu.setAttribute("label", csList[i].name);
+        var menu = create (doc, 'menu', {
+                      label: csList[i].name}); 
 
         var m_popup = doc.createElement("menupopup"); 
         for (var rd of ["Default", "Enable", "Disable"]) {
-          var m_item = doc.createElement("menuitem");
-          m_item.setAttribute("type", "radio"); 
-          m_item.setAttribute("label", rd);
-          m_item.setAttribute("value", rd.toLowerCase());
-          if (csList[i].state === rd.toLowerCase()) {
-            m_item.setAttribute("checked", true); 
-          }
+          var m_item = create(doc, 'menuitem', {
+                        type: 'radio', 
+                        label: rd, 
+                        value: rd.toLowerCase(),
+                        checked: (csList[i].state === rd.toLowerCase()) });
           m_popup.appendChild(m_item); 
         }
         m_popup.addEventListener("command", function(event) {
@@ -741,17 +688,17 @@ function menuCommand(event) {
     case 'ssleuth-menu-cs-reset-all' : 
       const prefs = SSleuthPreferences.prefService; 
 
-            var csList = prefs.getChildList("security.ssl3.", {}); 
-            for (var i=0; i<csList.length; i++) {
-                prefs.clearUserPref(csList[i]); 
-            }
+      var csList = prefs.getChildList("security.ssl3.", {}); 
+      for (var i=0; i<csList.length; i++) {
+          prefs.clearUserPref(csList[i]); 
+      }
 
       var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
-            for (i=0; i<csTglList.length; i++) {
-                csTglList[i].state = "default";
-            }
-            prefs.setCharPref("extensions.ssleuth.suites.toggle", 
-        JSON.stringify(csTglList));
+      for (i=0; i<csTglList.length; i++) {
+          csTglList[i].state = "default";
+      }
+      prefs.setCharPref("extensions.ssleuth.suites.toggle", 
+      JSON.stringify(csTglList));
       break;
     case 'ssleuth-menu-cs-custom-list'   :
       SSleuthPreferences.openTab(2); 
@@ -766,36 +713,26 @@ function menuCommand(event) {
 }
 
 function createPanelMenu(doc) {
-  var menupopup = doc.createElement("menupopup");   
-  menupopup.setAttribute("id", "ssleuth-panel-menu"); 
-  menupopup.setAttribute("position", "after_start"); 
+  var menupopup = create (doc, 'menupopup', {
+                    id: 'ssleuth-panel-menu', 
+                    position: 'after_start'}); 
 
-  var menuitem = doc.createElement("menuitem"); 
-  menuitem.setAttribute("label", "Preferences"); 
   // addEventLisetener() won't work if we clone the parent nodes.
   // the remaining option is to go with an in-line listener.
-  menuitem.setAttribute("id", "ssleuth-menu-open-preferences"); 
-  menupopup.appendChild(menuitem); 
-
+  menupopup.appendChild(create (doc, 'menuitem', {
+                    id: 'ssleuth-menu-open-preferences', 
+                    label: 'Preferences'})); 
   menupopup.appendChild(doc.createElement("menuseparator"));
-
-  menuitem = doc.createElement("menuitem"); 
-  menuitem.setAttribute("label", "Reset All"); 
-  menuitem.setAttribute("id", "ssleuth-menu-cs-reset-all"); 
-  menupopup.appendChild(menuitem); 
-
-  menuitem = doc.createElement("menuitem"); 
-  menuitem.setAttribute("label", "Custom list"); 
-  menuitem.setAttribute("id", "ssleuth-menu-cs-custom-list"); 
-  menupopup.appendChild(menuitem); 
-
+  menupopup.appendChild(create (doc, 'menuitem', {
+                  id: 'ssleuth-menu-cs-reset-all', 
+                  label: 'Reset All'})); 
+  menupopup.appendChild(create (doc, 'menuitem', {
+                        id: 'ssleuth-menu-cs-custom-list', 
+                        label: 'Custom list'})); 
   menupopup.appendChild(doc.createElement("menuseparator"));
-  menuitem = doc.createElement("menuitem");
-  menuitem.setAttribute("label", "About");
-  
-  menuitem.setAttribute("id", "ssleuth-menu-open-about"); 
-  menupopup.appendChild(menuitem); 
-
+  menupopup.appendChild(create (doc, 'menuitem', {
+                        id: 'ssleuth-menu-open-about', 
+                        label: 'About'})); 
   SSleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
 
   /* Right place to insert the menupopup? */
@@ -843,10 +780,310 @@ var prefListener = new PrefListener(
           deleteKeyShortcut(win.document); 
           createKeyShortcut(win.document); 
         }); 
+        break;
       case "panel.info" :
         SSleuthUI.prefs.PREFS[name] = 
           JSON.parse(branch.getCharPref(name)); 
+        break;
     }
   }
 ); 
 
+function SSleuthPanel(win) {
+  var doc = win.document; 
+
+  // Box container for the panel. 
+  var panelbox = create(doc, 'vbox', {id: 'ssleuth-panel-vbox'});
+  {
+    let vb = panelbox.appendChild(create(doc, 'vbox', {
+                  id: 'ssleuth-panel-vbox-https', 
+                  flex: '2', width: '300', height: '250', hidden: 'true'
+                })); 
+    {
+      let hb = vb.appendChild(create(doc, 'hbox', {
+                  id: 'ssleuth-img-cipher-rank-star', 
+                  align: 'baseline', height: '20'
+                }));
+      for (var i=1; i<=10; i++) {
+        hb.appendChild(create(doc, 'image', {
+                      id: 'ssleuth-img-cipher-rank-star-'+i ,
+                      class: 'ssleuth-star' }));
+      }
+      hb.appendChild(create(doc, 'description', {
+                    id: 'ssleuth-text-cipher-rank-numeric',
+                    class : 'ssleuth-text-title-class' }));
+    }
+    {
+      let hb = vb.appendChild(create(doc, 'hbox', {align: 'top', 
+                    width: '300', flex: '2'}));
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', {id: 'ssleuth-hbox-1-vbox-1',
+                    align: 'left', 
+                    width: '25'})); 
+        vb.appendChild(create(doc, 'image', {
+                      id: 'ssleuth-img-cipher-rank',
+                      class:  'ssleuth-img-state'}));
+      }
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', {id: 'ssleuth-hbox-1-vbox-2', flex: '2'})); 
+        vb.appendChild(create(doc, 'description', {
+                  id: 'ssleuth-text-cipher-suite-label',
+                  value: 'Cipher suite details',
+                  class: 'ssleuth-text-title-class'})); 
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {
+                      id: 'ssleuth-text-cipher-suite-name', 
+                      align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {
+                      id: 'ssleuth-text-cipher-suite',
+                      class: 'ssleuth-text-body-class'})); 
+          {
+            let chb = hb.appendChild(create(doc, 'hbox', {flex: '2', align: 'right'})); 
+            chb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-cipher-suite-rating',
+                        class: 'ssleuth-text-body-rating'})); 
+          }
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {
+                        id: 'ssleuth-text-key-exchange',
+                        hidden: 'true'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-key-exchange-label',
+                        value: 'Key exchange: ',
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-kxchange',
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-kxchange-notes',
+                        class: 'ssleuth-text-body-class' })); 
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {
+                        id: 'ssleuth-text-authentication'}));
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-authentication-label',
+                        value: 'Authentication: ', 
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-auth',
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-auth-key-text',
+                        value: 'Server key: ',
+                        class: 'ssleuth-text-body-class' })); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-auth-key',
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-auth-notes',
+                        class: 'ssleuth-text-body-class'})); 
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {
+                        id: 'ssleuth-text-bulk-cipher'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-bulk-cipher-label',
+                        value: 'Bulk cipher: ', 
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-bulkcipher',
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-bulkcipher-notes',
+                        class: 'ssleuth-text-body-class' })); 
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {
+                        id: 'ssleuth-text-hmac'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-hmac-label',
+                        value: 'HMAC: ', 
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-hmac',
+                        class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {
+                        id: 'ssleuth-text-cipher-suite-hmac-notes',
+                        class: 'ssleuth-text-body-class' })); 
+        }
+      } 
+    }
+    {
+      let hb = vb.appendChild(create(doc, 'hbox', {
+                    id: 'ssleuth-hbox-2', align: 'top'})); 
+      {
+        let chb = hb.appendChild(create(doc, 'hbox', {
+                      align: 'left', width: '25' })); 
+        chb.appendChild(create(doc, 'image', { id: 'ssleuth-img-p-f-secrecy',
+                      class: 'ssleuth-img-state'}));   
+      }
+      {
+        let chb = hb.appendChild(create(doc, 'hbox', {
+                      align: 'baseline', flex: '2'}));
+        chb.appendChild(create(doc, 'description', {id : 'ssleuth-text-p-f-secrecy', 
+                                class: 'ssleuth-text-title-class'})); 
+        {
+          let cchb = chb.appendChild(create(doc, 'hbox', { flex: '2', align: 'right'})); 
+          cchb.appendChild(create(doc, 'description', {id: 'ssleuth-p-f-secrecy-rating',
+                                class: 'ssleuth-text-body-rating'})); 
+        }
+      }
+    }
+    {
+      let hb = vb.appendChild(create(doc, 'hbox', { id: 'ssleuth-ff-connection-status'})); 
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', { align: 'left', width: '25'})); 
+        vb.appendChild(create(doc, 'image', { id: 'ssleuth-img-ff-connection-status', 
+                          class: 'ssleuth-img-state'})); 
+      }
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', {id: 'ssleuth-ff-connection-status-text-vbox', 
+                            flex: '2'})); 
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {
+                          id: 'ssleuth-ff-connection-status-text-hbox',
+                          align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {id: 'ssleuth-text-conn-status', 
+                        value:'Connection status (firefox): ', 
+                        class: 'ssleuth-text-title-class'})); 
+          hb.appendChild(create(doc, 'description', {id: 'ssleuth-text-ff-connection-status', 
+                        class: 'ssleuth-text-title-class'})); 
+          {
+            let chb = hb.appendChild(create(doc, 'hbox', { flex: '2', align: 'right'})); 
+            chb.appendChild(create(doc, 'description', {id : 'ssleuth-ff-connection-status-rating',
+            class: 'ssleuth-text-body-rating'})); 
+          }
+
+        }
+        
+        vb.appendChild(create(doc, 'description', {id : 'ssleuth-text-ff-connection-status-broken',
+                            value : 'This page has either insecure content or a bad certificate.',
+                            hidden : true, 
+                            class : 'ssleuth-text-body-class'})); 
+      }
+    } 
+    {
+      let hb = vb.appendChild(create(doc, 'hbox', {
+                    height: '100', flex: '2'})); 
+      {
+        let chb = hb.appendChild(create(doc, 'hbox', {
+                      align: 'left', width: '25' })); 
+        chb.appendChild(create(doc, 'image', { id: 'ssleuth-img-cert-state',
+                      class: 'ssleuth-img-state'}));   
+      }
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', {flex: '2'}));
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', { id: 'ssleuth-text-cert-label', 
+                              value: 'Certificate details', 
+                              class: 'ssleuth-text-title-class'})); 
+          {
+            let chb = hb.appendChild(create(doc, 'hbox', { flex: '2', align: 'right'})); 
+            chb.appendChild(create(doc, 'description', {id: 'ssleuth-cert-status-rating', 
+                                class: 'ssleuth-text-body-rating'})); 
+          }
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {id : 'ssleuth-text-cert-ev', 
+                                  value: 'Extended validation: ', 
+                                  class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-extended-validation', 
+                                  class: 'ssleuth-text-body-class'})); 
+          {
+            let chb = hb.appendChild(create(doc, 'hbox', { flex: '2', align: 'right'})); 
+            chb.appendChild(create(doc, 'description', {id: 'ssleuth-cert-ev-rating',
+                                  class: 'ssleuth-text-body-rating'})); 
+          }
+        }
+        vb.appendChild(create(doc, 'description', { id: 'ssleuth-text-cert-domain-mismatch',
+                              value: 'Certificate domain name does not match.',
+                              class: 'ssleuth-text-body-class'})); 
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {id : 'ssleuth-text-cert-cn-label', 
+                                  value: 'Common name: ', 
+                                  class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-common-name', 
+                                  class: 'ssleuth-text-body-class'})); 
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {id : 'ssleuth-text-cert-issuedto', 
+                                  value: 'Issued to: ', 
+                                  class: 'ssleuth-text-body-class'})); 
+          {
+            let vb = hb.appendChild(create(doc, 'vbox', {align: 'baseline'}));
+            vb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-org', 
+                                    class: 'ssleuth-text-title-class'})); 
+            vb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-org-unit', 
+                                    class: 'ssleuth-text-body-class'})); 
+          }
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {id : 'ssleuth-text-cert-issuedby', 
+                                  value: 'Issued by: ', 
+                                  class: 'ssleuth-text-body-class'})); 
+          {
+            let vb = hb.appendChild(create(doc, 'vbox', {align: 'baseline'}));
+            vb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-issuer-org', 
+                                    class: 'ssleuth-text-title-class'})); 
+            vb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-issuer-org-unit', 
+                                    class: 'ssleuth-text-body-class'})); 
+          }
+        }
+        {
+          let hb = vb.appendChild(create(doc, 'hbox', {id: 'ssleuth-text-cert-validity-box', 
+                                align: 'baseline'})); 
+          hb.appendChild(create(doc, 'description', {id : 'ssleuth-text-cert-validity-text', 
+                                  value: 'Validity: ', 
+                                  class: 'ssleuth-text-body-class'})); 
+          hb.appendChild(create(doc, 'description', {id : 'ssleuth-text-cert-validity', 
+                                  class: 'ssleuth-text-body-class'})); 
+        }
+        vb.appendChild(create(doc, 'description', {id: 'ssleuth-text-cert-fingerprint', 
+                                    class: 'ssleuth-text-body-class'})); 
+      }
+    }
+  }
+  {
+    {
+      let hb = panelbox.appendChild(create(doc, 'hbox', {id: 'ssleuth-panel-box-http', 
+                      align: 'baseline', flex: '2',
+                      width: '350', height: '100', hidden: 'true'})); 
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', { align: 'left', width: '25'})); 
+        vb.appendChild(create(doc, 'image', { id: 'ssleuth-img-http-omg', class: 'ssleuth-img-state'})); 
+      }
+      {
+        let vb = hb.appendChild(create(doc, 'vbox', {flex: '1'})); 
+        let h1 = vb.appendChild(create(doc, 'description', {id: 'ssleuth-text-http-1', 
+                    class: 'ssleuth-text-title-class'})); 
+        h1.textContent = "Your connection to this site is not encrypted.";
+        let h2 = vb.appendChild(create(doc, 'description', {id : 'ssleuth-text-http-2', 
+                    class: 'ssleuth-text-title-class'})); 
+
+        h2.textContent = "You can attempt connecting to the secure version of the site if available."; 
+        vb.appendChild(create(doc, 'label', {id: 'ssleuth-panel-https-link', 
+                    class:'text-link', crop: 'center', focus: 'true'})); 
+        let d1 = vb.appendChild(create(doc, 'description', {id : 'ssleuth-text-http-note', 
+                    class: 'ssleuth-text-body-class'})); 
+        d1.textContent = "Note: The availability of the above link depends on the site\'s offering of the same content over an https connection."; 
+ 
+      }
+    }
+  }
+  return panelbox; 
+}
+
+function create(doc, elem, attrs) {
+  var e = doc.createElement(elem); 
+  for (var [atr, val] in Iterator(attrs)) {
+    e.setAttribute(atr, val); 
+  }
+  return e; 
+}

@@ -302,8 +302,8 @@ function SSleuthPanel(win) {
       }
     } 
   } 
-  return panelbox; 
   */
+  return panelbox; 
   } catch (e) { 
     dump("\nError creating panel : " + e.message ); 
   }

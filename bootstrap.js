@@ -63,6 +63,7 @@ function shutdown(data, reason) {
 function unloadModules() {
   Cu.unload("resource://ssleuth/panel.js");
   Cu.unload("resource://ssleuth/button.js");
+  Cu.unload("resource://ssleuth/ssleuth-ui.js");
   Cu.unload("resource://ssleuth/ssleuth.js");
   Cu.unload("resource://ssleuth/new-window.js");
 }

@@ -111,7 +111,7 @@ var SSleuthPreferences = {
   closeTab: function() {
     const prefsTab = this.prefsTab; 
     if (prefsTab) {
-      _window().gBrowser.removeTab(prefsTab);
+      this.prefsTabWin.gBrowser.removeTab(prefsTab);
       this.prefsTab = null;
       this.prefsTabWin = null; 
     }

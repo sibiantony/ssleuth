@@ -324,7 +324,7 @@ function toggleCipherSuites(prefsOld) {
   const prefs = SSleuthPreferences.prefService;
   const br = "security.ssl3.";
   const SUITES_TOGGLE = "suites.toggle"; 
-  const PREF_SUITES_TOGGLE = "extensions.SSleuth." + SUITES_TOGGLE;
+  const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
 
   for (var t=0; t<SSleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
     
