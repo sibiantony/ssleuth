@@ -1081,6 +1081,9 @@ function SSleuthPanel(win) {
 }
 
 function create(doc, elem, attrs) {
+  // createElement() Regex warnings are targeting 'script' elements.
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=625690
+  // I don't do script here.
   var e = doc.createElement(elem); 
   for (var [atr, val] in Iterator(attrs)) {
     e.setAttribute(atr, val); 
