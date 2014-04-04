@@ -19,7 +19,7 @@ var SSleuthUI = {
   panelMenuTemplate: null, 
 
   init: function(window) {
-    dump ("\nssleuth UI init : \n");
+    // dump ("\nssleuth UI init : \n");
 
     this.prefs = SSleuthPreferences.readInitPreferences(); 
     /* This will cause problem if UI init happens again! FIXME:
@@ -48,7 +48,7 @@ var SSleuthUI = {
   }, 
 
   uninit: function(window) {
-    dump("\n SSleuth UI  : uninit \n"); 
+    // dump("\n SSleuth UI  : uninit \n"); 
     // Cleanup everything! 
     // Removing the button deletes the overlay elements as well 
     try {

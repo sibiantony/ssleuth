@@ -45,8 +45,6 @@ var SSleuth = {
   },
 
   onLocationChange: function(aProgress, aRequest, aURI) {
-    /* FIXME: This might throw error during startup with ff29! 
-     *   Modified - Test! */
     var win = Services.wm.getMostRecentWindow("navigator:browser"); 
     if (!win) return; 
     if (aURI.spec == this.prevURL) {
@@ -94,7 +92,7 @@ function protocolHttp(loc) {
 }
 
 function protocolHttps(aWebProgress, aRequest, aState, win) {
-  dump("\nprotocolHttps \n");
+  // dump("\nprotocolHttps \n");
   const Cc = Components.classes; 
   const Ci = Components.interfaces;
 
@@ -110,7 +108,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
       sslStatus = secUI.SSLStatus; 
     }
     if (!sslStatus) {
-      dump("\nSSLStatus is null \n");
+      // dump("\nSSLStatus null \n");
       // 1. A rather annoying behaviour : Firefox do not seem to populate
       //  SSLStatus if a tab switches to a page with the same URL.
       //
@@ -256,7 +254,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
           ratingParams);
 
   var connectionRank = Number(rating).toFixed(1); 
-  dump("Connection rank : " + connectionRank + "\n"); 
+  // dump("Connection rank : " + connectionRank + "\n"); 
 
   // Invoke the UI to do its job
   SSleuthUI.fillPanel(connectionRank, 
