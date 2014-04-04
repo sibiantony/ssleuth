@@ -372,7 +372,7 @@ function toggleCipherSuites(prefsOld) {
   }
 }
 
-var prefListener = new PrefListener(
+var prefListener = new ssleuthPrefListener(
   SSleuthPreferences.prefBranch,
   function(branch, name) {
     switch(name) {

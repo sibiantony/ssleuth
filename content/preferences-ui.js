@@ -519,6 +519,6 @@
   };
   window.addEventListener("load", prefUI.init, false); 
   window.addEventListener("ssleuth-prefwindow-index", 
-    prefUI.selectIndex, false, true); 
+    prefUI.selectIndex, false); 
 
 }());

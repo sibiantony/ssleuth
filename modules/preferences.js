@@ -1,7 +1,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = ["SSleuthPreferences", 
-              "PrefListener"]; 
+              "ssleuthPrefListener"]; 
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -142,7 +142,7 @@ var SSleuthPreferences = {
   }
 }; 
 
-function PrefListener(branch_name, callback) {
+function ssleuthPrefListener(branch_name, callback) {
   var prefService = Cc["@mozilla.org/preferences-service;1"]
     .getService(Ci.nsIPrefService);
   this._branch = prefService.getBranch(branch_name);
@@ -150,12 +150,12 @@ function PrefListener(branch_name, callback) {
   this._callback = callback;
 }
 
-PrefListener.prototype.observe = function(subject, topic, data) {
+ssleuthPrefListener.prototype.observe = function(subject, topic, data) {
   if (topic == 'nsPref:changed')
     this._callback(this._branch, data);
 };
 
-PrefListener.prototype.register = function(trigger) {
+ssleuthPrefListener.prototype.register = function(trigger) {
   this._branch.addObserver('', this, false);
   if (trigger) {
     let that = this;
@@ -166,7 +166,7 @@ PrefListener.prototype.register = function(trigger) {
   }
 };
 
-PrefListener.prototype.unregister = function() {
+ssleuthPrefListener.prototype.unregister = function() {
   if (this._branch)
     this._branch.removeObserver('', this);
 };

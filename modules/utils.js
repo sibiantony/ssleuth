@@ -1,8 +1,8 @@
 // "use strict"; 
 
-var EXPORTED_SYMBOLS = ["cloneArray"]; 
+var EXPORTED_SYMBOLS = ["ssleuthCloneArray"]; 
 
-function cloneArray(obj) {
+function ssleuthCloneArray(obj) {
   if (Object.prototype.toString.call(obj) === '[object Array]') {
     var out = [], i = 0, len = obj.length;
     for ( ; i < len; i++ ) {

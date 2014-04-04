@@ -134,7 +134,7 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-						<caption label="Connection rating"/>
+						<caption label="Overall rating"/>
 						<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
 						<vbox align="baseline">
 							<hbox width="850" equalsize="always" align="baseline"

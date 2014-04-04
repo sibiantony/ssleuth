@@ -10,7 +10,6 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/utils.js");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 Components.utils.import("resource://ssleuth/preferences.js");
-// Components.utils.import("resource://ssleuth/panel.js");
 
 var SSleuthUI = {
   ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
@@ -639,7 +638,7 @@ function menuEvent(event) {
         }
         m_popup.addEventListener("command", function(event) {
           var m = event.currentTarget.parentNode;
-          var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
+          var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
           for (var i=0; i<csTglList.length; i++) {
             if (m.label === csTglList[i].name) {
               csTglList[i].state = event.target.value; 
@@ -684,7 +683,7 @@ function menuCommand(event) {
           prefs.clearUserPref(csList[i]); 
       }
 
-      var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
+      var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
       for (i=0; i<csTglList.length; i++) {
           csTglList[i].state = "default";
       }
@@ -743,7 +742,7 @@ function forEachOpenWindow(todo) {
       .QueryInterface(Components.interfaces.nsIDOMWindow));
 }
 
-var prefListener = new PrefListener(
+var prefListener = new ssleuthPrefListener(
   SSleuthPreferences.prefBranch,
   function(branch, name) {
     switch(name) {
@@ -1054,3 +1053,4 @@ function create(doc, elem, attrs) {
   }
   return e; 
 }
+
