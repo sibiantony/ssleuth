@@ -78,14 +78,17 @@ var SSleuthPreferences = {
           {inBackground: false});
       this.prefsTab = prefsTab; 
       this.prefsTabWin = win; 
+      // TODO : Remove event listeners from inside
       prefsTab.addEventListener("TabClose", function() {
             SSleuthPreferences.prefsTab = null; 
             SSleuthPreferences.prefsTabWin = null; 
             }, false); 
-      win.addEventListener("unload", function() {
-            SSleuthPreferences.prefsTab = null; 
-            SSleuthPreferences.prefsTabWin = null; 
-            }, false);
+      win.addEventListener("unload", function winUnload() {
+            if (SSleuthPreferences) {
+              SSleuthPreferences.prefsTab = null; 
+              SSleuthPreferences.prefsTabWin = null; 
+            }
+           }, false);
     } else {
       this.prefsTabWin.gBrowser.selectedTab = this.prefsTab; 
       this.prefsTabWin.focus();

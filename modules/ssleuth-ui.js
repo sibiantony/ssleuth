@@ -390,7 +390,7 @@ function setButtonRank(connectionRank) {
       ssleuthUbRank.textContent = ""; 
     }
     _ssleuthButton(_window()).setAttribute("rank", buttonRank); 
-  } 
+  }
 }
 
 function showCipherDetails(cipherSuite, rp) {
@@ -691,13 +691,13 @@ function menuCommand(event) {
       prefs.setCharPref("extensions.ssleuth.suites.toggle", 
       JSON.stringify(csTglList));
       break;
-    case 'ssleuth-menu-cs-custom-list'   :
-      SSleuthPreferences.openTab(2); 
-      break;
-    case 'ssleuth-menu-open-preferences' : 
+    case 'ssleuth-menu-open-preferences': 
       SSleuthPreferences.openTab(0);
       break;
-    case 'ssleuth-menu-open-about'  :
+    case 'ssleuth-menu-cs-custom-list'  :
+      SSleuthPreferences.openTab(2); 
+      break;
+    case 'ssleuth-menu-open-about'      :
       SSleuthPreferences.openTab(3);
       break; 
   }
@@ -780,6 +780,13 @@ var prefListener = new PrefListener(
   }
 ); 
 
+// This is kind of nasty. There are a hell lot of UI elements for the panel.
+//    And an XUL overlay file is the right way to do these kind of stuff.
+//    But now that overlays are not allowed for restartless addons, 
+//    and that loadOverlay() is buggy, there must be an intuitive way to do this in js.
+//    With XUL xml indentations, it is very easy to identify elements. 
+//    Here I rely on javascript local scoping and re-use variable names to give
+//    that 'intuitiveness'. 
 function SSleuthPanel(win) {
   var doc = win.document; 
 
