@@ -60,16 +60,16 @@
 							orient="horizontal"
 							oncommand="">
 							<hbox align="baseline">
-								<radio id="ssleuth-panel-fontsize-default" 
+								<radio id="ssleuth-panel-fontsize-small" 
 										value="0" 
 										label="&ssleuth.pref.ui.fontsize.default;"/>
 								<hbox style="background-color:-moz-dialog" align="baseline">
 									<label value="&ssleuth.pref.ui.fontsize.header;"
-													control="ssleuth-panel-fontsize-default"
-													class="ssleuth-text-title-default"/>
+													control="ssleuth-panel-fontsize-small"
+													class="ssleuth-text-title-small"/>
 									<label value="&ssleuth.pref.ui.fontsize.body;"
-													control="ssleuth-panel-fontsize-default"
-													class="ssleuth-text-body-default"/>
+													control="ssleuth-panel-fontsize-small"
+													class="ssleuth-text-body-small"/>
 								</hbox>
 							</hbox>
 							<hbox align="baseline">
@@ -308,7 +308,7 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-						<caption label="Project"/>
+						<caption label="SSleuth version 0.2.3"/>
 						<description value="Author : Sibi Antony"/>
 						<description class="ssleuth-pref-text" >
 								Your feedback and development/translation support are welcome.
