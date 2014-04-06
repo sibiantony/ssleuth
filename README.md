@@ -25,8 +25,8 @@ connection status and the certificate details.
 
 ## Rating Rationale
 
-The ranking mechanism is in the early stages now, and might change
-in future. See the wiki page for more information.
+The rating mechanism is in the early stages now, and might change
+in future. See the wiki page on [Rating Mechanism](https://github.com/sibiantony/ssleuth/wiki/Rating-Mechanism) for more information.
 
 ## How to disable weak ciphers in Firefox
 
