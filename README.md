@@ -23,79 +23,10 @@ by ranking it and appropriateley color coding it.
 The addon panel also gives information on perfect forward secrecy, firefox 
 connection status and the certificate details.
 
-## Ranking Rationale
+## Rating Rationale
 
 The ranking mechanism is in the early stages now, and might change
-in future. User feedback and inputs on the ranking are welcome!
-
-The overall connection rankings depend on these parameters
-* Cipher suite rank
-* Perfect forward secrecy
-* Firefox Connection status
-* A valid certificate (matching domain/ valid dates)
-* And an extended validation certificate.
-
-### Cipher suite ranking
-Cipher suite rankings are based on the encryption algorithm used and
-the HMAC. Stronger block ciphers (like AES-256, CAMELLIA-256) are ranked
-the highest (10/10) while ciphers using smaller keylength (eg: DES) are demoted.
-Although RC4 ciphers are broken, at the moment
-for an attack to be practical, access to [huge amounts of data encrypted using different keys are necessary.](https://community.qualys.com/blogs/securitylabs/2013/03/19/rc4-in-tls-is-broken-now-what)
-For this reason, although RC4 is ranked low, it is not the least.
-
-SHA-1 and MD5 digests are reportedly weak, hence there are warning
-texts on the addon panel to notify of the weakness.
-
-The  cipher suite ranks can be found here : `chrome/content/cipherSuites.js`
-While calculating the overall connection rank, SSleuth gives a weight
-of 5/10 for cipher suite alone.
-
-### Perfect forward secrecy
-If the cipher suite supports perfect forward secrecy (Ephemeral Diffie-Hellmann
-key exchange) a point of 1 is awarded. Since the points are given separately 
-for PFS, the key exchange algorithm is not considered while ranking the
-cipher suites.
-
-### Firefox connection status
-Another point is awarded for a 'Secure' connection status from Firefox's
-own flags. The Firefox flag reports 3 states : 'Secure', 'Broken' or
-'Insecure'. For the latter 2 states, the API does not really inform
-of the reason as to why. Many a times, the 'Broken' state is due to http content
-loaded over a secure connection. The same state can also be reported for potentially
-insecure content (flash plugins). Firefox notifies the user
-on these explicity via the browser UI. If the states are 'Broken' or
-'Insecure' there are no points awarded.
-
-### Valid certificate
-A valid certificate earns another point. As of now, the validity is checked
-for a matching domain name and valid dates on the certificate.
-An extended validation (EV) certificate also gains another point out of 10.
-
-This is how the overall connection ranking is calculated :
-
-```Cipher rank(5) + 
-    PFS(2) + 
-    Extended Validation(1) + 
-    Firefox connection status(1) + 
-    Valid certificate(1) = Connection Rank(10)```
-
-No claims are made that the above approach is the right way to
-estimate connection strength. If possible, a future release of the
-addon will make the ranking mechanism configurable, so advanced
-users can tweak the way the strength is estimated.
-
-### References
-
-The cipher strength rankings and those reported by [SSL labs](https://www.ssllabs.com/ssltest/index.html)
-were compared during the development.
-Firefox developer Brian Smith [makes a proposal here](https://briansmith.org/browser-ciphersuites-01.html)
-on the cipher suites to be enabled/disabled for all major browsers, along with a catalogue of common
-cipher suites.
-
-There is also an [IETF working group](https://datatracker.ietf.org/wg/uta/charter/) that aims to propose a set of
-best practices for TLS clients and servers, including recommending
-versions of TLS, cipher suites etc.
-https://www.iana.org/assignments/tls-parameters/tls-parameters.xhtml#tls-parameters-4
+in future. See the wiki page for more information.
 
 ## How to disable weak ciphers in Firefox
 
