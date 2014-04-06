@@ -28,17 +28,11 @@ connection status and the certificate details.
 The rating mechanism is in the early stages now, and might change
 in future. See the wiki page on [Rating Mechanism](https://github.com/sibiantony/ssleuth/wiki/Rating-Mechanism) for more information.
 
-## How to disable weak ciphers in Firefox
+## Disabling weak ciphers
 
-This addon only reports the states and do not attempt to make any
-changes in the user security preferences.
-If the user wishes to enable only strong ciphers, visit firefox
-configuration (about:config) and play around with the flags
-`security.ssl3.<cipher-suite-name>`
-The flags are boolean and can be enabled/disabled quickly.
-Please note that you must take extreme care while choosing to
-disable cipher suites. You may end up unable to connect to some
-web servers if you disable a lot of them!
+Beginning with version 0.2.3 SSleuth supports enabling and disabling cipher suites.
+Users can create a list of cipher suites to toggle, and use the notifier right click
+menu to toggle them. More details on [enabling/disabling cipher suites](https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling) in the wiki.
 
 ## UI
 
