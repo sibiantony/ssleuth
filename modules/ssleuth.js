@@ -41,6 +41,7 @@ var SSleuth = {
     // dump("\nUninit \n");
     SSleuthUI.uninit(window); 
     prefListener.unregister(); 
+    this.prefRegistered = false; 
     window.gBrowser.removeProgressListener(this);
   },
 

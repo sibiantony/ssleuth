@@ -12,10 +12,10 @@ Components.utils.import("resource://ssleuth/cipher-suites.js");
 
 var ssleuthPanelInfo = {
   keyExchange   : false,
-  authAlg      : true,
+  authAlg       : true,
   bulkCipher    : true,
-  HMAC      : true,
-  certValidity   : true,
+  HMAC          : true,
+  certValidity  : true,
   validityTime  : true,
   certFingerprint : false
 }; 
@@ -24,12 +24,12 @@ var ssleuthDefaultPrefs = {
   PREF_BRANCH : "extensions.ssleuth.", 
   PREFS : {
     "notifier.location"   : 0,
-    "panel.fontsize"     : 1, 
-    "ui.keyshortcut"     : "control shift }",
+    "panel.fontsize"      : 1, 
+    "ui.keyshortcut"      : "control shift }",
     "rating.params"       : ssleuthConnectionRating,
     "rating.ciphersuite.params"  : ssleuthCipherSuites.weighting,
-    "suites.toggle"     : ffToggleDefault,
-    "panel.info"      : ssleuthPanelInfo
+    "suites.toggle"       : ffToggleDefault,
+    "panel.info"          : ssleuthPanelInfo
    }
 }; 
 
