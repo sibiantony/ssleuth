@@ -235,7 +235,6 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
               cipherSuite.bulkCipher.notes +
               cipherSuite.HMAC.notes; 
 
-  
   const csWeighting = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
   // Calculate ciphersuite rank  - All the cipher suite params ratings
   // are out of 10, so this will get normalized to 10.
@@ -355,14 +354,14 @@ function toggleCipherSuites(prefsOld) {
       // check with getPrefType() before setting the prefs.
       case "enable" :
         for (var i=0; i<cs.list.length; i++) {
-          if (prefs.getPrefType(br+cs.list[i]) == prefs.PREF_BOOL) {
+          if (prefs.getPrefType(br+cs.list[i]) === prefs.PREF_BOOL) {
             prefs.setBoolPref(br+cs.list[i], true);
           }
         }
         break;
       case "disable" :
         for (var i=0; i<cs.list.length; i++) {
-          if (prefs.getPrefType(br+cs.list[i]) == prefs.PREF_BOOL) {
+          if (prefs.getPrefType(br+cs.list[i]) === prefs.PREF_BOOL) {
             prefs.setBoolPref(br+cs.list[i], false);
           }
         }
