@@ -15,7 +15,7 @@ var SSleuth = {
   prevURL: null,
   urlChanged: false,
   prefs: null, 
-  prefRegistered : false,
+  initComplete : false,
 
   init: function(window) {
 
@@ -26,9 +26,10 @@ var SSleuth = {
     try {
       window.gBrowser.addProgressListener(this);
       this.prefs = SSleuthPreferences.readInitPreferences(); 
-      if (!this.prefRegistered) {
+      if (!this.initComplete) {
         prefListener.register(false); 
-        this.prefRegistered = true; 
+        httpObserver.init(); 
+        this.initComplete = true; 
       }
       SSleuthUI.init(window); 
     } catch(e) {
@@ -41,7 +42,7 @@ var SSleuth = {
     // dump("\nUninit \n");
     SSleuthUI.uninit(window); 
     prefListener.unregister(); 
-    this.prefRegistered = false; 
+    this.initComplete = false; 
     window.gBrowser.removeProgressListener(this);
   },
 
@@ -393,3 +394,29 @@ var prefListener = new ssleuthPrefListener(
   }
 ); 
 
+var httpObserver = {
+  init: function() {
+    try {
+      Services.obs.addObserver({observe: httpObserver.response},
+        'http-on-examine-response', false); 
+    } catch (e) {
+      dump("error observer : " + e.message + "\n");
+    }
+  },
+
+  uninit: function() {
+    Services.obs.removeObserver({observe: httpObserver.response}, 
+      'http-on-examine-response', false);
+  },
+  
+  response: function(aSubject, aTopic, aData) {
+    if (aTopic !== 'http-on-examine-response') return; 
+    try {
+      aSubject.QueryInterface(Ci.nsIHttpChannel); 
+      var url = aSubject.URI.asciiSpec;
+      dump(url +" \n"); 
+    } catch(e) {
+      dump("error: " + e.message ); 
+    }
+  },
+};
