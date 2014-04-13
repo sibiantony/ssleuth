@@ -108,8 +108,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
     secUI.QueryInterface(Ci.nsISSLStatusProvider); 
     if (secUI.SSLStatus) {
       sslStatus = secUI.SSLStatus; 
-    }
-    if (!sslStatus) {
+    } else {
       // dump("\nSSLStatus null \n");
       // 1. A rather annoying behaviour : Firefox do not seem to populate
       //  SSLStatus if a tab switches to a page with the same URL.
@@ -415,8 +414,17 @@ var httpObserver = {
       var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
       var url = channel.URI.asciiSpec;
       dump(url +" \n"); 
-      if (getWindow(aSubject)) {
-        dump("Associated window \n"); 
+      var contentWindow = getWindow(aSubject); 
+      if (contentWindow) {
+        dump("Associated window : " + contentWindow.name + "\n"); 
+        if (channel.securityInfo) {
+          var sslStatus = channel.securityInfo
+                            .QueryInterface(Ci.nsISSLStatusProvider)
+                            .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
+          dump("Secure  channel :" + sslStatus.cipherName + "\n");
+        }
+        // Check for http 
+        // if (!channel.originalURI.schemeIs("https")) {}
       }
     } catch(e) {
       dump("error: " + e.message ); 
