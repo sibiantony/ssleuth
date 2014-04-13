@@ -412,11 +412,37 @@ var httpObserver = {
   response: function(aSubject, aTopic, aData) {
     if (aTopic !== 'http-on-examine-response') return; 
     try {
-      aSubject.QueryInterface(Ci.nsIHttpChannel); 
-      var url = aSubject.URI.asciiSpec;
+      var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
+      var url = channel.URI.asciiSpec;
       dump(url +" \n"); 
+      if (getWindow(aSubject)) {
+        dump("Associated window \n"); 
+      }
     } catch(e) {
       dump("error: " + e.message ); 
     }
   },
 };
+
+
+function getWindow(request) {
+  if (request instanceof Components.interfaces.nsIRequest) {
+    try {
+      if (request.notificationCallbacks) {
+        return request.notificationCallbacks
+                      .getInterface(Components.interfaces.nsILoadContext)
+                      .associatedWindow;
+      }
+    } catch(e) { dump("Error during request.notificationCallbacks" + e.message + "\n"); }
+
+    try {
+      if (request.loadGroup && request.loadGroup.notificationCallbacks) {
+        return request.loadGroup.notificationCallbacks
+                      .getInterface(Components.interfaces.nsILoadContext)
+                      .associatedWindow;
+      }
+    } catch(e) { dump("Error during request.loadGroup.notifi.. " + e.message + "\n"); }
+  }
+
+  return null;
+}
