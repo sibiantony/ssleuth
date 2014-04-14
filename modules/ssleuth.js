@@ -16,6 +16,7 @@ var SSleuth = {
   urlChanged: false,
   prefs: null, 
   initComplete : false,
+  maxTabId: null, 
 
   init: function(window) {
 
@@ -48,7 +49,10 @@ var SSleuth = {
 
   onLocationChange: function(aProgress, aRequest, aURI) {
     var win = Services.wm.getMostRecentWindow("navigator:browser"); 
+
     if (!win) return; 
+    dump("onLocationChange : " + aURI.spec + "\n");
+
     if (aURI.spec == this.prevURL) {
       this.urlChanged = false; 
       return; 
@@ -73,7 +77,7 @@ var SSleuth = {
     var win = Services.wm.getMostRecentWindow("navigator:browser");
     var loc = win.content.location;
 
-    // dump("\nonSecurityChange: " + loc.protocol + "\n"); 
+    dump("\nonSecurityChange: " + loc.protocol + "\n"); 
     if (loc.protocol == "https:" ) {
       protocolHttps(aWebProgress, aRequest, aState, win);
     } else if (loc.protocol == "http:" ) {
@@ -119,7 +123,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
       //  displayed 
       if (SSleuth.urlChanged) {
         SSleuthUI.protocolChange("unknown", "");
-      } 
+      }
       return; 
     }
   }
@@ -390,6 +394,7 @@ var prefListener = new ssleuthPrefListener(
         toggleCipherSuites(prefsOld); 
         break;
     }
+
   }
 ); 
 
@@ -410,47 +415,69 @@ var httpObserver = {
   
   response: function(aSubject, aTopic, aData) {
     if (aTopic !== 'http-on-examine-response') return; 
+    if (!(aSubject instanceof Components.interfaces.nsIHttpChannel)) return; 
+
     try {
       var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
       var url = channel.URI.asciiSpec;
-      dump(url +" \n"); 
-      var contentWindow = getWindow(aSubject); 
-      if (contentWindow) {
-        dump("Associated window : " + contentWindow.name + "\n"); 
-        if (channel.securityInfo) {
-          var sslStatus = channel.securityInfo
-                            .QueryInterface(Ci.nsISSLStatusProvider)
-                            .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
-          dump("Secure  channel :" + sslStatus.cipherName + "\n");
-        }
-        // Check for http 
-        // if (!channel.originalURI.schemeIs("https")) {}
+      dump(url + " original URI : " + channel.originalURI.asciiSpec + "\n"); 
+
+      var browser = getTabForReq(aSubject); 
+      if (!browser) return; 
+
+      dump("Browser !\n");
+      if (!("_ssleuthTabId" in browser)) {
+        dump("Critical : no tab id present \n"); 
+        browser._ssleuthTabId = ++SSleuth.maxTabId;
+      } else {
+        dump("Found tab id " + browser._ssleuthTabId + "\n");
       }
+
+      if (channel.securityInfo) {
+        var sslStatus = channel.securityInfo
+                          .QueryInterface(Ci.nsISSLStatusProvider)
+                          .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
+        dump("Secure channel :" + sslStatus.cipherName + "\n");
+      }
+      // Check for http 
+      // if (!channel.originalURI.schemeIs("https")) {}
+
+      // Unique tab ID : browser._ssleuthTabId 
+
     } catch(e) {
-      dump("error: " + e.message ); 
+      dump("Error http response: " + e.message ); 
     }
+
   },
-};
+}; 
 
+function getTabForReq(req) {
+  var cWin = null; 
+  if (!req || !(req instanceof Ci.nsIRequest)) return null; 
 
-function getWindow(request) {
-  if (request instanceof Components.interfaces.nsIRequest) {
-    try {
-      if (request.notificationCallbacks) {
-        return request.notificationCallbacks
-                      .getInterface(Components.interfaces.nsILoadContext)
-                      .associatedWindow;
-      }
-    } catch(e) { dump("Error during request.notificationCallbacks" + e.message + "\n"); }
+  try {
+    var notifCB = req.notificationCallbacks ? 
+                    req.notificationCallbacks : 
+                    req.loadGroup.notificationCallbacks;
+    if (!notifCB) return null;
 
-    try {
-      if (request.loadGroup && request.loadGroup.notificationCallbacks) {
-        return request.loadGroup.notificationCallbacks
-                      .getInterface(Components.interfaces.nsILoadContext)
-                      .associatedWindow;
-      }
-    } catch(e) { dump("Error during request.loadGroup.notifi.. " + e.message + "\n"); }
+    cWin = notifCB.getInterface(Ci.nsILoadContext).associatedWindow;
+    return (cWin ? 
+              _window().gBrowser.getBrowserForDocument(cWin.top.document) : null); 
+  } catch (e) {
+    // At least 2 different types of errors to handle here:
+    // A REST Ajax request
+    // Error : getTabforReq : Component returned failure code: 0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
+    // A firefox repeated pull
+    // Error : getTabforReq : Component does not have requested interface'Component does 
+    //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
+    // 
+    // dump("Error : getTabforReq : " + e.message + "\n");
+    return null;
   }
 
-  return null;
+}
+
+function _window() {
+    return Services.wm.getMostRecentWindow("navigator:browser"); 
 }
