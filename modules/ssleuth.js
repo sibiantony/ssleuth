@@ -401,6 +401,7 @@ var prefListener = new ssleuthPrefListener(
 var httpObserver = {
   init: function() {
     try {
+      // TODO : Observer for cached content ?
       Services.obs.addObserver({observe: httpObserver.response},
         'http-on-examine-response', false); 
     } catch (e) {
@@ -420,7 +421,7 @@ var httpObserver = {
     try {
       var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
       var url = channel.URI.asciiSpec;
-      dump(url + " original URI : " + channel.originalURI.asciiSpec + "\n"); 
+      dump(url + " original URI : " + channel.originalURI.asciiSpec + "  content : " + channel.contentType + "\n"); 
 
       var browser = getTabForReq(aSubject); 
       if (!browser) return; 
@@ -467,7 +468,8 @@ function getTabForReq(req) {
   } catch (e) {
     // At least 2 different types of errors to handle here:
     // A REST Ajax request
-    // Error : getTabforReq : Component returned failure code: 0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
+    // Error : getTabforReq : Component returned failure code: 
+    //            0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
     // A firefox repeated pull
     // Error : getTabforReq : Component does not have requested interface'Component does 
     //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
