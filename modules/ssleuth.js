@@ -44,6 +44,7 @@ var SSleuth = {
     // dump("\nUninit \n");
     SSleuthUI.uninit(window); 
     prefListener.unregister(); 
+    httpObserver.uninit();
     this.initComplete = false; 
     window.gBrowser.removeProgressListener(this);
   },
@@ -452,12 +453,17 @@ var httpObserver = {
       
       if (!("_ssleuthTabId" in browser)) {
         dump("Critical : no tab id present \n"); 
-        browser._ssleuthTabId = ++SSleuth.maxTabId;
-        SSleuth.responseCache[browser._ssleuthTabId] = { url : url, 
+        // Use a string index - helps with deletion without problems.
+        var tabId = browser._ssleuthTabId = (SSleuth.maxTabId++).toString();
+        dump ("typeof tabId : " + typeof tabId + "\n");
+        SSleuth.responseCache[tabId] = { url : url, 
                                 reqs: {} }; 
-        browser.addEventListener("", function(tab) {
-            dump("Tab event for tab : " + tab + "\n"); 
+        browser.addEventListener("DOMNodeRemoved", function(tabId) {
+            dump("DOMNodeRemoved for tab : " + tabId + "\n"); 
+            // Remove entry
+            delete SSleuth.responseCache[tabId];
           }, false); 
+
 
       } else {
         // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
@@ -517,7 +523,7 @@ function getTabForReq(req) {
     // Error : getTabforReq : Component does not have requested interface'Component does 
     //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
     // 
-    // dump("Error : getTabforReq : " + e.message + "\n");
+    dump("Error : getTabforReq : " + e.message + "\n");
     return null;
   }
 
