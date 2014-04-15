@@ -17,6 +17,7 @@ var SSleuth = {
   prefs: null, 
   initComplete : false,
   maxTabId: null, 
+  responseCache: [], 
 
   init: function(window) {
 
@@ -47,18 +48,26 @@ var SSleuth = {
     window.gBrowser.removeProgressListener(this);
   },
 
-  onLocationChange: function(aProgress, aRequest, aURI) {
+  onLocationChange: function(progress, request, uri) {
     var win = Services.wm.getMostRecentWindow("navigator:browser"); 
 
     if (!win) return; 
-    dump("onLocationChange : " + aURI.spec + "\n");
 
-    if (aURI.spec == this.prevURL) {
+    dump("==========================\n"); 
+    dump("onLocationChange : " + uri.spec + " tab id " 
+            + getTabForReq(request)._ssleuthTabId + "\n");
+    var tab = getTabForReq(request)._ssleuthTabId; 
+    // Re-init. New location, new cache.
+    this.responseCache[tab] = { url : uri.asciiSpec, 
+                                reqs: {} }; 
+
+    dump("response cache so far : " + JSON.stringify(this.responseCache) + "\n");
+    if (uri.spec === this.prevURL) {
       this.urlChanged = false; 
       return; 
     }
     this.urlChanged = true; 
-    this.prevURL = aURI.spec; 
+    this.prevURL = uri.spec; 
 
     SSleuthUI.onLocationChange(win); 
   },
@@ -73,13 +82,13 @@ var SSleuth = {
     return; 
   },
 
-  onSecurityChange: function(aWebProgress, aRequest, aState) {
+  onSecurityChange: function(aWebProgress, request, aState) {
     var win = Services.wm.getMostRecentWindow("navigator:browser");
     var loc = win.content.location;
 
     dump("\nonSecurityChange: " + loc.protocol + "\n"); 
     if (loc.protocol == "https:" ) {
-      protocolHttps(aWebProgress, aRequest, aState, win);
+      protocolHttps(aWebProgress, request, aState, win);
     } else if (loc.protocol == "http:" ) {
       protocolHttp(loc);
     } else {
@@ -398,6 +407,8 @@ var prefListener = new ssleuthPrefListener(
   }
 ); 
 
+// TODO : Propery way of doing.
+// https://developer.mozilla.org/en/docs/Setting_HTTP_request_headers#All-in-one_example
 var httpObserver = {
   init: function() {
     try {
@@ -421,17 +432,36 @@ var httpObserver = {
     try {
       var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
       var url = channel.URI.asciiSpec;
-      dump(url + " original URI : " + channel.originalURI.asciiSpec + "  content : " + channel.contentType + "\n"); 
+      var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
+
+      dump("url : " + url + " content : " + channel.contentType
+                                    + " host ID : " + hostId + "\n"); 
 
       var browser = getTabForReq(aSubject); 
       if (!browser) return; 
 
-      dump("Browser !\n");
+      // Checks : 
+      // 1. HTTP/HTTPS
+      // 2. To which Tab this request belong to ?
+      // 3. Did the tab location url change ?
+      // 4. What is the content type of this request ?
+      // 5. .. 
+      //
+      // TODO : 
+      // If the tab is closed, cleanup - remove the entries.
+      
       if (!("_ssleuthTabId" in browser)) {
         dump("Critical : no tab id present \n"); 
         browser._ssleuthTabId = ++SSleuth.maxTabId;
+        SSleuth.responseCache[browser._ssleuthTabId] = { url : url, 
+                                reqs: {} }; 
+        browser.addEventListener("", function(tab) {
+            dump("Tab event for tab : " + tab + "\n"); 
+          }, false); 
+
       } else {
-        dump("Found tab id " + browser._ssleuthTabId + "\n");
+        // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
+           //    + browser.contentWindow.location.toString() + "\n");
       }
 
       if (channel.securityInfo) {
@@ -443,7 +473,16 @@ var httpObserver = {
       // Check for http 
       // if (!channel.originalURI.schemeIs("https")) {}
 
-      // Unique tab ID : browser._ssleuthTabId 
+      var tab = browser._ssleuthTabId; 
+
+      if (!(hostId in SSleuth.responseCache[tab].reqs)) {
+        dump("index for " + hostId + " not present in reqs list\n"); 
+        SSleuth.responseCache[tab].reqs[hostId] = {
+          count : 0, 
+          type : "",  
+        }
+      }
+      SSleuth.responseCache[tab].reqs[hostId].count++;
 
     } catch(e) {
       dump("Error http response: " + e.message ); 
@@ -454,7 +493,7 @@ var httpObserver = {
 
 function getTabForReq(req) {
   var cWin = null; 
-  if (!req || !(req instanceof Ci.nsIRequest)) return null; 
+  if (!(req instanceof Ci.nsIRequest)) return null; 
 
   try {
     var notifCB = req.notificationCallbacks ? 
@@ -467,10 +506,14 @@ function getTabForReq(req) {
               _window().gBrowser.getBrowserForDocument(cWin.top.document) : null); 
   } catch (e) {
     // At least 2 different types of errors to handle here:
-    // A REST Ajax request
+    // 1. A REST Ajax request
+    // Possibly also due to an incomplete response - downloading big files.
     // Error : getTabforReq : Component returned failure code: 
     //            0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
-    // A firefox repeated pull
+    // Requires a stream listener ? 
+    //    http://www.softwareishard.com/blog/firebug/nsitraceablechannel-intercept-http-traffic/
+    //
+    // 2. A firefox repeated pull
     // Error : getTabforReq : Component does not have requested interface'Component does 
     //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
     // 
