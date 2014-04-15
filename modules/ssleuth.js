@@ -458,10 +458,10 @@ var httpObserver = {
         dump ("typeof tabId : " + typeof tabId + "\n");
         SSleuth.responseCache[tabId] = { url : url, 
                                 reqs: {} }; 
-        browser.addEventListener("DOMNodeRemoved", function(tabId) {
-            dump("DOMNodeRemoved for tab : " + tabId + "\n"); 
+        browser.addEventListener("DOMNodeRemoved", function() {
+            dump("DOMNodeRemoved for tab : " + this._ssleuthTabId + "\n"); 
             // Remove entry
-            delete SSleuth.responseCache[tabId];
+            delete SSleuth.responseCache[this._ssleuthTabId];
           }, false); 
 
 
