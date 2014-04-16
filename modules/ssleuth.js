@@ -62,7 +62,8 @@ var SSleuth = {
     this.responseCache[tab] = { url : uri.asciiSpec, 
                                 reqs: {} }; 
 
-    dump("response cache so far : " + JSON.stringify(this.responseCache) + "\n");
+    dump("response cache so far : " 
+          + JSON.stringify(this.responseCache, null, 2) + "\n");
     if (uri.spec === this.prevURL) {
       this.urlChanged = false; 
       return; 
@@ -473,17 +474,35 @@ var httpObserver = {
       if (!(hostId in SSleuth.responseCache[tab].reqs)) {
         dump("index for " + hostId + " not present in reqs list\n"); 
          
+        // How to group the domains properly ?
+        // Problems are two-fold :
+        //  1. There is no easy/direct way to group subdomains. All sorts
+        //    of problems with variable numbers in tlds, any number of 
+        //    sub-sub domains etc. The only way to correctly identify 
+        //    a subdomain is by managing a tld list and parsing our urls
+        //    according to that list.
+        //    Mozilla has a list like that here :
+        //    http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1
+        // 2. Even if there is a way to 'group' the subdomains,
+        //    it may not be a good idea to do so. Because not all subdomains
+        //    with identical domains maps to the same physical server. The
+        //    security strength will vary. Grouping subdomains could be a 
+        //    good idea for an addon like noscript where user can 'see' 
+        //    these subdomains and trust them altogether.
+        //    Whereas, grouping many subdomains would cause problems
+        //    here, if the connection is established with varying security params.
+        SSleuth.responseCache[tab].reqs[hostId] = {
+          count : 0, 
+          ctype : {}, 
+        }
+
         if (channel.securityInfo) {
           var sslStatus = channel.securityInfo
                             .QueryInterface(Ci.nsISSLStatusProvider)
                             .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
           dump("Secure channel :" + sslStatus.cipherName + "\n");
-        }
-
-        SSleuth.responseCache[tab].reqs[hostId] = {
-          count : 0, 
-          cipherName: sslStatus.cipherName
-          ctype : {}, 
+          SSleuth.responseCache[tab].reqs[hostId].cipherName 
+              = sslStatus.cipherName; 
         }
 
       }
