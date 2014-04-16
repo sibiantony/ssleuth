@@ -277,8 +277,7 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
         cert,
         certValid,
         sslStatus.isDomainMismatch,
-        extendedValidation,
-        ratingParams); 
+        extendedValidation); 
 }
 
 function getConnectionRating(csRating, pfs,
@@ -293,12 +292,8 @@ function getConnectionRating(csRating, pfs,
 
 function isCertValid(cert) {
   var usecs = new Date().getTime(); 
-  var valid = false;
-  if (usecs > cert.validity.notBefore/1000 && 
-      usecs < cert.validity.notAfter/1000) {
-    valid = true; 
-  } 
-  return valid; 
+  return ((usecs > cert.validity.notBefore/1000 && 
+           usecs < cert.validity.notAfter/1000) ? true: false); 
 }
 
 function getSignatureKeyLen(cert, auth) {
@@ -389,17 +384,17 @@ var prefListener = new ssleuthPrefListener(
   function(branch, name) {
     switch(name) {
       case "rating.params": 
-        SSleuth.prefs.PREFS["rating.params"] = 
+        SSleuth.prefs.PREFS[name] = 
             JSON.parse(branch.getCharPref(name));
         break;
       case "rating.ciphersuite.params":
-        SSleuth.prefs.PREFS["rating.ciphersuite.params"] =
+        SSleuth.prefs.PREFS[name] =
             JSON.parse(branch.getCharPref(name));
         break;
       case "suites.toggle" :
         // TODO : No need for a cloned array here ?
-        var prefsOld = SSleuth.prefs.PREFS["suites.toggle"]; 
-        SSleuth.prefs.PREFS["suites.toggle"] = 
+        var prefsOld = SSleuth.prefs.PREFS[name]; 
+        SSleuth.prefs.PREFS[name] = 
             JSON.parse(branch.getCharPref(name));
         toggleCipherSuites(prefsOld); 
         break;
@@ -458,24 +453,18 @@ var httpObserver = {
         dump ("typeof tabId : " + typeof tabId + "\n");
         SSleuth.responseCache[tabId] = { url : url, 
                                 reqs: {} }; 
+        // Replace with mutation observer ?
         browser.addEventListener("DOMNodeRemoved", function() {
             dump("DOMNodeRemoved for tab : " + this._ssleuthTabId + "\n"); 
             // Remove entry
             delete SSleuth.responseCache[this._ssleuthTabId];
           }, false); 
 
-
       } else {
         // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
            //    + browser.contentWindow.location.toString() + "\n");
       }
 
-      if (channel.securityInfo) {
-        var sslStatus = channel.securityInfo
-                          .QueryInterface(Ci.nsISSLStatusProvider)
-                          .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
-        dump("Secure channel :" + sslStatus.cipherName + "\n");
-      }
       // Check for http 
       // if (!channel.originalURI.schemeIs("https")) {}
 
@@ -483,13 +472,32 @@ var httpObserver = {
 
       if (!(hostId in SSleuth.responseCache[tab].reqs)) {
         dump("index for " + hostId + " not present in reqs list\n"); 
+         
+        if (channel.securityInfo) {
+          var sslStatus = channel.securityInfo
+                            .QueryInterface(Ci.nsISSLStatusProvider)
+                            .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
+          dump("Secure channel :" + sslStatus.cipherName + "\n");
+        }
+
         SSleuth.responseCache[tab].reqs[hostId] = {
           count : 0, 
-          type : "",  
+          cipherName: sslStatus.cipherName
+          ctype : {}, 
         }
-      }
-      SSleuth.responseCache[tab].reqs[hostId].count++;
 
+      }
+      var hostEntry = SSleuth.responseCache[tab].reqs[hostId]; 
+      hostEntry.count++;
+
+      // Check content type - only save the top-level type for now. 
+      // application, text, image, video etc.
+      var cType = channel.contentType.split('/')[0]; 
+      if (!(cType in hostEntry.ctype)) {
+        hostEntry.ctype[cType] = 0;
+      }
+      hostEntry.ctype[cType]++;
+      
     } catch(e) {
       dump("Error http response: " + e.message ); 
     }
@@ -517,13 +525,13 @@ function getTabForReq(req) {
     // Error : getTabforReq : Component returned failure code: 
     //            0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
     // Requires a stream listener ? 
-    //    http://www.softwareishard.com/blog/firebug/nsitraceablechannel-intercept-http-traffic/
+    // http://www.softwareishard.com/blog/firebug/nsitraceablechannel-intercept-http-traffic/
     //
     // 2. A firefox repeated pull
     // Error : getTabforReq : Component does not have requested interface'Component does 
     //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
     // 
-    dump("Error : getTabforReq : " + e.message + "\n");
+    // dump("Error : getTabforReq : " + e.message + "\n");
     return null;
   }
 

@@ -104,15 +104,14 @@ var SSleuthUI = {
         cert,
         certValid,
         domMismatch,
-        ev,
-        ratingParams) {
+        ev) {
     setButtonRank(connectionRank); 
     panelConnectionRank(connectionRank); 
 
-    showCipherDetails(cipherSuite, ratingParams); 
-    showPFS(cipherSuite.pfs, ratingParams); 
-    showFFState(securityState, ratingParams); 
-    showCertDetails(cert, certValid, domMismatch, ev, ratingParams); 
+    showCipherDetails(cipherSuite); 
+    showPFS(cipherSuite.pfs);
+    showFFState(securityState); 
+    showCertDetails(cert, certValid, domMismatch, ev);
   }
 
 };
@@ -387,9 +386,11 @@ function setButtonRank(connectionRank) {
   }
 }
 
-function showCipherDetails(cipherSuite, rp) {
+function showCipherDetails(cipherSuite) {
   var doc = _window().document; 
   const cs = ssleuthCipherSuites; 
+  const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
+
   var marginCipherStatus = "low"; 
   if (cipherSuite.rank >= cs.cipherSuiteStrength.HIGH) {
     marginCipherStatus = "high"; 
@@ -436,8 +437,9 @@ function showCipherDetails(cipherSuite, rp) {
     = !(panelInfo.keyExchange); 
 }
 
-function showPFS(pfs, rp) {
+function showPFS(pfs) {
   var doc = _window().document; 
+  const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
 
   const pfsImg = doc.getElementById("ssleuth-img-p-f-secrecy"); 
   const pfsTxt = doc.getElementById("ssleuth-text-p-f-secrecy"); 
@@ -455,8 +457,9 @@ function showPFS(pfs, rp) {
   }
 }
 
-function showFFState(state, rp) {
+function showFFState(state) {
   var doc = _window().document; 
+  const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
 
   doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state); 
   doc.getElementById("ssleuth-text-ff-connection-status").textContent = state; 
@@ -473,11 +476,12 @@ function showFFState(state, rp) {
   }
 }
 
-function showCertDetails(cert, certValid, domMismatch, ev, rp) {
+function showCertDetails(cert, certValid, domMismatch, ev) {
   var validity = cert.validity.QueryInterface(Ci.nsIX509CertValidity);
   var doc = _window().document; 
-
+  const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
   const panelInfo = SSleuthUI.prefs.PREFS["panel.info"]; 
+
   doc.getElementById("ssleuth-text-cert-common-name").textContent = cert.commonName; 
   var certRating = doc.getElementById("ssleuth-cert-status-rating"); 
   var evRating = doc.getElementById("ssleuth-cert-ev-rating"); 
@@ -769,6 +773,10 @@ var prefListener = new ssleuthPrefListener(
       case "panel.info" :
         SSleuthUI.prefs.PREFS[name] = 
           JSON.parse(branch.getCharPref(name)); 
+        break;
+      case "rating.params": 
+        SSleuthUI.prefs.PREFS[name] = 
+            JSON.parse(branch.getCharPref(name));
         break;
     }
   }
