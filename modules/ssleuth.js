@@ -4,6 +4,7 @@ var EXPORTED_SYMBOLS = ["SSleuth"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const ENABLE_HTTP_OBS = true;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
@@ -15,7 +16,7 @@ var SSleuth = {
   prevURL: null,
   urlChanged: false,
   prefs: null, 
-  initComplete : false,
+  initOnce : false,
   maxTabId: null, 
   responseCache: [], 
 
@@ -28,10 +29,10 @@ var SSleuth = {
     try {
       window.gBrowser.addProgressListener(this);
       this.prefs = SSleuthPreferences.readInitPreferences(); 
-      if (!this.initComplete) {
+      if (!this.initOnce) {
         prefListener.register(false); 
-        httpObserver.init(); 
-        this.initComplete = true; 
+        if (ENABLE_HTTP_OBS) httpObserver.init(); 
+        this.initOnce = true; 
       }
       SSleuthUI.init(window); 
     } catch(e) {
@@ -44,8 +45,8 @@ var SSleuth = {
     // dump("\nUninit \n");
     SSleuthUI.uninit(window); 
     prefListener.unregister(); 
-    httpObserver.uninit();
-    this.initComplete = false; 
+    if (ENABLE_HTTP_OBS) httpObserver.uninit();
+    this.initOnce = false; 
     window.gBrowser.removeProgressListener(this);
   },
 
@@ -59,11 +60,12 @@ var SSleuth = {
             + getTabForReq(request)._ssleuthTabId + "\n");
     var tab = getTabForReq(request)._ssleuthTabId; 
     // Re-init. New location, new cache.
-    this.responseCache[tab] = { url : uri.asciiSpec, 
-                                reqs: {} }; 
-
+    // TODO : Fix Addon-manager showing up in the list.
+    this.responseCache[tab] = newResponseEntry(uri.asciiSpec);
+    updateResponseCache(request);
     dump("response cache so far : " 
           + JSON.stringify(this.responseCache, null, 2) + "\n");
+
     if (uri.spec === this.prevURL) {
       this.urlChanged = false; 
       return; 
@@ -80,17 +82,17 @@ var SSleuth = {
     return;
   },
 
-  onStateChange: function(aWebProgress, aRequest, aFlag, aStatus) {
+  onStateChange: function(progress, request, flag, status) {
     return; 
   },
 
-  onSecurityChange: function(aWebProgress, request, aState) {
+  onSecurityChange: function(progress, request, state) {
     var win = Services.wm.getMostRecentWindow("navigator:browser");
     var loc = win.content.location;
 
     dump("\nonSecurityChange: " + loc.protocol + "\n"); 
     if (loc.protocol == "https:" ) {
-      protocolHttps(aWebProgress, request, aState, win);
+      protocolHttps(progress, request, state, win);
     } else if (loc.protocol == "http:" ) {
       protocolHttp(loc);
     } else {
@@ -108,7 +110,7 @@ function protocolHttp(loc) {
   SSleuthUI.protocolChange("http", httpsURL);
 }
 
-function protocolHttps(aWebProgress, aRequest, aState, win) {
+function protocolHttps(progress, request, state, win) {
   // dump("\nprotocolHttps \n");
   const Cc = Components.classes; 
   const Ci = Components.interfaces;
@@ -146,20 +148,26 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
   var extendedValidation = false;
 
   // Security Info - Firefox states
-  if ((aState & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
+  if ((state & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
     securityState = "Secure"; 
-  } else if ((aState & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
+  } else if ((state & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
     securityState = "Insecure"; 
-  } else if ((aState & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
+  } else if ((state & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
     securityState = "Broken"; 
   }
 
-  if (aState & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
+  if (state & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
     extendedValidation = true; 
   }
-  var domainNameMatched = "No"; 
-  if (!sslStatus.isDomainMismatch) {
-    domainNameMatched = "Yes"; 
+
+  try {
+    if (ENABLE_HTTP_OBS) {
+      var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
+      SSleuth.responseCache[tab]["ffStatus"] = securityState;
+      SSleuth.responseCache[tab]["evCert"] = extendedValidation;
+    }
+  } catch(e) {
+    dump("Error ENABLE_HTTP_OBS: " + e.message + "\n");
   }
 
   var cipherSuite = { 
@@ -175,37 +183,21 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
     HMAC: null 
   }; 
           
-  // Key exchange
-  for (var i=0; i<cs.keyExchange.length; i++) {
-    if((cipherName.indexOf(cs.keyExchange[i].name) != -1)) {
-      cipherSuite.keyExchange = cs.keyExchange[i];
-      cipherSuite.pfs = cs.keyExchange[i].pfs; 
-      break; 
+  function getCsParam(param) {
+    for (var i=0; i<param.length; i++) {
+      if ((cipherName.indexOf(param[i].name) != -1)) {
+        return param[i];
+      }
     }
+    return null;
   }
 
-  // Authentication
-  for (i=0; i<cs.authentication.length; i++) {
-    if((cipherName.indexOf(cs.authentication[i].name) != -1)) {
-      cipherSuite.authentication = cs.authentication[i];
-      break; 
-    }
-  }
+  cipherSuite.keyExchange = getCsParam(cs.keyExchange);
+  cipherSuite.authentication = getCsParam(cs.authentication);
+  cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
+  cipherSuite.HMAC = getCsParam(cs.HMAC);
 
-  // Bulk cipher
-  for (i=0; i<cs.bulkCipher.length; i++) {
-    if((cipherName.indexOf(cs.bulkCipher[i].name) != -1)) {
-      cipherSuite.bulkCipher = cs.bulkCipher[i];
-      break; 
-    }
-  }
-  // HMAC
-  for (i=0; i<cs.HMAC.length; i++) {
-    if((cipherName.indexOf(cs.HMAC[i].name) != -1)) {
-      cipherSuite.HMAC = cs.HMAC[i];
-      break; 
-    }
-  }
+  cipherSuite.pfs = cipherSuite.keyExchange.pfs;
 
   if (!cipherSuite.keyExchange) {
     cipherSuite.keyExchange = {name: "",
@@ -225,11 +217,11 @@ function protocolHttps(aWebProgress, aRequest, aState, win) {
     // Something's missing in our list.
     // Get the security strength from Firefox's own flags.
     // Set cipher rank
-    if (aState & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
+    if (state & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) { 
       cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX; 
-    } else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
+    } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_MED) { 
       cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1; 
-    } else if (aState & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
+    } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
       cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1; 
     } 
   }
@@ -428,101 +420,108 @@ var httpObserver = {
 
     try {
       var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
-      var url = channel.URI.asciiSpec;
-      var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
-
-      dump("url : " + url + " content : " + channel.contentType
-                                    + " host ID : " + hostId + "\n"); 
-
-      var browser = getTabForReq(aSubject); 
-      if (!browser) return; 
-
-      // Checks : 
-      // 1. HTTP/HTTPS
-      // 2. To which Tab this request belong to ?
-      // 3. Did the tab location url change ?
-      // 4. What is the content type of this request ?
-      // 5. .. 
-      //
-      // TODO : 
-      // If the tab is closed, cleanup - remove the entries.
-      
-      if (!("_ssleuthTabId" in browser)) {
-        dump("Critical : no tab id present \n"); 
-        // Use a string index - helps with deletion without problems.
-        var tabId = browser._ssleuthTabId = (SSleuth.maxTabId++).toString();
-        dump ("typeof tabId : " + typeof tabId + "\n");
-        SSleuth.responseCache[tabId] = { url : url, 
-                                reqs: {} }; 
-        // Replace with mutation observer ?
-        browser.addEventListener("DOMNodeRemoved", function() {
-            dump("DOMNodeRemoved for tab : " + this._ssleuthTabId + "\n"); 
-            // Remove entry
-            delete SSleuth.responseCache[this._ssleuthTabId];
-          }, false); 
-
-      } else {
-        // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
-           //    + browser.contentWindow.location.toString() + "\n");
-      }
-
-      // Check for http 
-      // if (!channel.originalURI.schemeIs("https")) {}
-
-      var tab = browser._ssleuthTabId; 
-
-      if (!(hostId in SSleuth.responseCache[tab].reqs)) {
-        dump("index for " + hostId + " not present in reqs list\n"); 
-         
-        // How to group the domains properly ?
-        // Problems are two-fold :
-        //  1. There is no easy/direct way to group subdomains. All sorts
-        //    of problems with variable numbers in tlds, any number of 
-        //    sub-sub domains etc. The only way to correctly identify 
-        //    a subdomain is by managing a tld list and parsing our urls
-        //    according to that list.
-        //    Mozilla has a list like that here :
-        //    http://mxr.mozilla.org/mozilla-central/source/netwerk/dns/effective_tld_names.dat?raw=1
-        // 2. Even if there is a way to 'group' the subdomains,
-        //    it may not be a good idea to do so. Because not all subdomains
-        //    with identical domains maps to the same physical server. The
-        //    security strength will vary. Grouping subdomains could be a 
-        //    good idea for an addon like noscript where user can 'see' 
-        //    these subdomains and trust them altogether.
-        //    Whereas, grouping many subdomains would cause problems
-        //    here, if the connection is established with varying security params.
-        SSleuth.responseCache[tab].reqs[hostId] = {
-          count : 0, 
-          ctype : {}, 
-        }
-
-        if (channel.securityInfo) {
-          var sslStatus = channel.securityInfo
-                            .QueryInterface(Ci.nsISSLStatusProvider)
-                            .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
-          dump("Secure channel :" + sslStatus.cipherName + "\n");
-          SSleuth.responseCache[tab].reqs[hostId].cipherName 
-              = sslStatus.cipherName; 
-        }
-
-      }
-      var hostEntry = SSleuth.responseCache[tab].reqs[hostId]; 
-      hostEntry.count++;
-
-      // Check content type - only save the top-level type for now. 
-      // application, text, image, video etc.
-      var cType = channel.contentType.split('/')[0]; 
-      if (!(cType in hostEntry.ctype)) {
-        hostEntry.ctype[cType] = 0;
-      }
-      hostEntry.ctype[cType]++;
-      
+      updateResponseCache(channel);
     } catch(e) {
       dump("Error http response: " + e.message ); 
     }
 
   },
 }; 
+
+function updateResponseCache(channel) {
+  try {
+    var url = channel.URI.asciiSpec;
+    var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
+
+    dump("url : " + url + " content : " + channel.contentType
+                                  + " host ID : " + hostId + "\n"); 
+
+    var browser = getTabForReq(channel); 
+    if (!browser) return; 
+
+    // Checks : 
+    // 1. HTTP/HTTPS
+    // 2. To which Tab this request belong to ?
+    // 3. Did the tab location url change ?
+    // 4. What is the content type of this request ?
+    // 5. .. 
+    //
+    // TODO : 
+    // If the tab is closed, cleanup - remove the entries.
+    
+    if (!("_ssleuthTabId" in browser)) {
+      dump("Critical : no tab id present \n"); 
+      // Use a string index - helps with deletion without problems.
+      var tabId = browser._ssleuthTabId = (SSleuth.maxTabId++).toString();
+      dump ("typeof tabId : " + typeof tabId + "\n");
+      SSleuth.responseCache[tabId] = newResponseEntry(url); 
+      // Replace with mutation observer ?
+      browser.addEventListener("DOMNodeRemoved", function() {
+          dump("DOMNodeRemoved for tab : " + this._ssleuthTabId + "\n"); 
+          // Remove entry
+          delete SSleuth.responseCache[this._ssleuthTabId];
+        }, false); 
+
+    } else {
+      // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
+      //    + browser.contentWindow.location.toString() + "\n");
+    }
+
+    // Check for http 
+    // if (!channel.originalURI.schemeIs("https")) {}
+
+    var tab = browser._ssleuthTabId; 
+    var hostEntry = SSleuth.responseCache[tab].reqs[hostId];
+
+    if (!hostEntry) {
+      dump("index for " + hostId + " not present in reqs list\n"); 
+       
+      SSleuth.responseCache[tab].reqs[hostId] = {
+        count : 0, 
+        ctype : {}, 
+      }
+      hostEntry = SSleuth.responseCache[tab].reqs[hostId]; 
+
+      if (channel.securityInfo) {
+        var sslStatus = channel.securityInfo
+                          .QueryInterface(Ci.nsISSLStatusProvider)
+                          .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
+        if (!sslStatus) {
+          dump ("Critical : No sslstatus \n"); 
+        } else {
+          dump("Secure channel :" + sslStatus.cipherName + "\n");
+        }
+
+        hostEntry.cipherName = sslStatus.cipherName; 
+        hostEntry.certValid = isCertValid(sslStatus.serverCert);
+        hostEntry.domMatch = !sslStatus.isDomainMismatch;
+        hostEntry.csRating = getCipherSuiteRating(hostEntry.cipherName);
+
+      }
+
+    }
+    hostEntry.count++;
+
+    // Check content type - only save the top-level type for now. 
+    // application, text, image, video etc.
+    var cType = channel.contentType.split('/')[0]; 
+    if (!(cType in hostEntry.ctype)) {
+      hostEntry.ctype[cType] = 0;
+    }
+    hostEntry.ctype[cType]++;
+  } catch(e) {
+    dump("Error updateResponseCache : " + e.message + "\n");
+  }
+}
+
+function newResponseEntry(url) {
+  return { 
+        url : url, 
+        // ffStatus : "", 
+        // evCert : false, 
+        reqs: {} 
+      }; 
+}
 
 function getTabForReq(req) {
   var cWin = null; 
@@ -554,6 +553,30 @@ function getTabForReq(req) {
     return null;
   }
 
+}
+
+function getCipherSuiteRating(cipherName) {
+  const cs = ssleuthCipherSuites; 
+  const csW = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
+
+  function getRating(csParam) {
+    for (var i=0; i<csParam.length; i++) {
+      if ((cipherName.indexOf(csParam[i].name) != -1)) {
+        return csParam[i].rank; 
+      }
+    }
+    return null; 
+  }
+  var keyExchange = getRating(cs.keyExchange);
+  var bulkCipher = getRating(cs.bulkCipher);
+  var hmac = getRating(cs.HMAC); 
+  
+  if ((keyExchange && bulkCipher && hmac) == null)
+    return null; 
+
+  return ( (keyExchange * csW.keyExchange 
+            + bulkCipher * csW.bulkCipher 
+            + hmac * csW.hmac )/csW.total );
 }
 
 function _window() {
