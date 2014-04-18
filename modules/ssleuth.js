@@ -56,9 +56,11 @@ var SSleuth = {
     if (!win) return; 
 
     dump("==========================\n"); 
+    var tab = _window().gBrowser.getBrowserForDocument(
+                getTabForReq(request).top.document)._ssleuthTabId; 
     dump("onLocationChange : " + uri.spec + " tab id " 
-            + getTabForReq(request)._ssleuthTabId + "\n");
-    var tab = getTabForReq(request)._ssleuthTabId; 
+            + tab + "\n");
+
     // Re-init. New location, new cache.
     // TODO : Fix Addon-manager showing up in the list.
     this.responseCache[tab] = newResponseEntry(uri.asciiSpec);
@@ -396,7 +398,7 @@ var prefListener = new ssleuthPrefListener(
   }
 ); 
 
-// TODO : Propery way of doing.
+// TODO : Proper way of doing.
 // https://developer.mozilla.org/en/docs/Setting_HTTP_request_headers#All-in-one_example
 var httpObserver = {
   init: function() {
@@ -436,8 +438,14 @@ function updateResponseCache(channel) {
     dump("url : " + url + " content : " + channel.contentType
                                   + " host ID : " + hostId + "\n"); 
 
-    var browser = getTabForReq(channel); 
-    if (!browser) return; 
+    var cWin = getTabForReq(channel); 
+    if (!cWin) return; 
+    var browser = _window().gBrowser.getBrowserForDocument(cWin.top.document);
+
+    if (!browser) {
+      dump("Critical: No browser! \n");
+      return;
+    }
 
     // Checks : 
     // 1. HTTP/HTTPS
@@ -454,11 +462,15 @@ function updateResponseCache(channel) {
       // Use a string index - helps with deletion without problems.
       var tabId = browser._ssleuthTabId = (SSleuth.maxTabId++).toString();
       dump ("typeof tabId : " + typeof tabId + "\n");
+      dump ("GBrowser tab index : " + _window().gBrowser.getBrowserIndexForDocument(cWin.top.document) + "\n");
+
+      var tabNo = _window().gBrowser.getBrowserIndexForDocument(cWin.top.document);
+      var tabElement = _window().gBrowser.tabs[tabNo];
+
       SSleuth.responseCache[tabId] = newResponseEntry(url); 
       // Replace with mutation observer ?
       browser.addEventListener("DOMNodeRemoved", function() {
-          dump("DOMNodeRemoved for tab : " + this._ssleuthTabId + "\n"); 
-          // Remove entry
+          dump("tab removed : " +  "\n");
           delete SSleuth.responseCache[this._ssleuthTabId];
         }, false); 
 
@@ -534,8 +546,12 @@ function getTabForReq(req) {
     if (!notifCB) return null;
 
     cWin = notifCB.getInterface(Ci.nsILoadContext).associatedWindow;
-    return (cWin ? 
-              _window().gBrowser.getBrowserForDocument(cWin.top.document) : null); 
+    /* cWin.addEventListener("beforeunload", function() {
+          dump("beforeunload : \n"); 
+    }, false);*/
+    return cWin; 
+    // return (cWin ? 
+    //          _window().gBrowser.getBrowserForDocument(cWin.top.document) : null); 
   } catch (e) {
     // At least 2 different types of errors to handle here:
     // 1. A REST Ajax request
