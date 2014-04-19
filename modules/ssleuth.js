@@ -4,36 +4,43 @@ var EXPORTED_SYMBOLS = ["SSleuth"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
-const ENABLE_HTTP_OBS = true;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js"); 
+Components.utils.import("resource://ssleuth/observer.js"); 
 Components.utils.import("resource://ssleuth/ssleuth-ui.js");
 Components.utils.import("resource://ssleuth/preferences.js");
 
 var SSleuth = {
-  prevURL: null,
-  urlChanged: false,
   prefs: null, 
-  initOnce : false,
-  maxTabId: null, 
-  responseCache: [], 
 
-  init: function(window) {
+  extensionStartup: function(firstRun, reinstall) {
+    SSleuthPreferences.init(); 
+    SSleuthHttpObserver.init();
+    this.prefs = SSleuthPreferences.readInitPreferences();
+    prefListener.register(false);
 
-    // dump("\nSSleuth init \n"); 
-    // Handle exceptions while init(). If the panel
-    // is not properly installed for the buttons, the mainPopupSet 
-    // panel elements will wreak havoc on the browser UI. 
+    forEachOpenWindow(SSleuth.initWindow); 
+    Services.wm.addListener(WindowListener); 
+  },
+
+  extensionShutdown: function() {
+    forEachOpenWindow(SSleuth.uninitWindow); 
+    Services.wm.removeListener(WindowListener); 
+
+    SSleuthPreferences.uninit(); 
+    SSleuthHttpObserver.uninit();
+    prefListener.unregister(); 
+  },
+
+  extensionUninstall: function() {
+  },
+
+  initWindow: function(window) {
+    dump("\nSSleuth init Window \n"); 
     try {
-      window.gBrowser.addProgressListener(this);
-      this.prefs = SSleuthPreferences.readInitPreferences(); 
-      if (!this.initOnce) {
-        prefListener.register(false); 
-        if (ENABLE_HTTP_OBS) httpObserver.init(); 
-        this.initOnce = true; 
-      }
+      window.gBrowser.addProgressListener(ProgressListener);
       SSleuthUI.init(window); 
     } catch(e) {
       dump("\nError ssleuth init : " + e.message + "\n"); 
@@ -41,14 +48,17 @@ var SSleuth = {
     }
   },
 
-  uninit: function(window) {
-    // dump("\nUninit \n");
+  uninitWindow: function(window) {
+    dump("\nUninit window \n");
     SSleuthUI.uninit(window); 
-    prefListener.unregister(); 
-    if (ENABLE_HTTP_OBS) httpObserver.uninit();
-    this.initOnce = false; 
-    window.gBrowser.removeProgressListener(this);
-  },
+    // Add window remove listener.
+    window.gBrowser.removeProgressListener(ProgressListener);
+  }
+};
+
+var ProgressListener = {
+  prevURL: null,
+  urlChanged: false,
 
   onLocationChange: function(progress, request, uri) {
     var win = Services.wm.getMostRecentWindow("navigator:browser"); 
@@ -63,11 +73,11 @@ var SSleuth = {
 
     // Re-init. New location, new cache.
     // TODO : Fix Addon-manager showing up in the list.
-    this.responseCache[tab] = newResponseEntry(uri.asciiSpec);
-    updateResponseCache(request);
-    dump("response cache so far : " 
-          + JSON.stringify(this.responseCache, null, 2) + "\n");
-
+    // this.responseCache[tab] = newResponseEntry(uri.asciiSpec);
+    // updateResponseCache(request);
+    // dump("response cache so far : " 
+    //          + JSON.stringify(this.responseCache, null, 2) + "\n");
+    
     if (uri.spec === this.prevURL) {
       this.urlChanged = false; 
       return; 
@@ -77,9 +87,11 @@ var SSleuth = {
 
     SSleuthUI.onLocationChange(win); 
   },
+
   onProgressChange: function() {
     return;
   },
+
   onStatusChange: function() {
     return;
   },
@@ -93,14 +105,15 @@ var SSleuth = {
     var loc = win.content.location;
 
     dump("\nonSecurityChange: " + loc.protocol + "\n"); 
-    if (loc.protocol == "https:" ) {
+    if (loc.protocol === "https:" ) {
       protocolHttps(progress, request, state, win);
-    } else if (loc.protocol == "http:" ) {
+    } else if (loc.protocol === "http:" ) {
       protocolHttp(loc);
     } else {
       protocolUnknown(); 
     }
   }
+
 }; 
 
 function protocolUnknown() {
@@ -136,7 +149,9 @@ function protocolHttps(progress, request, state, win) {
       //  no connectivity and user attempts to reload a page. 
       //  Hide the panel to prevent stale values from getting 
       //  displayed 
-      if (SSleuth.urlChanged) {
+
+      // TODO : Recheck urlChanged context for the new redesign
+      if (ProgressListener.urlChanged) {
         SSleuthUI.protocolChange("unknown", "");
       }
       return; 
@@ -162,7 +177,7 @@ function protocolHttps(progress, request, state, win) {
     extendedValidation = true; 
   }
 
-  try {
+  /* try {
     if (ENABLE_HTTP_OBS) {
       var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
       SSleuth.responseCache[tab]["ffStatus"] = securityState;
@@ -170,7 +185,7 @@ function protocolHttps(progress, request, state, win) {
     }
   } catch(e) {
     dump("Error ENABLE_HTTP_OBS: " + e.message + "\n");
-  }
+  } */
 
   var cipherSuite = { 
     name: cipherName, 
@@ -276,10 +291,10 @@ function protocolHttps(progress, request, state, win) {
 }
 
 function getConnectionRating(csRating, pfs,
-      ffStatus,
-      certStatus,
-      evCert,
-      rp) {
+                              ffStatus,
+                              certStatus,
+                              evCert,
+                              rp) {
   return ((csRating * rp.cipherSuite + pfs * rp.pfs +
         ffStatus * rp.ffStatus + certStatus * rp.certStatus +
         evCert * rp.evCert )/rp.total); 
@@ -398,203 +413,35 @@ var prefListener = new ssleuthPrefListener(
   }
 ); 
 
-// TODO : Proper way of doing.
-// https://developer.mozilla.org/en/docs/Setting_HTTP_request_headers#All-in-one_example
-var httpObserver = {
-  init: function() {
-    try {
-      // TODO : Observer for cached content ?
-      Services.obs.addObserver({observe: httpObserver.response},
-        'http-on-examine-response', false); 
-    } catch (e) {
-      dump("error observer : " + e.message + "\n");
-    }
-  },
-
-  uninit: function() {
-    Services.obs.removeObserver({observe: httpObserver.response}, 
-      'http-on-examine-response', false);
-  },
-  
-  response: function(aSubject, aTopic, aData) {
-    if (aTopic !== 'http-on-examine-response') return; 
-    if (!(aSubject instanceof Components.interfaces.nsIHttpChannel)) return; 
-
-    try {
-      var channel = aSubject.QueryInterface(Ci.nsIHttpChannel); 
-      updateResponseCache(channel);
-    } catch(e) {
-      dump("Error http response: " + e.message ); 
-    }
-
-  },
-}; 
-
-function updateResponseCache(channel) {
-  try {
-    var url = channel.URI.asciiSpec;
-    var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
-
-    dump("url : " + url + " content : " + channel.contentType
-                                  + " host ID : " + hostId + "\n"); 
-
-    var cWin = getTabForReq(channel); 
-    if (!cWin) return; 
-    var browser = _window().gBrowser.getBrowserForDocument(cWin.top.document);
-
-    if (!browser) {
-      dump("Critical: No browser! \n");
-      return;
-    }
-
-    // Checks : 
-    // 1. HTTP/HTTPS
-    // 2. To which Tab this request belong to ?
-    // 3. Did the tab location url change ?
-    // 4. What is the content type of this request ?
-    // 5. .. 
-    //
-    // TODO : 
-    // If the tab is closed, cleanup - remove the entries.
-    
-    if (!("_ssleuthTabId" in browser)) {
-      dump("Critical : no tab id present \n"); 
-      // Use a string index - helps with deletion without problems.
-      var tabId = browser._ssleuthTabId = (SSleuth.maxTabId++).toString();
-      dump ("typeof tabId : " + typeof tabId + "\n");
-      dump ("GBrowser tab index : " + _window().gBrowser.getBrowserIndexForDocument(cWin.top.document) + "\n");
-
-      var tabNo = _window().gBrowser.getBrowserIndexForDocument(cWin.top.document);
-      var tabElement = _window().gBrowser.tabs[tabNo];
-
-      SSleuth.responseCache[tabId] = newResponseEntry(url); 
-      // Replace with mutation observer ?
-      browser.addEventListener("DOMNodeRemoved", function() {
-          dump("tab removed : " +  "\n");
-          delete SSleuth.responseCache[this._ssleuthTabId];
-        }, false); 
-
-    } else {
-      // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
-      //    + browser.contentWindow.location.toString() + "\n");
-    }
-
-    // Check for http 
-    // if (!channel.originalURI.schemeIs("https")) {}
-
-    var tab = browser._ssleuthTabId; 
-    var hostEntry = SSleuth.responseCache[tab].reqs[hostId];
-
-    if (!hostEntry) {
-      dump("index for " + hostId + " not present in reqs list\n"); 
-       
-      SSleuth.responseCache[tab].reqs[hostId] = {
-        count : 0, 
-        ctype : {}, 
-      }
-      hostEntry = SSleuth.responseCache[tab].reqs[hostId]; 
-
-      if (channel.securityInfo) {
-        var sslStatus = channel.securityInfo
-                          .QueryInterface(Ci.nsISSLStatusProvider)
-                          .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
-        if (!sslStatus) {
-          dump ("Critical : No sslstatus \n"); 
-        } else {
-          dump("Secure channel :" + sslStatus.cipherName + "\n");
-        }
-
-        hostEntry.cipherName = sslStatus.cipherName; 
-        hostEntry.certValid = isCertValid(sslStatus.serverCert);
-        hostEntry.domMatch = !sslStatus.isDomainMismatch;
-        hostEntry.csRating = getCipherSuiteRating(hostEntry.cipherName);
-
-      }
-
-    }
-    hostEntry.count++;
-
-    // Check content type - only save the top-level type for now. 
-    // application, text, image, video etc.
-    var cType = channel.contentType.split('/')[0]; 
-    if (!(cType in hostEntry.ctype)) {
-      hostEntry.ctype[cType] = 0;
-    }
-    hostEntry.ctype[cType]++;
-  } catch(e) {
-    dump("Error updateResponseCache : " + e.message + "\n");
-  }
-}
-
-function newResponseEntry(url) {
-  return { 
-        url : url, 
-        // ffStatus : "", 
-        // evCert : false, 
-        reqs: {} 
-      }; 
-}
-
-function getTabForReq(req) {
-  var cWin = null; 
-  if (!(req instanceof Ci.nsIRequest)) return null; 
-
-  try {
-    var notifCB = req.notificationCallbacks ? 
-                    req.notificationCallbacks : 
-                    req.loadGroup.notificationCallbacks;
-    if (!notifCB) return null;
-
-    cWin = notifCB.getInterface(Ci.nsILoadContext).associatedWindow;
-    /* cWin.addEventListener("beforeunload", function() {
-          dump("beforeunload : \n"); 
-    }, false);*/
-    return cWin; 
-    // return (cWin ? 
-    //          _window().gBrowser.getBrowserForDocument(cWin.top.document) : null); 
-  } catch (e) {
-    // At least 2 different types of errors to handle here:
-    // 1. A REST Ajax request
-    // Possibly also due to an incomplete response - downloading big files.
-    // Error : getTabforReq : Component returned failure code: 
-    //            0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
-    // Requires a stream listener ? 
-    // http://www.softwareishard.com/blog/firebug/nsitraceablechannel-intercept-http-traffic/
-    //
-    // 2. A firefox repeated pull
-    // Error : getTabforReq : Component does not have requested interface'Component does 
-    //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
-    // 
-    // dump("Error : getTabforReq : " + e.message + "\n");
-    return null;
-  }
-
-}
-
-function getCipherSuiteRating(cipherName) {
-  const cs = ssleuthCipherSuites; 
-  const csW = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
-
-  function getRating(csParam) {
-    for (var i=0; i<csParam.length; i++) {
-      if ((cipherName.indexOf(csParam[i].name) != -1)) {
-        return csParam[i].rank; 
-      }
-    }
-    return null; 
-  }
-  var keyExchange = getRating(cs.keyExchange);
-  var bulkCipher = getRating(cs.bulkCipher);
-  var hmac = getRating(cs.HMAC); 
-  
-  if ((keyExchange && bulkCipher && hmac) == null)
-    return null; 
-
-  return ( (keyExchange * csW.keyExchange 
-            + bulkCipher * csW.bulkCipher 
-            + hmac * csW.hmac )/csW.total );
-}
-
 function _window() {
     return Services.wm.getMostRecentWindow("navigator:browser"); 
 }
+
+// Apply a function to all open browser windows 
+function forEachOpenWindow(todo)  {
+  var windows = Services.wm.getEnumerator("navigator:browser");
+  while (windows.hasMoreElements())
+    todo(windows.getNext()
+      .QueryInterface(Components.interfaces.nsIDOMWindow));
+}
+
+var WindowListener = {
+  onOpenWindow: function(xulWindow) {
+    var window = xulWindow
+                  .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                  .getInterface(Components.interfaces.nsIDOMWindow);
+    function onWindowLoad() {
+      window.removeEventListener("load",onWindowLoad);
+      if (window.document.documentElement
+          .getAttribute("windowtype") == "navigator:browser")
+        SSleuth.initWindow(window);
+    }
+    window.addEventListener("load",onWindowLoad);
+  },
+  onCloseWindow: function(xulWindow) { 
+    dump ("onCloseWindow : \n");
+    // unloadWindow(xulWindow); 
+  },
+  onWindowTitleChange: function(xulWindow, newTitle) { }
+};
+

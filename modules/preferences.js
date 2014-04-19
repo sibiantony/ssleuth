@@ -69,7 +69,7 @@ var SSleuthPreferences = {
 
   openTab : function(index) {
 
-    const win = _window(); 
+    const win = Services.wm.getMostRecentWindow("navigator:browser");
 
     if (null == this.prefsTab || this.prefsTabWin.closed) {
        var prefsTab =
@@ -170,9 +170,4 @@ ssleuthPrefListener.prototype.unregister = function() {
   if (this._branch)
     this._branch.removeObserver('', this);
 };
-
-// Move to utils ?
-function _window() {
-  return Services.wm.getMostRecentWindow("navigator:browser");
-}
 

@@ -76,14 +76,14 @@
       cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
       csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
       for (var [id, val] in Iterator({
-        "ssleuth-pref-cipher-suite-weight" : cxRating.cipherSuite, 
-        "ssleuth-pref-pfs-weight"    : cxRating.pfs,
-        "ssleuth-pref-ev-weight"    : cxRating.evCert,
-        "ssleuth-pref-ffstatus-weight"  : cxRating.ffStatus,
-        "ssleuth-pref-certstate-weight"  : cxRating.certStatus,
-        "ssleuth-pref-cs-kx-weight"    : csRating.keyExchange,
-        "ssleuth-pref-cs-cipher-weight" : csRating.bulkCipher,
-        "ssleuth-pref-cs-hmac-weight"  : csRating.hmac
+        "ssleuth-pref-cipher-suite-weight"  : cxRating.cipherSuite, 
+        "ssleuth-pref-pfs-weight"           : cxRating.pfs,
+        "ssleuth-pref-ev-weight"            : cxRating.evCert,
+        "ssleuth-pref-ffstatus-weight"      : cxRating.ffStatus,
+        "ssleuth-pref-certstate-weight"     : cxRating.certStatus,
+        "ssleuth-pref-cs-kx-weight"         : csRating.keyExchange,
+        "ssleuth-pref-cs-cipher-weight"     : csRating.bulkCipher,
+        "ssleuth-pref-cs-hmac-weight"       : csRating.hmac
         })) {
           document.getElementById(id).value = val; 
       }

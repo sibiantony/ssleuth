@@ -15,9 +15,9 @@ function uninstall(data, reason) {
 
   // uninstall: remove storage, prefs
   if (reason === ADDON_UNINSTALL) { // updating=ADDON_UPGRADE
-    var nw = {};
-    Cu.import("resource://ssleuth/new-window.js", nw);
-    nw.Bootstrap.extensionUninstall();
+    var ss = {};
+    Cu.import("resource://ssleuth/ssleuth.js", ss);
+    ss.SSleuth.extensionUninstall();
   }
 
   // update/uninstall: unload all modules
@@ -42,9 +42,11 @@ function startup(data, reason) {
     }
   }
 
-  var nw = {};
-  Cu.import("resource://ssleuth/new-window.js", nw);
-  nw.Bootstrap.extensionStartup(firstRun, reinstall);
+  try {
+    var ss = {};
+    Cu.import("resource://ssleuth/ssleuth.js", ss);
+    ss.SSleuth.extensionStartup(firstRun, reinstall);
+  } catch(e) { dump("Error bootstrap : " + e.message + "\n");}
 }
 
 function shutdown(data, reason) {
@@ -52,21 +54,22 @@ function shutdown(data, reason) {
     return;
   }
 
-  var nw = {};
-  Cu.import("resource://ssleuth/new-window.js", nw);
-  nw.Bootstrap.extensionShutdown();
+  var ss = {};
+  Cu.import("resource://ssleuth/ssleuth.js", ss);
+  ss.SSleuth.extensionShutdown();
 
   unloadModules();
   registerResourceProtocol(null);
 }
 
 function unloadModules() {
-  Cu.unload("resource://ssleuth/preferences.js");
-  Cu.unload("resource://ssleuth/cipher-suites.js");
-  Cu.unload("resource://ssleuth/utils.js");
-  Cu.unload("resource://ssleuth/ssleuth-ui.js");
-  Cu.unload("resource://ssleuth/ssleuth.js");
-  Cu.unload("resource://ssleuth/new-window.js");
+  for (var module of ["preferences.js", 
+                        "cipher-suites.js",
+                        "utils.js", 
+                        "ssleuth-ui.js",
+                        "observer.js",
+                        "ssleuth.js"])
+  Cu.unload("resource://ssleuth/" + module);
 }
 
 function registerResourceProtocol(uri) { // null to unregister
