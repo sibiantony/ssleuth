@@ -17,10 +17,14 @@ var SSleuth = {
 
   extensionStartup: function(firstRun, reinstall) {
     SSleuthPreferences.init(); 
-    SSleuthHttpObserver.init();
+    // TODO : Need to re-think about the callbacks.
+    SSleuthHttpObserver.init( {
+                            isCertValid: isCertValid,
+                            getCipherSuiteRating: getCipherSuiteRating});
     this.prefs = SSleuthPreferences.readInitPreferences();
     prefListener.register(false);
 
+    SSleuthUI.startup();
     forEachOpenWindow(SSleuth.initWindow); 
     Services.wm.addListener(WindowListener); 
   },
@@ -28,6 +32,7 @@ var SSleuth = {
   extensionShutdown: function() {
     forEachOpenWindow(SSleuth.uninitWindow); 
     Services.wm.removeListener(WindowListener); 
+    SSleuthUI.shutdown();
 
     SSleuthPreferences.uninit(); 
     SSleuthHttpObserver.uninit();
@@ -41,6 +46,7 @@ var SSleuth = {
     dump("\nSSleuth init Window \n"); 
     try {
       window.gBrowser.addProgressListener(ProgressListener);
+      SSleuthHttpObserver.initWindow(window);
       SSleuthUI.init(window); 
     } catch(e) {
       dump("\nError ssleuth init : " + e.message + "\n"); 
@@ -50,6 +56,7 @@ var SSleuth = {
 
   uninitWindow: function(window) {
     dump("\nUninit window \n");
+    SSleuthHttpObserver.uninitWindow(window);
     SSleuthUI.uninit(window); 
     // Add window remove listener.
     window.gBrowser.removeProgressListener(ProgressListener);
@@ -66,18 +73,21 @@ var ProgressListener = {
     if (!win) return; 
 
     dump("==========================\n"); 
-    var tab = _window().gBrowser.getBrowserForDocument(
-                getTabForReq(request).top.document)._ssleuthTabId; 
+    var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId; 
     dump("onLocationChange : " + uri.spec + " tab id " 
             + tab + "\n");
 
     // Re-init. New location, new cache.
     // TODO : Fix Addon-manager showing up in the list.
-    // this.responseCache[tab] = newResponseEntry(uri.asciiSpec);
-    // updateResponseCache(request);
-    // dump("response cache so far : " 
-    //          + JSON.stringify(this.responseCache, null, 2) + "\n");
-    
+    // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
+    try {
+    var responseCache = SSleuthHttpObserver.newLoc(uri.asciiSpec,
+                                                tab); 
+    SSleuthHttpObserver.updateLoc(request);
+
+    dump("response cache so far : " 
+              + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
+    } catch(e) { dump("Error onLocationChange " + e.message + "\n"); }
     if (uri.spec === this.prevURL) {
       this.urlChanged = false; 
       return; 
@@ -177,15 +187,14 @@ function protocolHttps(progress, request, state, win) {
     extendedValidation = true; 
   }
 
-  /* try {
-    if (ENABLE_HTTP_OBS) {
+  try{
       var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
-      SSleuth.responseCache[tab]["ffStatus"] = securityState;
-      SSleuth.responseCache[tab]["evCert"] = extendedValidation;
-    }
+      SSleuthHttpObserver.updateLocEntry(tab, 
+                                        {ffStatus : securityState, 
+                                         evCert : extendedValidation});
   } catch(e) {
     dump("Error ENABLE_HTTP_OBS: " + e.message + "\n");
-  } */
+  } 
 
   var cipherSuite = { 
     name: cipherName, 
@@ -304,6 +313,30 @@ function isCertValid(cert) {
   var usecs = new Date().getTime(); 
   return ((usecs > cert.validity.notBefore/1000 && 
            usecs < cert.validity.notAfter/1000) ? true: false); 
+}
+
+function getCipherSuiteRating(cipherName) {
+  const cs = ssleuthCipherSuites; 
+  const csW = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
+
+  function getRating(csParam) {
+    for (var i=0; i<csParam.length; i++) {
+      if ((cipherName.indexOf(csParam[i].name) != -1)) {
+        return csParam[i].rank; 
+      }
+    }
+    return null; 
+  }
+  var keyExchange = getRating(cs.keyExchange);
+  var bulkCipher = getRating(cs.bulkCipher);
+  var hmac = getRating(cs.HMAC); 
+  
+  if ((keyExchange && bulkCipher && hmac) == null)
+    return null; 
+
+  return ( (keyExchange * csW.keyExchange 
+            + bulkCipher * csW.bulkCipher 
+            + hmac * csW.hmac )/csW.total );
 }
 
 function getSignatureKeyLen(cert, auth) {
@@ -440,7 +473,13 @@ var WindowListener = {
   },
   onCloseWindow: function(xulWindow) { 
     dump ("onCloseWindow : \n");
-    // unloadWindow(xulWindow); 
+    var window = xulWindow
+                  .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
+                  .getInterface(Components.interfaces.nsIDOMWindow);
+    if (window.document.documentElement
+        .getAttribute("windowtype") == "navigator:browser")
+      SSleuth.uninitWindow(window);
+ 
   },
   onWindowTitleChange: function(xulWindow, newTitle) { }
 };

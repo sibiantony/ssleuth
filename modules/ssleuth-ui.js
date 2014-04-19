@@ -15,17 +15,21 @@ var SSleuthUI = {
   ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
   ssleuthBtnLocation : null, 
   prefs: null, 
-  prefsRegistered: false, 
   panelMenuTemplate: null, 
+
+  startup: function() {
+    this.prefs = SSleuthPreferences.readInitPreferences(); 
+    prefListener.register(false); 
+    loadStyleSheet(); 
+  },
+
+  shutdown: function() {
+    prefListener.unregister(); 
+    removeStyleSheet(); 
+  },
 
   init: function(window) {
     dump ("\nssleuth UI init : \n");
-
-    this.prefs = SSleuthPreferences.readInitPreferences(); 
-    if (!this.prefsRegistered) {
-        prefListener.register(false); 
-        this.prefsRegistered = true;   
-    }
 
     this.ssleuthBtnLocation = this.prefs.PREFS["notifier.location"]; 
     var ssleuthButton = createButton(window); 
@@ -36,7 +40,6 @@ var SSleuthUI = {
     createPanelMenu(window.document); 
 
     createKeyShortcut(window.document);
-    loadStyleSheet(); 
     
     var ssleuthPanel = _ssleuthPanel(window); 
     var panelVbox = SSleuthPanel(window); 
@@ -49,12 +52,9 @@ var SSleuthUI = {
     // Cleanup everything! 
     // Removing the button deletes the overlay elements as well 
     try {
-      prefListener.unregister(); 
-      this.prefsRegistered = false; 
       removePanelMenu(window.document); 
       removeButton(_ssleuthButton(window)); 
       deleteKeyShortcut(window.document); 
-      removeStyleSheet(); 
     } catch (e) { 
       dump("Error uninit : " + e.message + "\n"); 
     }
