@@ -193,7 +193,7 @@ function protocolHttps(progress, request, state, win) {
                                         {ffStatus : securityState, 
                                          evCert : extendedValidation});
   } catch(e) {
-    dump("Error ENABLE_HTTP_OBS: " + e.message + "\n");
+    dump("Error Http Observer : " + e.message + "\n");
   } 
 
   var cipherSuite = { 
