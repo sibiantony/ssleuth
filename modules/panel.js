@@ -1,5 +1,8 @@
-
 var EXPORTED_SYMBOLS = ["SSleuthPanel"] 
+
+Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/Services.jsm");
+
 // This is kind of nasty. There are a hell lot of UI elements for the panel.
 //    And an XUL overlay file is the right way to do these kind of stuff.
 //    But now that overlays are not allowed for restartless addons, 
@@ -25,7 +28,7 @@ function SSleuthPanel(win) {
   }
 
   // Box container for the panel. 
-  var panelbox = create('vbox', {id: 'ssleuth-panel-vbox'}); {
+  let panelbox = create('vbox', {id: 'ssleuth-panel-vbox'}); {
     let vb = panelbox.appendChild(create('vbox', {
                   id: 'ssleuth-panel-vbox-https', 
                   flex: '2', width: HTTPS_PANEL_WIDTH, 
@@ -311,7 +314,33 @@ function SSleuthPanel(win) {
 
     }
   }
-  return panelbox; 
+
+  try {
+  let vbox = create('vbox', {id: 'ssleuth-panel-deck-vbox', flex: 1});{
+    let rb = vbox.appendChild(create('richlistbox', {
+                  id: 'ssleuth-panel-richlistbox',
+                  onselect: "document.getElementById('ssleuth-panel-deck').selectedIndex = this.selectedIndex;"})); {
+      let hb = rb.appendChild(create('hbox', {})); {
+
+        let ri = hb.appendChild(create('richlistitem', {})); {
+          ri.appendChild(create('description', {value: 'Main'}));
+        }
+        ri = hb.appendChild(create('richlistitem', {})); {
+          ri.appendChild(create('description', {value: 'HTTP Obs'}));
+        }
+      }
+    } { 
+    
+      let box = vbox.appendChild(create('box', {id: 'ssleuth-panel-box'})); {
+        let deck = box.appendChild(create('deck', {id: 'ssleuth-panel-deck', flex: 1}));
+        deck.appendChild(panelbox);
+        deck.appendChild(create('box', {}));
+      }
+    } 
+  }
+
+  return vbox; 
+  } catch (e) {dump ("Error ssleuth panel : " + e.message + "\n"); }
 }
 
 
