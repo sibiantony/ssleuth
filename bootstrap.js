@@ -66,6 +66,7 @@ function unloadModules() {
   for (var module of ["preferences.js", 
                         "cipher-suites.js",
                         "utils.js", 
+                        "panel.js",
                         "ssleuth-ui.js",
                         "observer.js",
                         "ssleuth.js"])
