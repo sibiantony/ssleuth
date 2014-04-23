@@ -1,3 +1,6 @@
+@-moz-document url(chrome://browser/content/browser.xul),
+				url(chrome://ssleuth/content/preferences.xul) {
+
 /*  skin/toolbar-button.css  */
 #ssleuth-tb-button, #ssleuth-ub-img {
   -moz-box-orient: horizontal !important;
@@ -195,12 +198,12 @@
 }
 
 .ssleuth-img-state-small {
-	margin-top: 0.25em; 
+	margin-top: 0.12em; 
 	width: 0.95em;
 }
 .ssleuth-img-state-medium {
-	margin-top: 0.25em; 
-	width: 0.95em;
+	margin-top: 0.12em; 
+	width: 1.0em;
 }
 .ssleuth-img-state-large {
 	margin-top: 0.25em; 
@@ -318,4 +321,6 @@
 	background-color: -moz-field;
 	color: -moz-fieldtext;
 	border-color: ThreeDShadow;
+}
+
 }

@@ -8,7 +8,7 @@
 <!ENTITY ssleuth.pref.ui.notifier.toolbar "Toolbar button" >
 
 <!ENTITY ssleuth.pref.ui.fontsize "SSleuth Panel font size">
-<!ENTITY ssleuth.pref.ui.fontsize.default "Small: ">
+<!ENTITY ssleuth.pref.ui.fontsize.small "Small: ">
 <!ENTITY ssleuth.pref.ui.fontsize.medium "Medium: ">
 <!ENTITY ssleuth.pref.ui.fontsize.large "Large: ">
 
