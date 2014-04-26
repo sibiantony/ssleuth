@@ -20,8 +20,10 @@ const ssleuthCipherSuites = {
       ui: "RSA",     notes: "" },
     { name: "SSL_RSA_FIPS",  rank: 5,  pfs: 0, 
       ui: "RSA",     notes: "" },
-    { name: "TLS_RSA_EXPORT",  rank: 2,  pfs: 0, 
+    { name: "TLS_RSA_EXPORT",  rank: 2, pfs: 0, 
       ui: "RSA EXPORT",   notes: "Weak Kx. " },
+    { name: "",         rank: 0,  pfs: 0,
+      ui: "Unknown",  notes: "Unknown key exchange type" },
   ],
 
   // No known weaknesses for the algorithms here. Except for the key length.
@@ -34,7 +36,9 @@ const ssleuthCipherSuites = {
     { name: "_ECDSA_",  rank: 10,   minSecureKeyLength: 263, 
       ui: "ECDSA",   notes: "" },
     { name: "_DSS_",    rank: 10,   minSecureKeyLength: 2048, 
-      ui: "DSA",     notes: "" } 
+      ui: "DSA",     notes: "" }, 
+    { name: "",         rank: 0,    minSecureKeyLength: 2048, 
+      ui: "Unknown", notes: "" }, 
   ],
 
   bulkCipher : [
@@ -56,6 +60,8 @@ const ssleuthCipherSuites = {
       ui: "RC2 CBC",  notes: "Weak" },
     { name: "RC4_40",     rank: 2,  
       ui: "RC4",      notes: "Weak" },
+    { name: "",           rank: 0, 
+      ui: "Unknown",  notes: "Unknown bulk cipher"}, 
   ],
 
   HMAC : [
@@ -63,7 +69,8 @@ const ssleuthCipherSuites = {
     { name: "SHA384",   rank: 10,  ui: "SHA-384",  notes: ""},
     { name: "SHA256",   rank: 10,  ui: "SHA-256",  notes: ""},
     { name: "SHA",      rank:  6,  ui: "SHA-1",    notes: "Reportedly weak. "},
-    { name: "MD5",      rank:  2,  ui: "MD5",      notes: "Broken. "}
+    { name: "MD5",      rank:  2,  ui: "MD5",      notes: "Broken. "},
+    { name: "",         rank:  0,  ui: "Unknown",  notes: "Unknown MAC algorithm."},
   ],
 
   cipherSuiteStrength : {

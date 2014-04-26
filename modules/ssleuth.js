@@ -114,6 +114,7 @@ var ProgressListener = {
     var win = Services.wm.getMostRecentWindow("navigator:browser");
     var loc = win.content.location;
 
+    try {
     dump("\nonSecurityChange: " + loc.protocol + "\n"); 
     if (loc.protocol === "https:" ) {
       protocolHttps(progress, request, state, win);
@@ -122,6 +123,7 @@ var ProgressListener = {
     } else {
       protocolUnknown(); 
     }
+    } catch(e) { dump("----------- ERROR : " + e.message + " ------------ \n");}
   }
 
 }; 
@@ -225,21 +227,7 @@ function protocolHttps(progress, request, state, win) {
 
   cipherSuite.pfs = cipherSuite.keyExchange.pfs;
 
-  if (!cipherSuite.keyExchange) {
-    cipherSuite.keyExchange = {name: "",
-                  rank: 10,
-                  pfs: 0, 
-                  ui: "",
-                  notes: "Unknown key exchange type"
-                  };
-  }
-
-  if (!cipherSuite.bulkCipher) {
-    cipherSuite.bulkCipher = {name: "",
-                  rank: 0,
-                  ui: "", 
-                  notes: "Unknown Bulk cipher"
-                  }; 
+  if (cipherSuite.bulkCipher.name === "") {
     // Something's missing in our list.
     // Get the security strength from Firefox's own flags.
     // Set cipher rank
@@ -250,14 +238,6 @@ function protocolHttps(progress, request, state, win) {
     } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_LOW) { 
       cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1; 
     } 
-  }
-
-  if (!cipherSuite.HMAC) {
-    cipherSuite.HMAC = {name: "",
-                  rank: 10,
-                  ui: "",
-                  notes: "Unknown MAC Algorithm"
-                  };
   }
 
   // Certificate signature alg. key size 
