@@ -317,26 +317,63 @@ function SSleuthPanel(win) {
 
   try {
   let vbox = create('vbox', {id: 'ssleuth-panel-deck-vbox', flex: 1});{
+
     let rb = vbox.appendChild(create('richlistbox', {
                   id: 'ssleuth-panel-richlistbox',
-                  onselect: "document.getElementById('ssleuth-panel-deck').selectedIndex = this.selectedIndex;"})); {
+                  onselect: "document.getElementById('ssleuth-panel-deck').selectedIndex = parseInt(this.selectedItem._index) + 2;"})); {
       let hb = rb.appendChild(create('hbox', {})); {
 
-        let ri = hb.appendChild(create('richlistitem', {})); {
+        let ri = hb.appendChild(create('richlistitem', {_index: 0})); {
           ri.appendChild(create('description', {value: 'Main'}));
         }
-        ri = hb.appendChild(create('richlistitem', {})); {
+        ri = hb.appendChild(create('richlistitem', {_index: 1})); {
           ri.appendChild(create('description', {value: 'HTTP Obs'}));
         }
       }
-    } { 
-    
-      let box = vbox.appendChild(create('box', {id: 'ssleuth-panel-box'})); {
-        let deck = box.appendChild(create('deck', {id: 'ssleuth-panel-deck', flex: 1}));
-        deck.appendChild(panelbox);
-        deck.appendChild(create('box', {}));
-      }
     } 
+
+    let tb = vbox.appendChild(create('toolbar', { 
+                      style: '-moz-appearance:groupbox',
+                      flex: 2})); {
+      let tb1 = tb.appendChild(create('toolbarbutton', {
+                        type: 'radio', 
+                        group: 'ssleuth-panel-tabbar', 
+                        label: 'Main domain'}));
+      let tb2 = tb.appendChild(create('toolbarbutton', {
+                        type: 'radio', 
+                        group: 'ssleuth-panel-tabbar', 
+                        label: 'HTTP obs'}));
+    }
+
+    let bb = vbox.appendChild(create('hbox', { 
+                      style: '-moz-appearance:groupbox',
+                      flex: 2})); {
+      let bb1 = bb.appendChild(create('button', {
+                        type: 'radio', 
+                        group: 'ssleuth-panel-tabbar', 
+                        label: 'Main domain'}));
+      let bb2 = bb.appendChild(create('button', {
+                        type: 'radio', 
+                        group: 'ssleuth-panel-tabbar', 
+                        label: 'HTTP obs'}));
+    }
+
+    let hbox = vbox.appendChild(create('hbox', {})); {
+      let hb = hbox.appendChild(create('hbox', {})); {
+        hb.appendChild(create('description', {value: 'Primary'}));
+      }
+      hb = hbox.appendChild(create('hbox', {})); {
+        hb.appendChild(create('description', {value: 'Domains'}));
+      }
+
+    }
+
+
+    let box = vbox.appendChild(create('box', {id: 'ssleuth-panel-box'})); {
+      let deck = box.appendChild(create('deck', {id: 'ssleuth-panel-deck', flex: 1}));
+      deck.appendChild(panelbox);
+      deck.appendChild(create('description', {value: "HTTP obs"}));
+    }
   }
 
   return vbox; 

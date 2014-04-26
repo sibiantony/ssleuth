@@ -168,8 +168,11 @@ function removeStyleSheet() {
 }
 
 function createPanel(panelId, position, window) {
-  return create(window.document, 'panel', {
+  var panel = create(window.document, 'panel', {
                   id: panelId, position: position, type: 'arrow'}); 
+  // Clicking on panel should retain the panel
+  panel.addEventListener("click", function(e){ e.stopPropagation();}, false);
+  return panel;
 }
 
 function installButton(ssleuthButton, firstRun, document) {
@@ -290,7 +293,7 @@ function panelEvent(event) {
     // Unlike a shortcut-key or the urlbar notifier, we don't
     // need to open the panel in this case. 
     try {
-      // dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
+      dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
       const ui = SSleuthUI; 
       if (!(event.type == "click" && 
           event.button == 0 &&
