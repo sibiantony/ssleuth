@@ -3,13 +3,14 @@ var EXPORTED_SYMBOLS = ["SSleuthPanel"]
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 
-// This is kind of nasty. There are a hell lot of UI elements for the panel.
-//    And an XUL overlay file is the right way to do these kind of stuff.
-//    But now that overlays are not allowed for restartless addons, 
-//    and that loadOverlay() is buggy, there must be an intuitive way to do this in js.
-//    With XUL xml indentations, it is very easy to identify elements. 
-//    Here I rely on javascript local scoping and re-use variable names to give
-//    that 'intuitiveness'. 
+/* There are a hell lot of UI elements for the panel.
+*    And an XUL overlay file is the right way to do these kind of stuff.
+*    But now that overlays are not allowed for restartless addons, 
+*    and that loadOverlay() is buggy, there must be an intuitive way to do this in js.
+*    With XUL xml indentations, it is very easy to identify elements. 
+*    Here I rely on javascript local scoping and re-use variable names to give
+*    that 'intuitiveness'. This is kind of nasty.
+*/
 function SSleuthPanel(win) {
   var doc = win.document; 
   const HTTPS_PANEL_WIDTH = '300';
@@ -27,84 +28,19 @@ function SSleuthPanel(win) {
     return e; 
   }
 
-  try {
 
-  // Box container for the panel. 
-  let panelbox = create('vbox', {id: 'ssleuth-panel-vbox'}); {
-    let vb = panelbox.appendChild(create('vbox', {
-                  id: 'ssleuth-panel-vbox-https', 
-                  flex: '2', width: HTTPS_PANEL_WIDTH, 
-                  height: '250', hidden: 'true'
-                })); {
-      let hb = vb.appendChild(create('hbox', {
-                  id: 'ssleuth-img-cipher-rank-star', 
-                  align: 'baseline', height: '20'
-                }));
-      for (var i=1; i<=10; i++) {
-        hb.appendChild(create('image', {
-                      id: 'ssleuth-img-cipher-rank-star-'+i ,
-                      class: 'ssleuth-star' }));
-      }
-      hb.appendChild(create('description', {
-                    id: 'ssleuth-text-cipher-rank-numeric',
-                    class : 'ssleuth-text-title-class' }));
-    } {
-      // Why not just use tabs ? Why this mess ?
-      // tabs - gives poor rendering on the panel with unneccesary paddings. 
-      //        - Margins can't be corrected
-      //        - They look heavy and bloated.
-      //        - Advantage is, it is a standard approach + user can navigate. But..
-      // A horizontal listitem/toolbar radio mode buttons doesn't behave well as expected.
-      // Then the remaining option is to hack up tabs on my own.
-      let hb = vb.appendChild(create('hbox', {class: 'ssleuth-paneltab-box'})); {
-        let chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-main', 
-                                          _selected: 'true', 
-                                          class: 'ssleuth-paneltab-tab'})); {
-          chb.appendChild(create('description', {value: 'Primary'}));
-        }
-        chb.addEventListener('click', function() {
-            doc.getElementById('ssleuth-panel-deck').selectedIndex = 0;
-            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
-            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
-            this.setAttribute('_selected', 'true'); 
-            }, false);
-        chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-domains', 
-                                        _selected: 'false', 
-                                        class: 'ssleuth-paneltab-tab'})); {
-          chb.appendChild(create('description', {value: 'Domains'}));
-        }
-        chb.addEventListener('click', function() {
-            doc.getElementById('ssleuth-panel-deck').selectedIndex = 1;
-            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
-            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
-            this.setAttribute('_selected', 'true'); 
-            }, false);
-        chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-cipher', 
-                                        _selected: 'false', 
-                                        class: 'ssleuth-paneltab-tab'})); {
-          chb.appendChild(create('description', {value: 'Cipher suites'}));
-        }
-        chb.addEventListener('click', function() {
-            doc.getElementById('ssleuth-panel-deck').selectedIndex = 2;
-            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
-            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
-            this.setAttribute('_selected', 'true'); 
-            }, false);
-      }
-    } 
-    let deck = vb.appendChild(create('deck', {id: 'ssleuth-panel-deck'}));
-    let dvb = deck.appendChild(create('vbox', {flex: '2'})); {
-      {
-      let hb = dvb.appendChild(create('hbox', {align: 'top', 
+  function panelMain() {
+    let mainVbox = create('vbox', {flex: '2'}); {
+      let hb = mainVbox.appendChild(create('hbox', {align: 'top', 
                     width: HTTPS_PANEL_WIDTH, flex: '2'})); {
-        let vb = hb.appendChild(create('vbox', {id: 'ssleuth-hbox-1-vbox-1',
+        let vb = hb.appendChild(create('vbox', {
                     align: 'left', 
                     width: IMG_MARGIN_WIDTH})); 
         vb.appendChild(create('image', {
                       id: 'ssleuth-img-cipher-rank',
                       class:  'ssleuth-img-state'}));
       } {
-        let vb = hb.appendChild(create('vbox', {id: 'ssleuth-hbox-1-vbox-2', flex: '2'})); 
+        let vb = hb.appendChild(create('vbox', {flex: '2'})); 
         vb.appendChild(create('description', {
                   id: 'ssleuth-text-cipher-suite-label',
                   value: 'Cipher suite details',
@@ -183,7 +119,7 @@ function SSleuthPanel(win) {
         }
       } 
     } {
-      let hb = dvb.appendChild(create('hbox', {
+      let hb = mainVbox.appendChild(create('hbox', {
                     id: 'ssleuth-hbox-2', align: 'top'})); {
         let chb = hb.appendChild(create('hbox', {
                       align: 'left', width: IMG_MARGIN_WIDTH })); 
@@ -204,7 +140,7 @@ function SSleuthPanel(win) {
         }
       }
     } {
-      let hb = dvb.appendChild(create('hbox', { 
+      let hb = mainVbox.appendChild(create('hbox', { 
                   id: 'ssleuth-ff-connection-status'})); {
         let vb = hb.appendChild(create('vbox', { 
                                   align: 'left', width: IMG_MARGIN_WIDTH})); 
@@ -239,7 +175,7 @@ function SSleuthPanel(win) {
                         class : 'ssleuth-text-body-class'})); 
       }
     } {
-      let hb = dvb.appendChild(create('hbox', {
+      let hb = mainVbox.appendChild(create('hbox', {
                     height: '100', flex: '2'})); {
         let chb = hb.appendChild(create('hbox', {
                       align: 'left', width: IMG_MARGIN_WIDTH })); 
@@ -332,41 +268,128 @@ function SSleuthPanel(win) {
                             class: 'ssleuth-text-body-class'})); 
       }
     }
-  } {
-    let hb = panelbox.appendChild(create('hbox', {
+
+    return mainVbox; 
+  }
+
+  function panelDomains() {
+    let domainsVb = create('vbox', {}); 
+    domainsVb.appendChild(create('description', {value: 'Domain requests'})); 
+    return domainsVb; 
+  }
+
+  function panelCipherSuites() {
+    let csVb = create('vbox', {}); 
+    csVb.appendChild(create('description', {value: 'Cipher suites'})); 
+    return csVb; 
+
+  }
+  try {
+
+  // Box container for the panel. 
+  let panelbox = create('vbox', {id: 'ssleuth-panel-vbox'}); {
+    let vb = panelbox.appendChild(create('vbox', {
+                  id: 'ssleuth-panel-vbox-https', 
+                  flex: '2', width: HTTPS_PANEL_WIDTH, 
+                  height: '250', hidden: 'true'
+                })); {
+      let hb = vb.appendChild(create('hbox', {
+                  id: 'ssleuth-img-cipher-rank-star', 
+                  align: 'baseline', height: '20'
+                }));
+      for (var i=1; i<=10; i++) {
+        hb.appendChild(create('image', {
+                      id: 'ssleuth-img-cipher-rank-star-'+i ,
+                      class: 'ssleuth-star' }));
+      }
+      hb.appendChild(create('description', {
+                    id: 'ssleuth-text-cipher-rank-numeric',
+                    class : 'ssleuth-text-title-class' }));
+    } {
+      // Why not just use tabs ? Why this mess ?
+      // tabs - gives poor rendering on the panel with unneccesary paddings. 
+      //        - Margins can't be corrected
+      //        - They look heavy and bloated.
+      //        - Advantage is, it is a standard approach + user can navigate. But..
+      // A horizontal listitem/toolbar radio mode buttons doesn't behave well as expected.
+      // Then the remaining option is to hack up tabs on my own.
+      let hb = vb.appendChild(create('hbox', {class: 'ssleuth-paneltab-box'})); {
+        let chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-main', 
+                                          _selected: 'true', 
+                                          class: 'ssleuth-paneltab-tab'})); {
+          chb.appendChild(create('description', {value: 'Primary'}));
+        }
+        chb.addEventListener('click', function() {
+            doc.getElementById('ssleuth-panel-deck').selectedIndex = 0;
+            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
+            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
+            this.setAttribute('_selected', 'true'); 
+            }, false);
+        chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-domains', 
+                                        _selected: 'false', 
+                                        class: 'ssleuth-paneltab-tab'})); {
+          chb.appendChild(create('description', {value: 'Domains'}));
+        }
+        chb.addEventListener('click', function() {
+            doc.getElementById('ssleuth-panel-deck').selectedIndex = 1;
+            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
+            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
+            this.setAttribute('_selected', 'true'); 
+            }, false);
+        chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-cipher', 
+                                        _selected: 'false', 
+                                        class: 'ssleuth-paneltab-tab'})); {
+          chb.appendChild(create('description', {value: 'Cipher suites'}));
+        }
+        chb.addEventListener('click', function() {
+            doc.getElementById('ssleuth-panel-deck').selectedIndex = 2;
+            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
+            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
+            this.setAttribute('_selected', 'true'); 
+            }, false);
+      }
+    } { 
+      let deck = vb.appendChild(create('deck', {id: 'ssleuth-panel-deck'}));
+      deck.appendChild(panelMain()); 
+      deck.appendChild(panelDomains()); 
+      deck.appendChild(panelCipherSuites());
+
+    } {
+      let hb = panelbox.appendChild(create('hbox', {
                     id: 'ssleuth-panel-box-http', 
                     align: 'baseline', flex: '2',
                     width: HTTP_PANEL_WIDTH, height: '100', hidden: 'true'})); {
-      let vb = hb.appendChild(create('vbox', { 
-                                align: 'left', width: IMG_MARGIN_WIDTH})); 
-      vb.appendChild(create('image', { 
-                        id: 'ssleuth-img-http-omg', 
-                        class: 'ssleuth-img-state'})); 
-    } {
-      let vb = hb.appendChild(create('vbox', {flex: '1'})); 
-      let h1 = vb.appendChild(create('description', {
-                                id: 'ssleuth-text-http-1', 
-                                class: 'ssleuth-text-title-class'})); 
-      h1.textContent = "Your connection to this site is not encrypted.";
-      let h2 = vb.appendChild(create('description', {
-                                id : 'ssleuth-text-http-2', 
-                                class: 'ssleuth-text-title-class'})); 
+        let vb = hb.appendChild(create('vbox', { 
+                                  align: 'left', width: IMG_MARGIN_WIDTH})); 
+        vb.appendChild(create('image', { 
+                          id: 'ssleuth-img-http-omg', 
+                          class: 'ssleuth-img-state'})); 
+      } {
+        let vb = hb.appendChild(create('vbox', {flex: '1'})); 
+        let h1 = vb.appendChild(create('description', {
+                                  id: 'ssleuth-text-http-1', 
+                                  class: 'ssleuth-text-title-class'})); 
+        h1.textContent = "Your connection to this site is not encrypted.";
+        let h2 = vb.appendChild(create('description', {
+                                  id : 'ssleuth-text-http-2', 
+                                  class: 'ssleuth-text-title-class'})); 
 
-      h2.textContent = "You can attempt connecting to the secure version of the site if available."; 
-      vb.appendChild(create('label', {id: 'ssleuth-panel-https-link', 
-                        class:'text-link', crop: 'center', focus: 'true'}));
-      let d1 = vb.appendChild(create('description', {
-                                id : 'ssleuth-text-http-note', 
-                                class: 'ssleuth-text-body-class'})); 
-      d1.textContent = "Note: The availability of the above link depends on the site\'s offering of the same content over an https connection."; 
+        h2.textContent = "You can attempt connecting to the secure version of the site if available."; 
+        vb.appendChild(create('label', {id: 'ssleuth-panel-https-link', 
+                          class:'text-link', crop: 'center', focus: 'true'}));
+        let d1 = vb.appendChild(create('description', {
+                                  id : 'ssleuth-text-http-note', 
+                                  class: 'ssleuth-text-body-class'})); 
+        d1.textContent = "Note: The availability of the above link depends on the site\'s offering of the same content over an https connection."; 
 
+      }
     }
   }
 
-  }
-
   return panelbox; 
-  } catch (e) {dump ("Error ssleuth panel : " + e.message + "\n"); }
+  } catch (e) {
+    dump ("Error ssleuth panel : " + e.message + "\n"); 
+  }
 }
 
 
