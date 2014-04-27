@@ -29,7 +29,8 @@ var ssleuthDefaultPrefs = {
     "rating.params"       : ssleuthConnectionRating,
     "rating.ciphersuite.params"  : ssleuthCipherSuites.weighting,
     "suites.toggle"       : ffToggleDefault,
-    "panel.info"          : ssleuthPanelInfo
+    "panel.info"          : ssleuthPanelInfo,
+    "domains.watch"       : true
    }
 }; 
 

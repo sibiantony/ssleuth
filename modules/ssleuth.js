@@ -421,6 +421,10 @@ var prefListener = new ssleuthPrefListener(
             JSON.parse(branch.getCharPref(name));
         toggleCipherSuites(prefsOld); 
         break;
+      case "domains.watch" : 
+        SSleuth.prefs.PREFS[name] = 
+            JSON.parse(branch.getBoolPref(name));
+        break;
     }
 
   }

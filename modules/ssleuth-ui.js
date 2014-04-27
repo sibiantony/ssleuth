@@ -48,6 +48,9 @@ var SSleuthUI = {
     var panelVbox = SSleuthPanel(window); 
     ssleuthPanel.appendChild(panelVbox); 
     setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 
+    // TODO : Optimize this handlings. Only when enabled ?
+    //        Do init in preferences handler ?
+    initDomainWatcher(window.document); 
   }, 
 
   uninit: function(window) {
@@ -747,6 +750,45 @@ function forEachOpenWindow(todo) {
       .QueryInterface(Components.interfaces.nsIDOMWindow));
 }
 
+function initDomainWatcher(doc) {
+  var domainsTab = doc.getElementById('ssleuth-paneltab-domains');
+  domainsTab.addEventListener('click', loadDomains, false);
+
+}
+
+function loadDomains() {
+  if (!SSleuthUI.prefs.PREFS['domains.watch']) 
+    return; 
+  try {
+  const win = _window(); 
+  var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
+  var respCache = SSleuthHttpObserver.responseCache[tab];
+
+  /* dump("response cache far this tab: " 
+              + JSON.stringify(respCache, null, 2) + "\n");*/
+
+  const doc = win.document; 
+  let reqs = respCache['reqs'];
+  let rb = doc.getElementById('ssleuth-paneltab-domains-list');      
+
+  for ( var [key, val] in Iterator(reqs)) {
+    let ri = rb.appendChild(create(doc, 'richlistitem', {}));
+    let vb = ri.appendChild(create(doc, 'vbox', {})); {
+      let hb = vb.appendChild(create(doc, 'hbox', {})); {
+        hb.appendChild(create(doc, 'description', { value : key})); 
+        let val = " reqs: " + reqs[key]['count'];
+        hb.appendChild(create(doc, 'description', { value : val}));
+        val = " cipher rt: " + reqs[key]['csRating']; 
+        hb.appendChild(create(doc, 'description', { value : val}));
+      }
+      vb.appendChild(create(doc, 'description', {
+                        value : reqs[key]['cipherName'] }));
+    }
+  }
+
+  } catch(e) { dump("Error -- loadDomains -- " + e.message + "\n"); }
+}
+
 var prefListener = new ssleuthPrefListener(
   SSleuthPreferences.prefBranch,
   function(branch, name) {
@@ -783,6 +825,10 @@ var prefListener = new ssleuthPrefListener(
       case "rating.params": 
         SSleuthUI.prefs.PREFS[name] = 
             JSON.parse(branch.getCharPref(name));
+        break;
+      case "domains.watch" : 
+        SSleuthUI.prefs.PREFS[name] = 
+            JSON.parse(branch.getBoolPref(name));
         break;
     }
   }

@@ -273,8 +273,16 @@ function SSleuthPanel(win) {
   }
 
   function panelDomains() {
+    // Fix richlistbox maxheight when loading the content ?
+    // Or follow something like this : 
+    //  http://mike.kaply.com/2011/08/05/richlistbox-tricks-for-your-add-on/
     let domainsVb = create('vbox', {}); 
-    domainsVb.appendChild(create('description', {value: 'Domain requests'})); 
+    let rb = domainsVb.appendChild(create('richlistbox', {
+                id : 'ssleuth-paneltab-domains-list', 
+                // TODO : Fix this!
+                style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0); border: none',
+                flex: '1', maxheight: "200"})); {
+    }
     return domainsVb; 
   }
 

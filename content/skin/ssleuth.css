@@ -367,4 +367,14 @@
 	border-style: solid; */
 }
 
+#ssleuth-paneltab-domains-list {
+   -moz-appearance: none;
+    -moz-margin-end: -1px;
+    background-color: rgba(0, 0, 0, 0);
+    border: medium none;
+    /* margin-top: 40px;*/
+    position: relative;
+
+}
+
 }
