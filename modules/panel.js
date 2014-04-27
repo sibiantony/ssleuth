@@ -27,6 +27,8 @@ function SSleuthPanel(win) {
     return e; 
   }
 
+  try {
+
   // Box container for the panel. 
   let panelbox = create('vbox', {id: 'ssleuth-panel-vbox'}); {
     let vb = panelbox.appendChild(create('vbox', {
@@ -47,7 +49,53 @@ function SSleuthPanel(win) {
                     id: 'ssleuth-text-cipher-rank-numeric',
                     class : 'ssleuth-text-title-class' }));
     } {
-      let hb = vb.appendChild(create('hbox', {align: 'top', 
+      // Why not just use tabs ? Why this mess ?
+      // tabs - gives poor rendering on the panel with unneccesary paddings. 
+      //        - Margins can't be corrected
+      //        - They look heavy and bloated.
+      //        - Advantage is, it is a standard approach + user can navigate. But..
+      // A horizontal listitem/toolbar radio mode buttons doesn't behave well as expected.
+      // Then the remaining option is to hack up tabs on my own.
+      let hb = vb.appendChild(create('hbox', {class: 'ssleuth-paneltab-box'})); {
+        let chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-main', 
+                                          _selected: 'true', 
+                                          class: 'ssleuth-paneltab-tab'})); {
+          chb.appendChild(create('description', {value: 'Primary'}));
+        }
+        chb.addEventListener('click', function() {
+            doc.getElementById('ssleuth-panel-deck').selectedIndex = 0;
+            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
+            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
+            this.setAttribute('_selected', 'true'); 
+            }, false);
+        chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-domains', 
+                                        _selected: 'false', 
+                                        class: 'ssleuth-paneltab-tab'})); {
+          chb.appendChild(create('description', {value: 'Domains'}));
+        }
+        chb.addEventListener('click', function() {
+            doc.getElementById('ssleuth-panel-deck').selectedIndex = 1;
+            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
+            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
+            this.setAttribute('_selected', 'true'); 
+            }, false);
+        chb = hb.appendChild(create('hbox', {id: 'ssleuth-paneltab-cipher', 
+                                        _selected: 'false', 
+                                        class: 'ssleuth-paneltab-tab'})); {
+          chb.appendChild(create('description', {value: 'Cipher suites'}));
+        }
+        chb.addEventListener('click', function() {
+            doc.getElementById('ssleuth-panel-deck').selectedIndex = 2;
+            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
+            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
+            this.setAttribute('_selected', 'true'); 
+            }, false);
+      }
+    } 
+    let deck = vb.appendChild(create('deck', {id: 'ssleuth-panel-deck'}));
+    let dvb = deck.appendChild(create('vbox', {flex: '2'})); {
+      {
+      let hb = dvb.appendChild(create('hbox', {align: 'top', 
                     width: HTTPS_PANEL_WIDTH, flex: '2'})); {
         let vb = hb.appendChild(create('vbox', {id: 'ssleuth-hbox-1-vbox-1',
                     align: 'left', 
@@ -135,7 +183,7 @@ function SSleuthPanel(win) {
         }
       } 
     } {
-      let hb = vb.appendChild(create('hbox', {
+      let hb = dvb.appendChild(create('hbox', {
                     id: 'ssleuth-hbox-2', align: 'top'})); {
         let chb = hb.appendChild(create('hbox', {
                       align: 'left', width: IMG_MARGIN_WIDTH })); 
@@ -156,7 +204,7 @@ function SSleuthPanel(win) {
         }
       }
     } {
-      let hb = vb.appendChild(create('hbox', { 
+      let hb = dvb.appendChild(create('hbox', { 
                   id: 'ssleuth-ff-connection-status'})); {
         let vb = hb.appendChild(create('vbox', { 
                                   align: 'left', width: IMG_MARGIN_WIDTH})); 
@@ -191,7 +239,7 @@ function SSleuthPanel(win) {
                         class : 'ssleuth-text-body-class'})); 
       }
     } {
-      let hb = vb.appendChild(create('hbox', {
+      let hb = dvb.appendChild(create('hbox', {
                     height: '100', flex: '2'})); {
         let chb = hb.appendChild(create('hbox', {
                       align: 'left', width: IMG_MARGIN_WIDTH })); 
@@ -315,68 +363,9 @@ function SSleuthPanel(win) {
     }
   }
 
-  try {
-  let vbox = create('vbox', {id: 'ssleuth-panel-deck-vbox', flex: 1});{
-
-    let rb = vbox.appendChild(create('richlistbox', {
-                  id: 'ssleuth-panel-richlistbox',
-                  onselect: "document.getElementById('ssleuth-panel-deck').selectedIndex = parseInt(this.selectedItem._index) + 2;"})); {
-      let hb = rb.appendChild(create('hbox', {})); {
-
-        let ri = hb.appendChild(create('richlistitem', {_index: 0})); {
-          ri.appendChild(create('description', {value: 'Main'}));
-        }
-        ri = hb.appendChild(create('richlistitem', {_index: 1})); {
-          ri.appendChild(create('description', {value: 'HTTP Obs'}));
-        }
-      }
-    } 
-
-    let tb = vbox.appendChild(create('toolbar', { 
-                      style: '-moz-appearance:groupbox',
-                      flex: 2})); {
-      let tb1 = tb.appendChild(create('toolbarbutton', {
-                        type: 'radio', 
-                        group: 'ssleuth-panel-tabbar', 
-                        label: 'Main domain'}));
-      let tb2 = tb.appendChild(create('toolbarbutton', {
-                        type: 'radio', 
-                        group: 'ssleuth-panel-tabbar', 
-                        label: 'HTTP obs'}));
-    }
-
-    let bb = vbox.appendChild(create('hbox', { 
-                      style: '-moz-appearance:groupbox',
-                      flex: 2})); {
-      let bb1 = bb.appendChild(create('button', {
-                        type: 'radio', 
-                        group: 'ssleuth-panel-tabbar', 
-                        label: 'Main domain'}));
-      let bb2 = bb.appendChild(create('button', {
-                        type: 'radio', 
-                        group: 'ssleuth-panel-tabbar', 
-                        label: 'HTTP obs'}));
-    }
-
-    let hbox = vbox.appendChild(create('hbox', {})); {
-      let hb = hbox.appendChild(create('hbox', {})); {
-        hb.appendChild(create('description', {value: 'Primary'}));
-      }
-      hb = hbox.appendChild(create('hbox', {})); {
-        hb.appendChild(create('description', {value: 'Domains'}));
-      }
-
-    }
-
-
-    let box = vbox.appendChild(create('box', {id: 'ssleuth-panel-box'})); {
-      let deck = box.appendChild(create('deck', {id: 'ssleuth-panel-deck', flex: 1}));
-      deck.appendChild(panelbox);
-      deck.appendChild(create('description', {value: "HTTP obs"}));
-    }
   }
 
-  return vbox; 
+  return panelbox; 
   } catch (e) {dump ("Error ssleuth panel : " + e.message + "\n"); }
 }
 

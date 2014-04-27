@@ -323,4 +323,41 @@
 	border-color: ThreeDShadow;
 }
 
+.ssleuth-paneltab-box {
+	margin-top : 15px;
+	margin-bottom : 5px;
+}
+
+.ssleuth-paneltab-tab {
+	-moz-appearance: none;
+	border-width: 1px;
+	/* -moz-border-end-width: 0;*/
+	border-style: solid;
+	/* border-color: transparent;*/
+	border-color: ThreeDShadow;
+	/* padding: 1px 1px;*/
+	padding-top: 3px;
+	-moz-box-align: left;
+	width: 100px;
+	overflow: hidden;
+	/*color: WindowText;*/
+	color: GrayText;
+	font-size: 105%;
+}
+
+.ssleuth-paneltab-tab[_selected="false"] {
+	border-top: none;
+	border-left: none;
+	border-right: none;
+}
+.ssleuth-paneltab-tab[_selected="true"] {
+	/* background-color: -moz-field;*/
+	color: -moz-fieldtext;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-width: 1px;
+	border-style: solid;
+	border-bottom: none;
+}
+
 }
