@@ -72,6 +72,15 @@ var SSleuthUI = {
     // for the first time 
     if (!window) return; 
 
+    if (SSleuthUI.prefs.PREFS['domains.watch']) {
+      // If the user is navigating with the domains tab
+      // reload the data.
+      if (window.document.getElementById('ssleuth-paneltab-domains')
+                      .getAttribute('_selected') === 'true') {
+        loadDomains(); 
+      }
+    }
+
     // If the user navigates the tabs with the panel open, 
     //  make it appear smooth. 
     var ssleuthPanel = _ssleuthPanel(window);
@@ -764,29 +773,43 @@ function loadDomains() {
   var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
   var respCache = SSleuthHttpObserver.responseCache[tab];
 
+  resetDomains(win);
+
   /* dump("response cache far this tab: " 
               + JSON.stringify(respCache, null, 2) + "\n");*/
 
   const doc = win.document; 
   let reqs = respCache['reqs'];
-  let rb = doc.getElementById('ssleuth-paneltab-domains-list');      
+  let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
-  for ( var [key, val] in Iterator(reqs)) {
+  for (var [key, val] in Iterator(reqs)) {
     let ri = rb.appendChild(create(doc, 'richlistitem', {}));
     let vb = ri.appendChild(create(doc, 'vbox', {})); {
       let hb = vb.appendChild(create(doc, 'hbox', {})); {
-        hb.appendChild(create(doc, 'description', { value : key})); 
-        let val = " reqs: " + reqs[key]['count'];
-        hb.appendChild(create(doc, 'description', { value : val}));
-        val = " cipher rt: " + reqs[key]['csRating']; 
-        hb.appendChild(create(doc, 'description', { value : val}));
-      }
-      vb.appendChild(create(doc, 'description', {
+        let str = key.substring(key.indexOf(':')+1);
+        hb.appendChild(create(doc, 'description', {value : str})); 
+        str = " " + reqs[key]['count'] + "x";
+        hb.appendChild(create(doc, 'description', {value : str}));
+      } 
+      hb = vb.appendChild(create(doc, 'hbox', {})); {
+        let str = reqs[key]['csRating'] + " "; 
+        hb.appendChild(create(doc, 'description', {value : str}));
+        hb.appendChild(create(doc, 'description', {
                         value : reqs[key]['cipherName'] }));
+      }
     }
   }
 
   } catch(e) { dump("Error -- loadDomains -- " + e.message + "\n"); }
+}
+
+function resetDomains(win) {
+  let rb = win.document.getElementById('ssleuth-paneltab-domains-list');
+
+  while (rb.hasChildNodes()) {
+    rb.removeChild(rb.firstChild);
+  }
+
 }
 
 var prefListener = new ssleuthPrefListener(

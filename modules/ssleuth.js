@@ -69,25 +69,29 @@ var ProgressListener = {
 
   onLocationChange: function(progress, request, uri) {
     var win = Services.wm.getMostRecentWindow("navigator:browser"); 
-
     if (!win) return; 
 
     dump("==========================\n"); 
-    var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId; 
-    dump("onLocationChange : " + uri.spec + " tab id " 
-            + tab + "\n");
+    dump("onLocationChange : " + uri.spec + "\n");
 
-    // Re-init. New location, new cache.
-    // TODO : Fix Addon-manager showing up in the list.
-    // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
     try {
-    var responseCache = SSleuthHttpObserver.newLoc(uri.asciiSpec,
-                                                tab); 
-    SSleuthHttpObserver.updateLoc(request);
+      if (request) {
+        var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId; 
 
-    dump("response cache so far : " 
+        // Re-init. New location, new cache.
+        // TODO : Fix Addon-manager showing up in the list.
+        // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
+        // TODO : Do we need newLoc and updateLoc here ? Identify which is new
+        //          locationChange and which is for update.
+        SSleuthHttpObserver.newLoc(uri.asciiSpec, tab); 
+
+        SSleuthHttpObserver.updateLoc(request);
+      }
+      dump("response cache so far : " 
               + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
-    } catch(e) { dump("Error onLocationChange " + e.message + "\n"); }
+    } catch(e) { 
+      dump("Error onLocationChange " + e.message + "\n"); 
+    }
     if (uri.spec === this.prevURL) {
       this.urlChanged = false; 
       return; 

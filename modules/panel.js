@@ -279,8 +279,8 @@ function SSleuthPanel(win) {
     let domainsVb = create('vbox', {}); 
     let rb = domainsVb.appendChild(create('richlistbox', {
                 id : 'ssleuth-paneltab-domains-list', 
-                // TODO : Fix this!
-                style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0); border: none',
+                // TODO : Fix this! css in sheet is not working! 
+                style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0); border: none; font-size: 85%',
                 flex: '1', maxheight: "200"})); {
     }
     return domainsVb; 
@@ -327,6 +327,9 @@ function SSleuthPanel(win) {
                                           class: 'ssleuth-paneltab-tab'})); {
           chb.appendChild(create('description', {value: 'Primary'}));
         }
+
+        // TODO : 'true' 'false' to boolean? _selected is needed for css. 
+        //          CSS can't check boolean ?
         chb.addEventListener('click', function() {
             doc.getElementById('ssleuth-panel-deck').selectedIndex = 0;
             doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
