@@ -50,7 +50,8 @@ var SSleuthUI = {
     setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 
     // TODO : Optimize this handlings. Only when enabled ?
     //        Do init in preferences handler ?
-    initDomainWatcher(window.document); 
+    initDomainsPanel(window.document); 
+    initCiphersPanel(window.document);
   }, 
 
   uninit: function(window) {
@@ -759,11 +760,16 @@ function forEachOpenWindow(todo) {
       .QueryInterface(Components.interfaces.nsIDOMWindow));
 }
 
-function initDomainWatcher(doc) {
+function initDomainsPanel(doc) {
   var domainsTab = doc.getElementById('ssleuth-paneltab-domains');
   domainsTab.addEventListener('click', loadDomains, false);
-
 }
+
+function initCiphersPanel(doc) {
+  var ciphersTab = doc.getElementById('ssleuth-paneltab-cipher');
+  ciphersTab.addEventListener('click', loadCiphers, false);
+}
+
 
 function loadDomains() {
   if (!SSleuthUI.prefs.PREFS['domains.watch']) 
@@ -773,41 +779,137 @@ function loadDomains() {
   var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
   var respCache = SSleuthHttpObserver.responseCache[tab];
 
-  resetDomains(win);
-
-  /* dump("response cache far this tab: " 
-              + JSON.stringify(respCache, null, 2) + "\n");*/
-
   const doc = win.document; 
+
+  resetDomains(doc);
+
   let reqs = respCache['reqs'];
   let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
-  for (var [key, val] in Iterator(reqs)) {
-    let ri = rb.appendChild(create(doc, 'richlistitem', {}));
+  for (var [domain, stats] in Iterator(reqs)) {
+    let ri = rb.appendChild(create(doc, 'richlistitem', {class: 'ssleuth-paneltab-domains-item'}));
     let vb = ri.appendChild(create(doc, 'vbox', {})); {
+      // Domain name + requests hbox
       let hb = vb.appendChild(create(doc, 'hbox', {})); {
-        let str = key.substring(key.indexOf(':')+1);
+        let str = domain.substring(domain.indexOf(':')+1);
+        hb.appendChild(create(doc, 'description', {value : str, 
+                                  style: 'font-weight: bold;'})); 
+        str = " " + stats['count'] + "x";
+        hb.appendChild(create(doc, 'description', {value : str}));
+
+        str = " "; 
+        for (var [ctype, count] in Iterator(stats['ctype'])) {
+          switch (ctype) {
+            case "text"   : str += "txt: " ; break;
+            case "image"  : str += "img: "; break;
+            case "application" : str += "app: "; break;
+            case "audio"  : str += "aud: "; break;
+            case "video"  : str += "vid: "; break;
+          }
+          str += count + ", "; 
+        }
         hb.appendChild(create(doc, 'description', {value : str})); 
-        str = " " + reqs[key]['count'] + "x";
-        hb.appendChild(create(doc, 'description', {value : str}));
+          
       } 
+
+      // Cipher suite hbox
       hb = vb.appendChild(create(doc, 'hbox', {})); {
-        let str = reqs[key]['csRating'] + " "; 
-        hb.appendChild(create(doc, 'description', {value : str}));
-        hb.appendChild(create(doc, 'description', {
-                        value : reqs[key]['cipherName'] }));
+        if (domain.indexOf('https:') != -1) {
+          let str = stats['csRating'].toFixed(1) + " "; 
+          hb.appendChild(create(doc, 'description', {value : str}));
+          hb.appendChild(create(doc, 'description', {
+                          value : stats['cipherName'] }));
+        } else {
+          let str = "Insecure channel!";
+          // TODO : To stylesheet
+          hb.appendChild(create(doc, 'description', {value: str, 
+                                          style: 'color: #5e0a0a;'})); 
+        }
       }
     }
+    // TODO : The color coding is based only on cipher suite rating.
+    //        The ev status, firefox security status etc. is not available here.
+    //        Identify a way to generlize the ratings as in the front panel
+    var cipherRating = "low"; 
+    if (domain.indexOf('https:') != -1) {
+      if (stats['csRating'] < 5) {
+         cipherRating = "low";
+      } else if (stats['csRating'] < 7) {
+        cipherRating = "medium"; 
+      } else if (stats['csRating'] < 9) {
+        cipherRating = "high"; 
+      } else if (stats['csRating'] <= 10) {
+        cipherRating = "vhigh"; 
+      }
+    }
+    ri.setAttribute('rank', cipherRating); 
   }
 
   } catch(e) { dump("Error -- loadDomains -- " + e.message + "\n"); }
 }
 
-function resetDomains(win) {
-  let rb = win.document.getElementById('ssleuth-paneltab-domains-list');
+function resetDomains(doc) {
+  let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
   while (rb.hasChildNodes()) {
     rb.removeChild(rb.firstChild);
+  }
+
+}
+
+function loadCiphers() {
+  try {
+    var doc = _window().document; 
+    var vb = doc.getElementById("ssleuth-paneltab-ciphers"); 
+
+    // Reset anything before.
+    while (vb.hasChildNodes()) {
+      vb.removeChild(vb.firstChild);
+    }
+
+    // This has to be done everytime, as the preferences change.
+    var csList = JSON.parse(SSleuthPreferences.prefService
+            .getCharPref("extensions.ssleuth.suites.toggle"));
+    if (csList.length > 0) {
+      for (var i=0; i<csList.length; i++) {
+        var hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'} )); 
+        hb.appendChild(create (doc, 'description', {
+                      value: csList[i].name})); 
+
+        var m_list = hb.appendChild(doc.createElement('menulist')); 
+        var m_popup = m_list.appendChild(doc.createElement("menupopup")); 
+
+        // TODO : Better way to set the index? 'checked' attribute doesn't work.
+        //        or optimize this.
+        var index = 0; 
+        for (var rd of ["Default", "Enable", "Disable"]) {
+          m_popup.appendChild(create(doc, 'menuitem', {
+                        label: rd, 
+                        value: rd.toLowerCase() }));
+          if (csList[i].state === rd.toLowerCase()) {
+            m_list.selectedIndex = index; 
+          }
+          index++;
+        }
+        m_popup.addEventListener("command", function(event) {
+          // TODO : Get rid of this mess. Pass cs name string to event handler?
+          var m = event.currentTarget.parentNode.parentNode.firstChild;
+          var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
+          for (var i=0; i<csTglList.length; i++) {
+            if (m.value === csTglList[i].name) {
+              csTglList[i].state = event.target.value; 
+            }
+          }
+          SSleuthPreferences.prefService
+            .setCharPref("extensions.ssleuth.suites.toggle", JSON.stringify(csTglList));
+        }); 
+
+      }
+    }
+
+
+  } catch (e) {
+    dump("Error -- loadCiphers -- " + e.message + "\n"); 
   }
 
 }

@@ -287,11 +287,11 @@ function SSleuthPanel(win) {
   }
 
   function panelCipherSuites() {
-    let csVb = create('vbox', {}); 
-    csVb.appendChild(create('description', {value: 'Cipher suites'})); 
+    let csVb = create('vbox', {id : 'ssleuth-paneltab-ciphers'}); 
     return csVb; 
 
   }
+
   try {
 
   // Box container for the panel. 
