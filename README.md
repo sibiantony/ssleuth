@@ -7,7 +7,9 @@ parameters.
 
 * Mozilla download page : https://addons.mozilla.org/en-US/firefox/addon/ssleuth/
 
-This addon was developed with the intent to rate the encryption ciphers used in an
+![Screenshot mozilla.org](https://addons.cdn.mozilla.net/img/uploads/previews/full/135/135328.png)
+
+This was developed with the intent to rate the encryption ciphers used in an
 SSL connection. The project maintains a list of cipher suites that are shipped with
 Firefox and a rank for each of them.
 The rankings are mainly inspired from Qualys's SSL labs server testing tool. The 
@@ -20,7 +22,7 @@ or `Page Info -> Security -> Technical details`.
 The user can see the cipher suite used for connection and firefox's
 assessment of the strength of the cipher.
 
-This addon attempts to enhance this visibility of ciphers to the user,
+SSleuth attempts to enhance this visibility of ciphers to the user,
 by ranking it and appropriateley color coding it. 
 The addon panel also gives information on perfect forward secrecy, firefox 
 connection status and the certificate details.
