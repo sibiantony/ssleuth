@@ -11,6 +11,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 var SSleuthHttpObserver = {
   responseCache : [],
   maxTabId: null, 
+  minTabId: null, 
   prefs: null, 
   utilCb: null, 
 
@@ -44,6 +45,7 @@ var SSleuthHttpObserver = {
     for (var browser of window.gBrowser.browsers) {
       if (browser._ssleuthTabId) {
         this.deleteLoc(browser._ssleuthTabId);
+        freeTabId(browser._ssleuthTabId);
       }
     } 
 
@@ -99,8 +101,33 @@ function tabClosed(e) {
     if (browser._ssleuthTabId) {
       dump("ssleuth tab id : " + browser._ssleuthTabId);
       SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
+      freeTabId(browser._ssleuthTabId);
     }
   } catch(e) { dump("Error tabClosed : " + e.message + "\n");}
+}
+
+
+// These are to make sure that freed up indexes
+//  are re-used. At the end, there will always be
+//  null spots equal to max. opened tabs.
+function freeTabId(id) {
+  if (id < SSleuthHttpObserver.minTabId) 
+    SSleuthHttpObserver.minTabId = id; 
+}
+
+function getTabId() {
+  const obs = SSleuthHttpObserver; 
+  var id = obs.minTabId; 
+
+  while ((obs.responseCache[id] != null) && (obs.minTabId < obs.maxTabId)) {
+      // This spot is occupied. Find the next free one.
+      id = ++obs.minTabId;
+  }
+
+  if (obs.minTabId == obs.maxTabId) 
+    obs.minTabId = ++obs.maxTabId;
+
+  return id; 
 }
 
 function updateResponseCache(channel) {
@@ -127,7 +154,7 @@ function updateResponseCache(channel) {
     if (!("_ssleuthTabId" in browser)) {
       dump("No tab id present \n"); 
       // Use a string index - helps with deletion without problems.
-      var tabId = browser._ssleuthTabId = (obs.maxTabId++).toString();
+      var tabId = browser._ssleuthTabId = getTabId().toString();
 
       SSleuthHttpObserver.newLoc(url, tabId); 
 
