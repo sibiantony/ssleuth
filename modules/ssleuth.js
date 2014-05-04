@@ -24,7 +24,7 @@ var SSleuth = {
     this.prefs = SSleuthPreferences.readInitPreferences();
     prefListener.register(false);
 
-    SSleuthUI.startup();
+    SSleuthUI.startup(this.prefs);
     forEachOpenWindow(SSleuth.initWindow); 
     Services.wm.addListener(WindowListener); 
   },
@@ -193,7 +193,7 @@ function protocolHttps(progress, request, state, win) {
     extendedValidation = true; 
   }
 
-  try{
+  try {
       var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
       SSleuthHttpObserver.updateLocEntry(tab, 
                                         {ffStatus : securityState, 
@@ -431,6 +431,7 @@ var prefListener = new ssleuthPrefListener(
         break;
     }
 
+    SSleuthUI.prefListener(branch, name); 
   }
 ); 
 

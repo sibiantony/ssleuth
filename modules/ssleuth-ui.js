@@ -17,17 +17,16 @@ Components.utils.import("resource://ssleuth/panel.js");
 var SSleuthUI = {
   ssleuthLoc : { URLBAR: 0, TOOLBAR: 1 },
   ssleuthBtnLocation : null, 
+  // Reference to SSleuth.prefs
   prefs: null, 
   panelMenuTemplate: null, 
 
-  startup: function() {
-    this.prefs = SSleuthPreferences.readInitPreferences(); 
-    prefListener.register(false); 
+  startup: function(prefs) {
+    this.prefs = prefs;
     loadStyleSheet(); 
   },
 
   shutdown: function() {
-    prefListener.unregister(); 
     removeStyleSheet(); 
   },
 
@@ -48,7 +47,7 @@ var SSleuthUI = {
     var panelVbox = SSleuthPanel(window); 
     ssleuthPanel.appendChild(panelVbox); 
     setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document); 
-    // TODO : Optimize this handlings. Only when enabled ?
+    // TODO : Optimize this handlings. Only when HTTP obs enabled ?
     //        Do init in preferences handler ?
     initDomainsPanel(window.document); 
     initCiphersPanel(window.document);
@@ -88,6 +87,7 @@ var SSleuthUI = {
     if (ssleuthPanel.state == "open") {
       showPanel(ssleuthPanel, true); 
     }
+
   },
 
   protocolChange: function(proto, data) {
@@ -128,6 +128,10 @@ var SSleuthUI = {
     showPFS(cipherSuite.pfs);
     showFFState(securityState); 
     showCertDetails(cert, certValid, domMismatch, ev);
+  },
+
+  prefListener: function(branch, name) {
+    preferencesChanged(branch, name); 
   }
 
 };
@@ -306,13 +310,13 @@ function panelEvent(event) {
     // Unlike a shortcut-key or the urlbar notifier, we don't
     // need to open the panel in this case. 
     try {
-      dump ("Panel state : " + _ssleuthPanel(_window()).state + "\n"); 
       const ui = SSleuthUI; 
       if (!(event.type == "click" && 
           event.button == 0 &&
           ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR )) { 
         togglePanel(_ssleuthPanel(_window())); 
       }
+
      } catch(ex) {
       dump("Error during panelEvent action : " + ex.message + "\n"); 
     }
@@ -341,9 +345,16 @@ function showPanel(panel, show) {
   }
 }
 
+function panelVisible() {
+  // Special case : Firefox does not select menuitems unless the 
+  //    panel is visible. Or loadTabs -> loadCiphers() ?
+  loadCiphers();
+}
+
 function togglePanel(panel) {
   if (panel.state == "closed") {
     showPanel(panel, true); 
+    panelVisible();
   } else if (panel.state == "open") {
     showPanel(panel, false); 
   }
@@ -656,6 +667,9 @@ function menuEvent(event) {
         }
         m_popup.addEventListener("command", function(event) {
           var m = event.currentTarget.parentNode;
+          // FIXME : The SSleuthUI.prefs is a reference to SSleuth.prefs
+          //    which in turn seems to be a reference to preferences module var.
+          //    This might work here, but not clean.
           var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
           for (var i=0; i<csTglList.length; i++) {
             if (m.label === csTglList[i].name) {
@@ -766,8 +780,7 @@ function initDomainsPanel(doc) {
 }
 
 function initCiphersPanel(doc) {
-  var ciphersTab = doc.getElementById('ssleuth-paneltab-cipher');
-  ciphersTab.addEventListener('click', loadCiphers, false);
+  loadCiphers(); 
 }
 
 
@@ -787,7 +800,8 @@ function loadDomains() {
   let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
   for (var [domain, stats] in Iterator(reqs)) {
-    let ri = rb.appendChild(create(doc, 'richlistitem', {class: 'ssleuth-paneltab-domains-item'}));
+    let ri = rb.appendChild(create(doc, 'richlistitem', {
+              class: 'ssleuth-paneltab-domains-item'}));
     let vb = ri.appendChild(create(doc, 'vbox', {})); {
       // Domain name + requests hbox
       let hb = vb.appendChild(create(doc, 'hbox', {})); {
@@ -860,51 +874,45 @@ function resetDomains(doc) {
 function loadCiphers() {
   try {
     var doc = _window().document; 
-    var vb = doc.getElementById("ssleuth-paneltab-ciphers"); 
+    var rows = doc.getElementById("ssleuth-paneltab-ciphers-rows"); 
 
     // Reset anything before.
-    while (vb.hasChildNodes()) {
-      vb.removeChild(vb.firstChild);
+    while (rows.hasChildNodes()) {
+      rows.removeChild(rows.firstChild);
     }
 
     // This has to be done everytime, as the preferences change.
-    var csList = JSON.parse(SSleuthPreferences.prefService
-            .getCharPref("extensions.ssleuth.suites.toggle"));
-    if (csList.length > 0) {
-      for (var i=0; i<csList.length; i++) {
-        var hb = vb.appendChild(create(doc, 'hbox', {align: 'baseline'} )); 
-        hb.appendChild(create (doc, 'description', {
-                      value: csList[i].name})); 
+    var csList = SSleuthUI.prefs.PREFS['suites.toggle'];
+        
+    for (var i=0; i<csList.length; i++) {
+      var row = rows.appendChild(create(doc, 'row', {align: 'baseline'} )); 
+      row.appendChild(create (doc, 'description', {
+                    value: csList[i].name})); 
 
-        var m_list = hb.appendChild(doc.createElement('menulist')); 
-        var m_popup = m_list.appendChild(doc.createElement("menupopup")); 
+      var m_list = row.appendChild(doc.createElement('menulist')); 
+      var m_popup = m_list.appendChild(doc.createElement("menupopup")); 
 
-        // TODO : Better way to set the index? 'checked' attribute doesn't work.
-        //        or optimize this.
-        var index = 0; 
-        for (var rd of ["Default", "Enable", "Disable"]) {
-          m_popup.appendChild(create(doc, 'menuitem', {
-                        label: rd, 
-                        value: rd.toLowerCase() }));
-          if (csList[i].state === rd.toLowerCase()) {
-            m_list.selectedIndex = index; 
-          }
-          index++;
+      for (var rd of ["Default", "Enable", "Disable"]) {
+        var mi = m_popup.appendChild(create(doc, 'menuitem', {
+                      label: rd, 
+                      value: rd.toLowerCase() }));
+        // TODO : Some optimizations here in Firefox. Unless the panel is 
+        //        visible, the selected item is not applied??
+        if (csList[i].state === rd.toLowerCase()) {
+          m_list.selectedItem = mi; 
         }
-        m_popup.addEventListener("command", function(event) {
-          // TODO : Get rid of this mess. Pass cs name string to event handler?
-          var m = event.currentTarget.parentNode.parentNode.firstChild;
-          var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
-          for (var i=0; i<csTglList.length; i++) {
-            if (m.value === csTglList[i].name) {
-              csTglList[i].state = event.target.value; 
-            }
-          }
-          SSleuthPreferences.prefService
-            .setCharPref("extensions.ssleuth.suites.toggle", JSON.stringify(csTglList));
-        }); 
-
       }
+      m_popup.addEventListener("command", function(event) {
+        var m = event.currentTarget.parentNode.parentNode.firstChild;
+        var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]); 
+        for (var i=0; i<csTglList.length; i++) {
+          if (m.value === csTglList[i].name) {
+            csTglList[i].state = event.target.value; 
+          }
+        }
+        SSleuthPreferences.prefService
+          .setCharPref("extensions.ssleuth.suites.toggle", JSON.stringify(csTglList));
+      }, false);
     }
 
 
@@ -914,50 +922,49 @@ function loadCiphers() {
 
 }
 
-var prefListener = new ssleuthPrefListener(
-  SSleuthPreferences.prefBranch,
-  function(branch, name) {
-    switch(name) {
-      case "notifier.location":
-        // Changing the notifier location requires tearing down
-        // everything. Button, panel.. and the panel overlay!
-        SSleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
-        forEachOpenWindow(function(win) {
-          SSleuthUI.uninit(win); 
-        }); 
-      
-        forEachOpenWindow(function(win) {
-          SSleuthUI.init(win); 
-        }); 
-        break;
-      case "panel.fontsize":
-        SSleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
-        forEachOpenWindow(function(win) {
-          setPanelFont(branch.getIntPref(name), win.document); 
-        }); 
-        break;
-      case "ui.keyshortcut":
-        SSleuthUI.prefs.PREFS[name] = branch.getCharPref(name); 
-        forEachOpenWindow(function(win) {
-          deleteKeyShortcut(win.document); 
-          createKeyShortcut(win.document); 
-        }); 
-        break;
-      case "panel.info" :
-        SSleuthUI.prefs.PREFS[name] = 
-          JSON.parse(branch.getCharPref(name)); 
-        break;
-      case "rating.params": 
-        SSleuthUI.prefs.PREFS[name] = 
-            JSON.parse(branch.getCharPref(name));
-        break;
-      case "domains.watch" : 
-        SSleuthUI.prefs.PREFS[name] = 
-            JSON.parse(branch.getBoolPref(name));
-        break;
-    }
+function preferencesChanged(branch, name) {
+  switch(name) {
+    case "notifier.location":
+      // Changing the notifier location requires tearing down
+      // everything. Button, panel.. and the panel overlay!
+      SSleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
+      forEachOpenWindow(function(win) {
+        SSleuthUI.uninit(win); 
+      }); 
+    
+      forEachOpenWindow(function(win) {
+        SSleuthUI.init(win); 
+      }); 
+      break;
+    case "panel.fontsize":
+      SSleuthUI.prefs.PREFS[name] = branch.getIntPref(name); 
+      forEachOpenWindow(function(win) {
+        setPanelFont(branch.getIntPref(name), win.document); 
+      }); 
+      break;
+    case "ui.keyshortcut":
+      SSleuthUI.prefs.PREFS[name] = branch.getCharPref(name); 
+      forEachOpenWindow(function(win) {
+        deleteKeyShortcut(win.document); 
+        createKeyShortcut(win.document); 
+      }); 
+      break;
+    case "panel.info" :
+      SSleuthUI.prefs.PREFS[name] = 
+        JSON.parse(branch.getCharPref(name)); 
+      break;
+    case "rating.params": 
+      // Prefs set from main
+      break;
+    case "domains.watch" : 
+      // Prefs set from main
+      break;
+    case "suites.toggle" : 
+      // Prefs set from main
+      loadCiphers(); 
+      break;
   }
-); 
+}
 
 
 function create(doc, elem, attrs) {

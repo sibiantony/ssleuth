@@ -280,14 +280,24 @@ function SSleuthPanel(win) {
     let rb = domainsVb.appendChild(create('richlistbox', {
                 id : 'ssleuth-paneltab-domains-list', 
                 // TODO : Fix this! css in sheet is not working! 
-                style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0); border: none; font-size: 85%',
-                flex: '1', maxheight: "200"})); {
+                style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0);',
+                flex: '1', maxheight: "250"})); {
     }
     return domainsVb; 
   }
 
   function panelCipherSuites() {
     let csVb = create('vbox', {id : 'ssleuth-paneltab-ciphers'}); 
+    let desc = csVb.appendChild(create('description', {})); 
+    desc.textContent = 'The changes are global, and you must reload the page after changes. Read the instructions carefully.'; 
+    let grid = csVb.appendChild(create('grid', {})); {
+      let cols = grid.appendChild(create('columns', {})); 
+      cols.appendChild(create('column', {}));
+      cols.appendChild(create('column', {}));
+    } {
+      grid.appendChild(create('rows', {id: 'ssleuth-paneltab-ciphers-rows'})); 
+    }
+
     return csVb; 
 
   }
@@ -305,11 +315,13 @@ function SSleuthPanel(win) {
                   id: 'ssleuth-img-cipher-rank-star', 
                   align: 'baseline', height: '20'
                 }));
+
       for (var i=1; i<=10; i++) {
         hb.appendChild(create('image', {
                       id: 'ssleuth-img-cipher-rank-star-'+i ,
                       class: 'ssleuth-star' }));
       }
+    
       hb.appendChild(create('description', {
                     id: 'ssleuth-text-cipher-rank-numeric',
                     class : 'ssleuth-text-title-class' }));

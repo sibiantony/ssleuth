@@ -1,13 +1,13 @@
 <!ENTITY ssleuth.pref.title.label "SSleuth preferences" >
-<!ENTITY ssleuth.pref.tab.ssleuthui "SSleuth UI" >
+<!ENTITY ssleuth.pref.tab.ssleuthui "General" >
 <!ENTITY ssleuth.pref.tab.ranking "Connection ranking" >
 <!ENTITY ssleuth.pref.tab.about "About" >
 
-<!ENTITY ssleuth.pref.ui.notifier.label "SSleuth Notifier location" >
+<!ENTITY ssleuth.pref.ui.notifier.label "Notifier location" >
 <!ENTITY ssleuth.pref.ui.notifier.urlbar "URL bar notifier" >
 <!ENTITY ssleuth.pref.ui.notifier.toolbar "Toolbar button" >
 
-<!ENTITY ssleuth.pref.ui.fontsize "SSleuth Panel font size">
+<!ENTITY ssleuth.pref.ui.fontsize "Panel font size">
 <!ENTITY ssleuth.pref.ui.fontsize.default "Small: ">
 <!ENTITY ssleuth.pref.ui.fontsize.medium "Medium: ">
 <!ENTITY ssleuth.pref.ui.fontsize.large "Large: ">
