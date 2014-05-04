@@ -91,18 +91,21 @@ var SSleuthUI = {
   },
 
   protocolChange: function(proto, data) {
+    var doc = _window().document; 
     switch(proto) {
       case "unknown":
         setButtonRank(-1);
         setBoxHidden("https", true);
         setBoxHidden("http", true); 
+        doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
         break;
       case "http":
         setButtonRank(-1);
         setBoxHidden("https", true);
         setBoxHidden("http", false);
+        doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
 
-        var panelLink = _window().document.getElementById("ssleuth-panel-https-link"); 
+        var panelLink = doc.getElementById("ssleuth-panel-https-link"); 
         panelLink.href = data; 
         panelLink.setAttribute("value", data); 
         break;
@@ -110,6 +113,7 @@ var SSleuthUI = {
       case "https":
         setBoxHidden("https", false);
         setBoxHidden("http", true);
+        doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
         break;
     }
   },
@@ -340,6 +344,7 @@ function setBoxHidden(protocol, show) {
 function showPanel(panel, show) {
   if (show) {
     panel.openPopup(_ssleuthButton(_window())); 
+    panelVisible();
   } else {
     panel.hidePopup(); 
   }
@@ -354,7 +359,6 @@ function panelVisible() {
 function togglePanel(panel) {
   if (panel.state == "closed") {
     showPanel(panel, true); 
-    panelVisible();
   } else if (panel.state == "open") {
     showPanel(panel, false); 
   }
