@@ -13,8 +13,12 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 */
 function SSleuthPanel(win) {
   var doc = win.document; 
+  // With the new tabbed panel, the actual width is determined
+  // by the tabs width. So these are just relics. 
+  // Check : This might help with the flex for right-side ratings text.
   const HTTPS_PANEL_WIDTH = '300';
   const HTTP_PANEL_WIDTH = '330';
+
   const IMG_MARGIN_WIDTH = '25';
 
   function create(elem, attrs) {
@@ -401,6 +405,8 @@ function SSleuthPanel(win) {
             doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
             this.setAttribute('_selected', 'true'); 
             }, false);
+
+        hb.appendChild(create('hbox', {class: 'ssleuth-paneltab-tab', _selected: 'false'}));
       }
     } { 
       let deck = panelbox.appendChild(create('deck', {id: 'ssleuth-panel-deck'}));
