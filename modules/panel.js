@@ -239,7 +239,8 @@ function SSleuthPanel(win) {
                               id : 'ssleuth-text-cert-issuedto', 
                               value: 'Issued to: ', 
                               class: 'ssleuth-text-body-class'})); {
-              let vb = hb.appendChild(create('vbox', {align: 'baseline'}));
+              let vb = hb.appendChild(create('vbox', {align: 'baseline', 
+                                flex: '1'}));
               vb.appendChild(create('description', {
                                 id: 'ssleuth-text-cert-org', 
                                 class: 'ssleuth-text-title-class'})); 
@@ -248,12 +249,13 @@ function SSleuthPanel(win) {
                                 class: 'ssleuth-text-body-class'})); 
             }
           } {
-            let hb = vb.appendChild(create('hbox', {align: 'baseline'})); 
+            let hb = vb.appendChild(create('hbox', {align: 'baseline' }));
             hb.appendChild(create('description', {
                                 id : 'ssleuth-text-cert-issuedby', 
                                 value: 'Issued by: ', 
                                 class: 'ssleuth-text-body-class'})); {
-              let vb = hb.appendChild(create('vbox', {align: 'baseline'}));
+              let vb = hb.appendChild(create('vbox', {align: 'baseline', 
+                                flex: '1'}));
               vb.appendChild(create('description', {
                                 id: 'ssleuth-text-cert-issuer-org', 
                                 class: 'ssleuth-text-title-class'})); 
