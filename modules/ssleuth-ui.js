@@ -803,6 +803,12 @@ function loadDomains() {
   let reqs = respCache['reqs'];
   let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
+  // Set maxheight to that of the main vbox
+  // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
+  // doc.getElementById('ssleuth-panel-domains-vbox').
+  //    setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
+  dump ("Box height -- " + doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+
   for (var [domain, stats] in Iterator(reqs)) {
     let ri = rb.appendChild(create(doc, 'richlistitem', {
               class: 'ssleuth-paneltab-domains-item'}));

@@ -35,7 +35,7 @@ function SSleuthPanel(win) {
   try {
 
   function panelMain() {
-    let mainVbox = create('vbox', {flex: '2'}); {
+    let mainVbox = create('vbox', {id: 'ssleuth-panel-main-vbox', flex: '2'}); {
       let httpsBox = mainVbox.appendChild(create('vbox', {
                         id: 'ssleuth-panel-vbox-https', 
                         flex: '2', width: HTTPS_PANEL_WIDTH, 
@@ -319,12 +319,13 @@ function SSleuthPanel(win) {
     // Fix richlistbox maxheight when loading the content ?
     // Or follow something like this : 
     //  http://mike.kaply.com/2011/08/05/richlistbox-tricks-for-your-add-on/
-    let domainsVb = create('vbox', {}); 
+    let domainsVb = create('vbox', {id: 'ssleuth-panel-domains-vbox'}); 
     let rb = domainsVb.appendChild(create('richlistbox', {
                 id : 'ssleuth-paneltab-domains-list', 
                 // TODO : Fix this! css in sheet is not working! 
                 style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0);',
                 flex: '1', maxheight: "150"})); {
+                //flex: '1'})); {//, maxheight: "150"})); {
     }
     return domainsVb; 
   }
