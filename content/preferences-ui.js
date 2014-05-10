@@ -60,13 +60,13 @@
 
       panelInfo = JSON.parse(prefs.getCharPref(PREF_PANEL_INFO)); 
       for (var [id, val] in Iterator({
-        "ssleuth-pref-show-cs-hmac"        : panelInfo.HMAC,
-        "ssleuth-pref-show-cs-bulk-cipher"     : panelInfo.bulkCipher,
-        "ssleuth-pref-show-cs-key-exchange"   : panelInfo.keyExchange,
+        "ssleuth-pref-show-cs-hmac"          : panelInfo.HMAC,
+        "ssleuth-pref-show-cs-bulk-cipher"   : panelInfo.bulkCipher,
+        "ssleuth-pref-show-cs-key-exchange"  : panelInfo.keyExchange,
         "ssleuth-pref-show-cs-cert-sig"      : panelInfo.authAlg, 
         "ssleuth-pref-show-cert-validity"    : panelInfo.certValidity, 
         "ssleuth-pref-show-cert-validity-time"  : panelInfo.validityTime, 
-        "ssleuth-pref-show-cert-fingerprint"  : panelInfo.certFingerprint, 
+        "ssleuth-pref-show-cert-fingerprint"    : panelInfo.certFingerprint, 
         })) {
           document.getElementById(id).checked = val; 
       }

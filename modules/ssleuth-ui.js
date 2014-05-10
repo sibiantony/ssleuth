@@ -449,7 +449,7 @@ function showCipherDetails(cipherSuite) {
 
   // Need to localize 'bits'. XUL - may not need ids. 
   doc.getElementById("ssleuth-text-cipher-suite-auth-key").textContent =
-    (cipherSuite.signatureKeyLen + " bits."); 
+    (cipherSuite.pubKeySize + " bits."); 
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
     (cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen 
       + " bits.");
@@ -527,16 +527,14 @@ function showCertDetails(cert, certValid, domMismatch, ev) {
   var rating = (Number(ev) * rp.evCert).toFixed(1);
   evRating.textContent = rating + "/" + rp.evCert; 
 
-  toggleCertElem("ssleuth-text-cert-org", cert.organization); 
-  toggleCertElem("ssleuth-text-cert-org-unit", cert.organizationalUnit); 
-  toggleCertElem("ssleuth-text-cert-issuer-org", cert.issuerOrganization); 
-  toggleCertElem("ssleuth-text-cert-issuer-org-unit", 
-      cert.issuerOrganizationUnit); 
-
-  function toggleCertElem(id, text) {
-    var elem = doc.getElementById(id); 
-    elem.textContent = text; 
-    elem.hidden = (text == "");
+  for ( var [id, text] in Iterator({
+    "ssleuth-text-cert-org": cert.organization,
+    "ssleuth-text-cert-org-unit": cert.organizationalUnit,
+    "ssleuth-text-cert-issuer-org": cert.issuerOrganization,
+    "ssleuth-text-cert-issuer-org-unit": cert.issuerOrganizationUnit})) {
+      var elem = doc.getElementById(id); 
+      elem.textContent = text; 
+      elem.hidden = (text == "");
   }
 
   var certValidity = doc.getElementById("ssleuth-text-cert-validity"); 
@@ -724,7 +722,7 @@ function menuCommand(event) {
           csTglList[i].state = "default";
       }
       prefs.setCharPref("extensions.ssleuth.suites.toggle", 
-      JSON.stringify(csTglList));
+          JSON.stringify(csTglList));
       break;
     case 'ssleuth-menu-open-preferences': 
       SSleuthPreferences.openTab(0);
@@ -787,7 +785,6 @@ function initCiphersPanel(doc) {
   loadCiphers(); 
 }
 
-
 function loadDomains() {
   if (!SSleuthUI.prefs.PREFS['domains.watch']) 
     return; 
@@ -807,7 +804,8 @@ function loadDomains() {
   // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
   // doc.getElementById('ssleuth-panel-domains-vbox').
   //    setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-  dump ("Box height -- " + doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+  dump ("Box height -- " + 
+      doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
   for (var [domain, stats] in Iterator(reqs)) {
     let ri = rb.appendChild(create(doc, 'richlistitem', {

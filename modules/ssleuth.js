@@ -194,10 +194,10 @@ function protocolHttps(progress, request, state, win) {
   }
 
   try {
-      var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
-      SSleuthHttpObserver.updateLocEntry(tab, 
-                                        {ffStatus : securityState, 
-                                         evCert : extendedValidation});
+    var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
+    SSleuthHttpObserver.updateLocEntry(tab, 
+                                      {ffStatus : securityState, 
+                                       evCert : extendedValidation});
   } catch(e) {
     dump("Error Http Observer : " + e.message + "\n");
   } 
@@ -208,7 +208,7 @@ function protocolHttps(progress, request, state, win) {
     pfs: 0, 
     notes: "",
     cipherKeyLen: sslStatus.secretKeyLength,
-    signatureKeyLen: 0, 
+    pubKeySize: 0, 
     keyExchange: null, 
     authentication: null, 
     bulkCipher: null, 
@@ -244,8 +244,8 @@ function protocolHttps(progress, request, state, win) {
     } 
   }
 
-  // Certificate signature alg. key size 
-  cipherSuite.signatureKeyLen = getSignatureKeyLen(cert, 
+  // Certificate pubkey alg. key size 
+  cipherSuite.pubKeySize = getKeySize(cert, 
                   cipherSuite.authentication.ui); 
 
   cipherSuite.notes = cipherSuite.keyExchange.notes +
@@ -323,14 +323,14 @@ function getCipherSuiteRating(cipherName) {
             + hmac * csW.hmac )/csW.total );
 }
 
-function getSignatureKeyLen(cert, auth) {
+function getKeySize(cert, auth) {
   var keySize = '';
   try {
     var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
               .createInstance(Components.interfaces.nsIASN1Tree); 
     certASN1.loadASN1Structure(cert.ASN1Structure);
 
-    // The key size is not available directly as an attribute in any 
+    // The public key size is not available directly as an attribute in any 
     // interfaces. So we're on our own parsing the cert structure strings. 
     // Here I didn't want to mess around with strings in the structure
     // which could get localized.
@@ -349,7 +349,7 @@ function getSignatureKeyLen(cert, auth) {
           break;
     }
   } catch (e) { 
-    dump("Error getSignatureKeyLen() : " + e.message + "\n"); 
+    dump("Error getKeySize() : " + e.message + "\n"); 
   }
   return keySize;
 }
@@ -403,6 +403,13 @@ function toggleCipherSuites(prefsOld) {
         }
         break;
     }
+  }
+  // Reload, if this tab is on https
+  var browser = _window().gBrowser.selectedBrowser; 
+  if (browser.currentURI.scheme === "https") {
+    browser.reloadWithFlags(
+        Components.interfaces.
+        nsIWebNavigation.LOAD_FLAGS_BYPASS_CACHE);
   }
 }
 
