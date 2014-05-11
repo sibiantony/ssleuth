@@ -283,12 +283,9 @@ function createButton(window) {
       panelPosition, window) ); 
 
     if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
-      // For some reason, the styles here doesn't work from
-      //   the style sheet! 
       button.appendChild(create(doc, 'description', {
               'id': 'ssleuth-ub-rank', 
-              'class': 'plain ssleuth-text-body-class', 
-              'style': 'padding-left: 4px; padding-right: 2px;'})); 
+              'class': 'ssleuth-text-body-class'})); 
     }
 
   } catch (ex) {
@@ -627,12 +624,6 @@ function setPanelFont(panelFont, doc) {
                     configImg[panelFont]; 
     }
 
-    // Exception case : urlbar button text also changes with 
-    // panel body. In addition, it requires a 'plain' class. 
-    // A better way to handle this case? 
-    var ubRank = doc.getElementById("ssleuth-ub-rank"); 
-    if (ubRank) 
-      ubRank.className = "plain " + bodyFontClass + " " + configBody[panelFont];
   } catch(e) {
     dump("setPanelFont error : " + e.message + "\n"); 
   }

@@ -46,9 +46,12 @@
 
 #ssleuth-ub-rank {
     /* font-weight: bold;*/
-/*  padding-left: 4px;
-    padding-right:2px; 
-*/
+    -moz-appearance: none;
+    border: medium none;
+    margin: 0 !important;
+    padding: 0;
+    padding-left: 4px; 
+    padding-right: 2px;
 }
 #ssleuth-ub-rank[rank="default"]{
     color: #5b696c; 
