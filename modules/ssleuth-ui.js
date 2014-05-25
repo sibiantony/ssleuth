@@ -66,7 +66,7 @@ var SSleuthUI = {
     }
   },
 
-  onLocationChange: function(window) {
+  onLocationChange: function(window, urlChanged) {
     // The document elements are not available until a 
     // successful init. So we need to add the child panel
     // for the first time 

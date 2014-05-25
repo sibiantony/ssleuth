@@ -92,14 +92,11 @@ var ProgressListener = {
     } catch(e) { 
       dump("Error onLocationChange " + e.message + "\n"); 
     }
-    if (uri.spec === this.prevURL) {
-      this.urlChanged = false; 
-      return; 
-    }
-    this.urlChanged = true; 
+
+    this.urlChanged = !(uri.spec === this.prevURL); 
     this.prevURL = uri.spec; 
 
-    SSleuthUI.onLocationChange(win); 
+    SSleuthUI.onLocationChange(win, this.urlChanged); 
   },
 
   onProgressChange: function() {
