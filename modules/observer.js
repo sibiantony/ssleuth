@@ -21,6 +21,11 @@ var SSleuthHttpObserver = {
       // TODO : Observer for cached content ?
       Services.obs.addObserver({observe: SSleuthHttpObserver.response},
         'http-on-examine-response', false); 
+      Services.obs.addObserver({observe: SSleuthHttpObserver.response},
+        'http-on-examine-cached-response', false); 
+      // TODO : merged response necessary ? Never seen ff using it.
+      Services.obs.addObserver({observe: SSleuthHttpObserver.response},
+        'http-on-examine-merged-response', false); 
 
     } catch (e) {
       dump("error observer : " + e.message + "\n");
@@ -36,6 +41,10 @@ var SSleuthHttpObserver = {
   uninit: function() {
     Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
       'http-on-examine-response', false);
+    Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+      'http-on-examine-cached-response', false);
+    Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+      'http-on-examine-merged-response', false);
   },
 
   uninitWindow: function(window) {
@@ -52,7 +61,10 @@ var SSleuthHttpObserver = {
   }, 
 
   response: function(subject, topic, data) {
-    if (topic !== 'http-on-examine-response') return; 
+    if ((topic !== 'http-on-examine-response' ) && 
+        (topic !== 'http-on-examine-cached-response') 
+        (topic !== 'http-on-examine-merged-response')) 
+      return; 
     if (!(subject instanceof Components.interfaces.nsIHttpChannel)) return; 
 
     try {
