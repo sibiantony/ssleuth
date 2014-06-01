@@ -122,7 +122,6 @@ var SSleuthUI = {
         cipherSuite,
         securityState,
         cert,
-        certValid,
         domMismatch,
         ev) {
     setButtonRank(connectionRank); 
@@ -131,7 +130,7 @@ var SSleuthUI = {
     showCipherDetails(cipherSuite); 
     showPFS(cipherSuite.pfs);
     showFFState(securityState); 
-    showCertDetails(cert, certValid, domMismatch, ev);
+    showCertDetails(cert, domMismatch, ev);
   },
 
   prefListener: function(branch, name) {
@@ -507,13 +506,14 @@ function showFFState(state) {
   }
 }
 
-function showCertDetails(cert, certValid, domMismatch, ev) {
-  var validity = cert.validity.QueryInterface(Ci.nsIX509CertValidity);
+function showCertDetails(cert, domMismatch, ev) {
+  var svCert = cert.serverCert;
+  var validity = svCert.validity.QueryInterface(Ci.nsIX509CertValidity);
   var doc = _window().document; 
   const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
   const panelInfo = SSleuthUI.prefs.PREFS["panel.info"]; 
 
-  doc.getElementById("ssleuth-text-cert-common-name").textContent = cert.commonName; 
+  doc.getElementById("ssleuth-text-cert-common-name").textContent = svCert.commonName; 
   var certRating = doc.getElementById("ssleuth-cert-status-rating"); 
   var evRating = doc.getElementById("ssleuth-cert-ev-rating"); 
   var elemEV = doc.getElementById("ssleuth-text-cert-extended-validation"); 
@@ -525,17 +525,17 @@ function showCertDetails(cert, certValid, domMismatch, ev) {
   evRating.textContent = rating + "/" + rp.evCert; 
 
   for ( var [id, text] in Iterator({
-    "ssleuth-text-cert-org": cert.organization,
-    "ssleuth-text-cert-org-unit": cert.organizationalUnit,
-    "ssleuth-text-cert-issuer-org": cert.issuerOrganization,
-    "ssleuth-text-cert-issuer-org-unit": cert.issuerOrganizationUnit})) {
+    "ssleuth-text-cert-org": svCert.organization,
+    "ssleuth-text-cert-org-unit": svCert.organizationalUnit,
+    "ssleuth-text-cert-issuer-org": svCert.issuerOrganization,
+    "ssleuth-text-cert-issuer-org-unit": svCert.issuerOrganizationUnit})) {
       var elem = doc.getElementById(id); 
       elem.textContent = text; 
       elem.hidden = (text == "");
   }
 
   var certValidity = doc.getElementById("ssleuth-text-cert-validity"); 
-  certValidity.setAttribute("valid", certValid.toString()); 
+  certValidity.setAttribute("valid", cert.isValid.toString()); 
 
   if (panelInfo.validityTime) 
     certValidity.textContent = validity.notBeforeGMT + 
@@ -546,17 +546,19 @@ function showCertDetails(cert, certValid, domMismatch, ev) {
 
   doc.getElementById("ssleuth-text-cert-domain-mismatch").hidden = !domMismatch;
 
-  var rating = (Number(certValid && !domMismatch) * rp.certStatus).toFixed(1);
+  var rating = (Number(cert.isValid && !domMismatch) * rp.certStatus).toFixed(1);
   certRating.textContent = rating + "/" + rp.certStatus; 
 
-  if (certValid && !domMismatch) {
+  if (cert.isValid && !domMismatch) {
     doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "good"); 
   } else {
     doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 
   }
 
+  doc.getElementById("ssleuth-text-cert-sigalg")
+    .textContent = cert.signatureAlg; 
   doc.getElementById("ssleuth-text-cert-fingerprint")
-    .textContent = cert.sha1Fingerprint; 
+    .textContent = svCert.sha1Fingerprint; 
 
   doc.getElementById("ssleuth-text-cert-validity-box").hidden 
     = !(panelInfo.certValidity); 

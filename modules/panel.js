@@ -263,6 +263,16 @@ function SSleuthPanel(win) {
                                 id: 'ssleuth-text-cert-issuer-org-unit', 
                                 class: 'ssleuth-text-body-class'})); 
             }
+          }  {
+            let hb = vb.appendChild(create('hbox', {
+                                      align: 'baseline'})); 
+            hb.appendChild(create('description', {
+                              id : 'ssleuth-text-cert-sigalg-text', 
+                              value: 'Signature: ', 
+                              class: 'ssleuth-text-body-class'})); 
+            hb.appendChild(create('description', {
+                              id : 'ssleuth-text-cert-sigalg', 
+                              class: 'ssleuth-text-body-class'})); 
           } {
             let hb = vb.appendChild(create('hbox', {
                                       id: 'ssleuth-text-cert-validity-box', 
@@ -334,7 +344,7 @@ function SSleuthPanel(win) {
     let csVb = create('vbox', {id : 'ssleuth-paneltab-ciphers', 
                       width: HTTPS_PANEL_WIDTH, flex: '1'}); 
     let desc = csVb.appendChild(create('description', {})); 
-    desc.textContent = 'The changes are global, and you must reload the page after changes. Read the instructions.'; 
+    desc.textContent = 'The changes are global. Read the instructions.'; 
     let grid = csVb.appendChild(create('grid', {})); {
       let cols = grid.appendChild(create('columns', {})); 
       cols.appendChild(create('column', {}));

@@ -174,7 +174,6 @@ function protocolHttps(progress, request, state, win) {
   const cs = ssleuthCipherSuites; 
   var securityState = "";
   var cipherName = sslStatus.cipherName; 
-  var cert = sslStatus.serverCert;
   var extendedValidation = false;
 
   // Security Info - Firefox states
@@ -203,7 +202,7 @@ function protocolHttps(progress, request, state, win) {
     name: cipherName, 
     rank: cs.cipherSuiteStrength.LOW, 
     pfs: 0, 
-    notes: "",
+    notes: '',
     cipherKeyLen: sslStatus.secretKeyLength,
     pubKeySize: 0, 
     keyExchange: null, 
@@ -211,7 +210,14 @@ function protocolHttps(progress, request, state, win) {
     bulkCipher: null, 
     HMAC: null 
   }; 
-          
+
+  var cert = {
+    serverCert : sslStatus.serverCert,
+    pubKeySize : 0, 
+    isValid : false, 
+    signatureAlg : ''
+  }; 
+
   function getCsParam(param) {
     for (var i=0; i<param.length; i++) {
       if ((cipherName.indexOf(param[i].name) != -1)) {
@@ -242,8 +248,10 @@ function protocolHttps(progress, request, state, win) {
   }
 
   // Certificate pubkey alg. key size 
-  cipherSuite.pubKeySize = getKeySize(cert, 
+  // TODO : remove cipherSuite.pub..
+  cert.pubKeySize = cipherSuite.pubKeySize = getKeySize(cert.serverCert, 
                   cipherSuite.authentication.ui); 
+  cert.signatureAlg = getSignatureAlg(cert.serverCert); 
 
   cipherSuite.notes = cipherSuite.keyExchange.notes +
               cipherSuite.bulkCipher.notes +
@@ -257,13 +265,13 @@ function protocolHttps(progress, request, state, win) {
             cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
 
   const ratingParams = SSleuth.prefs.PREFS["rating.params"]; 
-  var certValid = isCertValid(cert); 
+  cert.isValid = isCertValid(cert.serverCert); 
 
   // Get the connection rating. Normalize the params to 10
   var rating = getConnectionRating(cipherSuite.rank, 
           cipherSuite.pfs * 10, 
           ((securityState == "Secure") ? 1 : 0) * 10,
-          Number(!sslStatus.isDomainMismatch && certValid) * 10,
+          Number(!sslStatus.isDomainMismatch && cert.isValid) * 10,
           Number(extendedValidation) * 10, 
           ratingParams);
 
@@ -275,7 +283,6 @@ function protocolHttps(progress, request, state, win) {
         cipherSuite,
         securityState,
         cert,
-        certValid,
         sslStatus.isDomainMismatch,
         extendedValidation); 
 }
@@ -349,6 +356,18 @@ function getKeySize(cert, auth) {
     dump("Error getKeySize() : " + e.message + "\n"); 
   }
   return keySize;
+}
+
+function getSignatureAlg(cert) {
+  try {
+    var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
+              .createInstance(Components.interfaces.nsIASN1Tree); 
+    certASN1.loadASN1Structure(cert.ASN1Structure);
+    return certASN1.getDisplayData(4).replace(/PKCS #1/g, ''); 
+
+  } catch (e) { 
+    dump("Error getSignatureAlg() : " + e.message + "\n"); 
+  }
 }
 
 function toggleCipherSuites(prefsOld) {
