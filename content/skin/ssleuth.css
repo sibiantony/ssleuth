@@ -93,6 +93,25 @@
     background: -moz-linear-gradient(120deg,  #d1e3c4, rgba(255,255,255,0));
 }
 
+#urlbar[_ssleuthrank="default"] {
+}
+#urlbar[_ssleuthrank="low"] {
+	background: -moz-linear-gradient(92deg,  #cbb1b1, rgba(255,255,255,0)) !important; 
+    color: #5e0a0a !important; 
+}
+#urlbar[_ssleuthrank="medium"] {
+	background: -moz-linear-gradient(92deg,  #f8eac8, rgba(255,255,255,0)) !important; 
+    color: #e88119 !important;
+}
+#urlbar[_ssleuthrank="high"] {
+	background: -moz-linear-gradient(92deg,  #ced7e6, rgba(255,255,255,0)) !important; 
+    color: #3f629e !important; 
+}
+#urlbar[_ssleuthrank="vhigh"] {
+	background: -moz-linear-gradient(92deg,  #d1e3c4, rgba(255,255,255,0)) !important; 
+    color: #4f941c !important; 
+}
+
 #ssleuth-box-urlbar:hover {
     background: transparent;
 }

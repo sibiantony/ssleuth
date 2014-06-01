@@ -414,6 +414,10 @@ function setButtonRank(connectionRank) {
     }
     _ssleuthButton(_window()).setAttribute("rank", buttonRank); 
   }
+
+  // URL bar background gradient
+  doc.getElementById("urlbar").setAttribute("_ssleuthrank", buttonRank); 
+  // doc.getElementById("urlbar").style.backgroundColor = '#ced7e6';
 }
 
 function showCipherDetails(cipherSuite) {
