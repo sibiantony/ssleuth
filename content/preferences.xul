@@ -126,6 +126,12 @@
 												id="ssleuth-pref-show-panel-info-reset"/>
 							</hbox>
 					</groupbox>
+					<groupbox>
+						<caption label="URL bar"/>
+            <checkbox id="ssleuth-pref-show-urlbar-gradient"
+                label="Colorize url bar"/>
+					</groupbox>
+
 					</vbox>
 				</scrollbox>
 

@@ -25,6 +25,7 @@
   const PREF_CS_RATING = "extensions.ssleuth.rating.ciphersuite.params"; 
   const PREF_SUITES_TGL = "extensions.ssleuth.suites.toggle"; 
   const PREF_PANEL_INFO = "extensions.ssleuth.panel.info"; 
+  const PREF_URL_COLORIZE = "extensions.ssleuth.ui.urlbar.colorize";
 
   var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
   var csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
@@ -70,6 +71,9 @@
         })) {
           document.getElementById(id).checked = val; 
       }
+
+      document.getElementById("ssleuth-pref-show-urlbar-gradient").checked
+        = prefs.getBoolPref(PREF_URL_COLORIZE);
     },
 
     initRatings: function() {
@@ -161,26 +165,27 @@
       }
       for (var [id, func] in Iterator({
         "ssleuth-pref-notifier-location"  : prefUI.notifLocChange, 
-        "ssleuth-pref-panel-fontsize"    : prefUI.panelFontChange, 
+        "ssleuth-pref-panel-fontsize"     : prefUI.panelFontChange, 
         "ssleuth-pref-cx-ratings-apply"   : prefUI.cxRatingApply,
         "ssleuth-pref-cx-ratings-reset"   : prefUI.cxRatingReset, 
         "ssleuth-pref-cs-ratings-apply"   : prefUI.csRatingApply,
         "ssleuth-pref-cs-ratings-reset"   : prefUI.csRatingReset,
         "ssleuth-pref-mng-cs-entry-new"   : prefUI.csMngEntryNew,
         "ssleuth-pref-mng-cs-entry-edit"  : prefUI.csMngEntryEdit,
-        "ssleuth-pref-mng-cs-entry-remove"   : prefUI.csMngEntryRemove,
-        "ssleuth-pref-mng-cs-edit-apply"   : prefUI.csMngEntryEditApply,
+        "ssleuth-pref-mng-cs-entry-remove"  : prefUI.csMngEntryRemove,
+        "ssleuth-pref-mng-cs-edit-apply"    : prefUI.csMngEntryEditApply,
         "ssleuth-pref-mng-cs-edit-cancel"   : prefUI.csMngEntryEditCancel,
         "ssleuth-pref-mng-cs-entry-restore-default" : prefUI.csMngEntryRestoreDefault,
-        "ssleuth-pref-cs-reset-all-cs"    : prefUI.csResetAll,
-        "ssleuth-pref-show-cs-hmac"      : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-cs-bulk-cipher"     : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-cs-key-exchange"    : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-cs-cert-sig"      : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-cert-validity"    : prefUI.panelInfoCheck, 
+        "ssleuth-pref-cs-reset-all-cs"      : prefUI.csResetAll,
+        "ssleuth-pref-show-cs-hmac"         : prefUI.panelInfoCheck, 
+        "ssleuth-pref-show-cs-bulk-cipher"  : prefUI.panelInfoCheck, 
+        "ssleuth-pref-show-cs-key-exchange" : prefUI.panelInfoCheck, 
+        "ssleuth-pref-show-cs-cert-sig"     : prefUI.panelInfoCheck, 
+        "ssleuth-pref-show-cert-validity"   : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-cert-validity-time"  : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-cert-fingerprint"  : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-panel-info-reset"  : prefUI.panelInfoReset, 
+        "ssleuth-pref-show-cert-fingerprint"    : prefUI.panelInfoCheck, 
+        "ssleuth-pref-show-panel-info-reset"    : prefUI.panelInfoReset, 
+        "ssleuth-pref-show-urlbar-gradient"     : prefUI.colorizeChange,
       }) ) {
         document.getElementById(id)
           .addEventListener("command", func, false); 
@@ -198,6 +203,10 @@
     panelFontChange: function() {
       prefs.setIntPref(PREF_PANEL_FONT,
         document.getElementById("ssleuth-pref-panel-fontsize").value);
+    },
+    colorizeChange: function() {
+      prefs.setBoolPref(PREF_URL_COLORIZE,
+        document.getElementById("ssleuth-pref-show-urlbar-gradient").checked);
     },
 
     panelInfoCheck: function() {

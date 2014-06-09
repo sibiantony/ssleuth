@@ -26,6 +26,7 @@ var ssleuthDefaultPrefs = {
     "notifier.location"   : 0,
     "panel.fontsize"      : 1, 
     "ui.keyshortcut"      : "control shift }",
+    "ui.urlbar.colorize"  : false, 
     "rating.params"       : ssleuthConnectionRating,
     "rating.ciphersuite.params"  : ssleuthCipherSuites.weighting,
     "suites.toggle"       : ffToggleDefault,

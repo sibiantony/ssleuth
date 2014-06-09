@@ -416,8 +416,8 @@ function setButtonRank(connectionRank) {
   }
 
   // URL bar background gradient
-  doc.getElementById("urlbar").setAttribute("_ssleuthrank", buttonRank); 
-  // doc.getElementById("urlbar").style.backgroundColor = '#ced7e6';
+  doc.getElementById("urlbar").setAttribute("_ssleuthrank", 
+    (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? buttonRank : 'default')); 
 }
 
 function showCipherDetails(cipherSuite) {
@@ -965,6 +965,9 @@ function preferencesChanged(branch, name) {
     case "suites.toggle" : 
       // Prefs set from main
       loadCiphers(); 
+      break;
+    case "ui.urlbar.colorize":
+      SSleuthUI.prefs.PREFS[name] = branch.getBoolPref(name);
       break;
   }
 }
