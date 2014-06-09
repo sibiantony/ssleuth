@@ -443,13 +443,10 @@ function showCipherDetails(cipherSuite) {
     (rating + "/" + rp.cipherSuite); 
 
   doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent = 
-    (cipherSuite.keyExchange.ui); 
+    (cipherSuite.keyExchange.ui + '.'); 
   doc.getElementById("ssleuth-text-cipher-suite-auth").textContent = 
-    (cipherSuite.authentication.ui + ". "); 
+    (cipherSuite.authentication.ui + '. '); 
 
-  // Need to localize 'bits'. XUL - may not need ids. 
-  doc.getElementById("ssleuth-text-cipher-suite-auth-key").textContent =
-    (cipherSuite.pubKeySize + " bits."); 
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent = 
     (cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen 
       + " bits.");
@@ -482,13 +479,8 @@ function showPFS(pfs) {
   var rating = Number(pfs * rp.pfs).toFixed(1);
   pfsRating.textContent = rating + "/" + rp.pfs; 
 
-  if (pfs) {
-    pfsImg.setAttribute("status", "yes"); 
-    pfsTxt.textContent = "Perfect Forward Secrecy : Yes";
-  } else {
-    pfsImg.setAttribute("status", "no"); 
-    pfsTxt.textContent = "Perfect Forward Secrecy : No";
-  }
+  pfsTxt.textContent = pfs ? 'Yes': 'No';
+  pfsImg.setAttribute('status', pfsTxt.textContent.toLowerCase());
 }
 
 function showFFState(state) {
@@ -558,6 +550,12 @@ function showCertDetails(cert, domMismatch, ev) {
   } else {
     doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad"); 
   }
+
+  // Need to localize 'bits'. XUL - may not need ids. 
+  doc.getElementById("ssleuth-text-cert-pub-key")
+    .textContent = (cert.pubKeySize + " bits."); 
+  doc.getElementById("ssleuth-text-cert-pub-key")
+    .setAttribute("secure", cert.pubKeyMinSecure.toString()); 
 
   doc.getElementById("ssleuth-text-cert-sigalg")
     .textContent = cert.signatureAlg; 

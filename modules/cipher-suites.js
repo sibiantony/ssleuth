@@ -33,11 +33,11 @@ const ssleuthCipherSuites = {
     // Do not modify ui values. Used in extracting key length from certificate.
     { name: "_RSA_",    rank: 10,   minSecureKeyLength: 2048, 
       ui: "RSA",     notes: "" },
-    { name: "_ECDSA_",  rank: 10,   minSecureKeyLength: 263, 
+    { name: "_ECDSA_",  rank: 10,   minSecureKeyLength: 256, 
       ui: "ECDSA",   notes: "" },
     { name: "_DSS_",    rank: 10,   minSecureKeyLength: 2048, 
       ui: "DSA",     notes: "" }, 
-    { name: "",         rank: 0,    minSecureKeyLength: 2048, 
+    { name: "",         rank: 0,    minSecureKeyLength: 0, 
       ui: "Unknown", notes: "" }, 
   ],
 
@@ -64,6 +64,7 @@ const ssleuthCipherSuites = {
       ui: "Unknown",  notes: "Unknown bulk cipher"}, 
   ],
 
+  // Again, ui fields are used in identifying TLS hash. Don't modify.
   HMAC : [
     { name: "SHA512",   rank: 10,  ui: "SHA-512",  notes: ""},
     { name: "SHA384",   rank: 10,  ui: "SHA-384",  notes: ""},

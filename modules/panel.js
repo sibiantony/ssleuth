@@ -91,13 +91,6 @@ function SSleuthPanel(win) {
                           id: 'ssleuth-text-cipher-suite-auth',
                           class: 'ssleuth-text-body-class'})); 
             hb.appendChild(create('description', {
-                          id: 'ssleuth-text-cipher-suite-auth-key-text',
-                          value: 'Server key: ',
-                          class: 'ssleuth-text-body-class' })); 
-            hb.appendChild(create('description', {
-                          id: 'ssleuth-text-cipher-suite-auth-key',
-                          class: 'ssleuth-text-body-class'})); 
-            hb.appendChild(create('description', {
                           id: 'ssleuth-text-cipher-suite-auth-notes',
                           class: 'ssleuth-text-body-class'})); 
           } {
@@ -138,6 +131,9 @@ function SSleuthPanel(win) {
         } {
           let chb = hb.appendChild(create('hbox', {
                         align: 'baseline', flex: '2'}));
+          chb.appendChild(create('description', {
+                            value: 'Perfect Forward Secrecy: ', 
+                            class: 'ssleuth-text-title-class'})); 
           chb.appendChild(create('description', {
                             id : 'ssleuth-text-p-f-secrecy', 
                             class: 'ssleuth-text-title-class'})); 
@@ -205,7 +201,11 @@ function SSleuthPanel(win) {
                                   id: 'ssleuth-cert-status-rating', 
                                   class: 'ssleuth-text-body-rating'})); 
             }
-          } {
+          } vb.appendChild(create('description', { 
+                            id: 'ssleuth-text-cert-domain-mismatch',
+                            value: 'Certificate domain name does not match.',
+                            class: 'ssleuth-text-body-class'}));
+            {
             let hb = vb.appendChild(create('hbox', {align: 'baseline'})); 
             hb.appendChild(create('description', {id : 'ssleuth-text-cert-ev', 
                                     value: 'Extended validation: ', 
@@ -220,11 +220,24 @@ function SSleuthPanel(win) {
                                     id: 'ssleuth-cert-ev-rating',
                                     class: 'ssleuth-text-body-rating'})); 
             }
-          }
-          vb.appendChild(create('description', { 
-                            id: 'ssleuth-text-cert-domain-mismatch',
-                            value: 'Certificate domain name does not match.',
-                            class: 'ssleuth-text-body-class'})); {
+          } {
+            let hb = vb.appendChild(create('hbox', {
+                                      align: 'baseline'})); 
+            hb.appendChild(create('description', {
+                              id : 'ssleuth-text-cert-sigalg-text', 
+                              value: 'Signature: ', 
+                              class: 'ssleuth-text-body-class'})); 
+            hb.appendChild(create('description', {
+                              id : 'ssleuth-text-cert-sigalg', 
+                              class: 'ssleuth-text-body-class'})); 
+            hb.appendChild(create('description', {
+                          id: 'ssleuth-text-cert-pub-key-text',
+                          value: 'Key: ',
+                          class: 'ssleuth-text-body-class' })); 
+            hb.appendChild(create('description', {
+                          id: 'ssleuth-text-cert-pub-key',
+                          class: 'ssleuth-text-body-class'})); 
+          } {
             let hb = vb.appendChild(create('hbox', {align: 'baseline'})); 
             hb.appendChild(create('description', {
                               id : 'ssleuth-text-cert-cn-label', 
@@ -263,16 +276,6 @@ function SSleuthPanel(win) {
                                 id: 'ssleuth-text-cert-issuer-org-unit', 
                                 class: 'ssleuth-text-body-class'})); 
             }
-          }  {
-            let hb = vb.appendChild(create('hbox', {
-                                      align: 'baseline'})); 
-            hb.appendChild(create('description', {
-                              id : 'ssleuth-text-cert-sigalg-text', 
-                              value: 'Signature: ', 
-                              class: 'ssleuth-text-body-class'})); 
-            hb.appendChild(create('description', {
-                              id : 'ssleuth-text-cert-sigalg', 
-                              class: 'ssleuth-text-body-class'})); 
           } {
             let hb = vb.appendChild(create('hbox', {
                                       id: 'ssleuth-text-cert-validity-box', 

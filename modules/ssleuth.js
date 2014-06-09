@@ -204,7 +204,6 @@ function protocolHttps(progress, request, state, win) {
     pfs: 0, 
     notes: '',
     cipherKeyLen: sslStatus.secretKeyLength,
-    pubKeySize: 0, 
     keyExchange: null, 
     authentication: null, 
     bulkCipher: null, 
@@ -214,6 +213,7 @@ function protocolHttps(progress, request, state, win) {
   var cert = {
     serverCert : sslStatus.serverCert,
     pubKeySize : 0, 
+    pubKeyMinSecure: false, 
     isValid : false, 
     signatureAlg : ''
   }; 
@@ -248,9 +248,10 @@ function protocolHttps(progress, request, state, win) {
   }
 
   // Certificate pubkey alg. key size 
-  // TODO : remove cipherSuite.pub..
-  cert.pubKeySize = cipherSuite.pubKeySize = getKeySize(cert.serverCert, 
+  cert.pubKeySize = getKeySize(cert.serverCert, 
                   cipherSuite.authentication.ui); 
+  cert.pubKeyMinSecure = 
+      (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
   cert.signatureAlg = getSignatureAlg(cert.serverCert); 
 
   cipherSuite.notes = cipherSuite.keyExchange.notes +
@@ -363,7 +364,24 @@ function getSignatureAlg(cert) {
     var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
               .createInstance(Components.interfaces.nsIASN1Tree); 
     certASN1.loadASN1Structure(cert.ASN1Structure);
-    return certASN1.getDisplayData(4).replace(/PKCS #1/g, ''); 
+    var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, ''); 
+    var alg = ""; 
+
+    const cs = ssleuthCipherSuites;
+    for (var i=0; i<cs.HMAC.length; i++) {
+      if ((sigText.indexOf(cs.HMAC[i].ui) != -1)) {
+        alg += cs.HMAC[i].ui + "+"; 
+        break;
+      }
+    }
+    for (var i=0; i<cs.authentication.length; i++) {
+      if ((sigText.indexOf(cs.authentication[i].ui) != -1)) {
+        alg += cs.authentication[i].ui;
+        break;
+      }
+    }
+
+    return alg; 
 
   } catch (e) { 
     dump("Error getSignatureAlg() : " + e.message + "\n"); 
