@@ -213,6 +213,7 @@ function protocolHttps(progress, request, state, win) {
   var cert = {
     serverCert : sslStatus.serverCert,
     pubKeySize : 0, 
+    pubKeyAlg  : '', 
     pubKeyMinSecure: false, 
     isValid : false, 
     signatureAlg : null
@@ -247,9 +248,9 @@ function protocolHttps(progress, request, state, win) {
     } 
   }
 
-  // Certificate pubkey alg. key size 
-  cert.pubKeySize = getKeySize(cert.serverCert, 
-                      cipherSuite.authentication.ui); 
+  // Certificate pubkey algorithim, key size
+  cert.pubKeyAlg = cipherSuite.authentication.ui; 
+  cert.pubKeySize = getKeySize(cert.serverCert, cert.pubKeyAlg); 
   cert.pubKeyMinSecure = 
       (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
   cert.signatureAlg = getSignatureAlg(cert.serverCert); 

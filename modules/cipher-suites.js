@@ -69,7 +69,7 @@ const ssleuthCipherSuites = {
     { name: "SHA512",   rank: 10,  ui: "SHA-512",  notes: ""},
     { name: "SHA384",   rank: 10,  ui: "SHA-384",  notes: ""},
     { name: "SHA256",   rank: 10,  ui: "SHA-256",  notes: ""},
-    { name: "SHA",      rank:  6,  ui: "SHA-1",    notes: "Reportedly weak. "},
+    { name: "SHA",      rank:  4,  ui: "SHA-1",    notes: "Reportedly weak. "},
     { name: "MD5",      rank:  2,  ui: "MD5",      notes: "Broken. "},
     { name: "",         rank:  0,  ui: "Unknown",  notes: "Unknown MAC algorithm."},
   ],
@@ -82,10 +82,10 @@ const ssleuthCipherSuites = {
   },
 
   weighting : {
-    keyExchange : 2,
-    bulkCipher  : 6,
-    hmac    : 2,
-    total     : 10
+    keyExchange : 3,
+    bulkCipher  : 3,
+    hmac        : 4,
+    total       : 10
   }
 }; 
 

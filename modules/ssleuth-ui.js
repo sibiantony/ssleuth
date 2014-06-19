@@ -553,7 +553,7 @@ function showCertDetails(cert, domMismatch, ev) {
 
   // Need to localize 'bits'. XUL - may not need ids. 
   doc.getElementById("ssleuth-text-cert-pub-key")
-    .textContent = (cert.pubKeySize + " bits."); 
+    .textContent = (cert.pubKeySize + " bits " + cert.pubKeyAlg); 
   doc.getElementById("ssleuth-text-cert-pub-key")
     .setAttribute("secure", cert.pubKeyMinSecure.toString()); 
 
