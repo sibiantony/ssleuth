@@ -215,7 +215,7 @@ function protocolHttps(progress, request, state, win) {
     pubKeySize : 0, 
     pubKeyMinSecure: false, 
     isValid : false, 
-    signatureAlg : ''
+    signatureAlg : null
   }; 
 
   function getCsParam(param) {
@@ -249,14 +249,16 @@ function protocolHttps(progress, request, state, win) {
 
   // Certificate pubkey alg. key size 
   cert.pubKeySize = getKeySize(cert.serverCert, 
-                  cipherSuite.authentication.ui); 
+                      cipherSuite.authentication.ui); 
   cert.pubKeyMinSecure = 
       (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
   cert.signatureAlg = getSignatureAlg(cert.serverCert); 
+  // Weak keys are rated down.
+  !cert.pubKeyMinSecure && (cert.signatureAlg.rating = 0); 
 
   cipherSuite.notes = cipherSuite.keyExchange.notes +
-              cipherSuite.bulkCipher.notes +
-              cipherSuite.HMAC.notes; 
+                        cipherSuite.bulkCipher.notes +
+                        cipherSuite.HMAC.notes; 
 
   const csWeighting = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
   // Calculate ciphersuite rank  - All the cipher suite params ratings
@@ -270,14 +272,14 @@ function protocolHttps(progress, request, state, win) {
 
   // Get the connection rating. Normalize the params to 10
   var rating = getConnectionRating(cipherSuite.rank, 
-          cipherSuite.pfs * 10, 
-          ((securityState == "Secure") ? 1 : 0) * 10,
-          Number(!sslStatus.isDomainMismatch && cert.isValid) * 10,
-          Number(extendedValidation) * 10, 
-          ratingParams);
+                  cipherSuite.pfs * 10, 
+                  ((securityState == "Secure") ? 1 : 0) * 10,
+                  Number(!sslStatus.isDomainMismatch && cert.isValid) * 10,
+                  Number(extendedValidation) * 10, 
+                  cert.signatureAlg.rating, 
+                  ratingParams);
 
   var connectionRank = Number(rating).toFixed(1); 
-  // dump("Connection rank : " + connectionRank + "\n"); 
 
   // Invoke the UI to do its job
   SSleuthUI.fillPanel(connectionRank, 
@@ -292,10 +294,11 @@ function getConnectionRating(csRating, pfs,
                               ffStatus,
                               certStatus,
                               evCert,
+                              signature, 
                               rp) {
   return ((csRating * rp.cipherSuite + pfs * rp.pfs +
-        ffStatus * rp.ffStatus + certStatus * rp.certStatus +
-        evCert * rp.evCert )/rp.total); 
+            ffStatus * rp.ffStatus + certStatus * rp.certStatus +
+            evCert * rp.evCert + signature * rp.signature)/rp.total); 
 }
 
 function isCertValid(cert) {
@@ -365,23 +368,27 @@ function getSignatureAlg(cert) {
               .createInstance(Components.interfaces.nsIASN1Tree); 
     certASN1.loadASN1Structure(cert.ASN1Structure);
     var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, ''); 
-    var alg = ""; 
+    var signature = { hmac : "", enc : "", rating : 0};  
 
     const cs = ssleuthCipherSuites;
     for (var i=0; i<cs.HMAC.length; i++) {
       if ((sigText.indexOf(cs.HMAC[i].ui) != -1)) {
-        alg += cs.HMAC[i].ui + "+"; 
+        signature.hmac += cs.HMAC[i].ui;
+        signature.rating += cs.HMAC[i].rank; 
         break;
       }
     }
     for (var i=0; i<cs.authentication.length; i++) {
       if ((sigText.indexOf(cs.authentication[i].ui) != -1)) {
-        alg += cs.authentication[i].ui;
+        signature.enc += cs.authentication[i].ui;
+        signature.rating += cs.authentication[i].rank;
+        signature.rating /= 2; 
         break;
       }
     }
+    dump ("Signature rating " + signature.rating + "\n"); 
 
-    return alg; 
+    return signature; 
 
   } catch (e) { 
     dump("Error getSignatureAlg() : " + e.message + "\n"); 

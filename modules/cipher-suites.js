@@ -90,11 +90,12 @@ const ssleuthCipherSuites = {
 }; 
 
 const ssleuthConnectionRating = {
-  cipherSuite : 5,
+  cipherSuite : 4,
   pfs         : 2,
   ffStatus    : 1, 
   certStatus  : 1,
   evCert      : 1,
+  signature   : 1, 
   total       : 10
 };
 
@@ -103,9 +104,9 @@ const ssleuthConnectionRating = {
  * - 4 states mainly for being nice to other addons doing toggle
  * and to respect user's own preferences.
  *    1. default - nothing is done in this case.
- *     2. reset->default   - clear any existing preferences to their default values
- *     3. enable  - enable the cipher suites in the list
- *     4. disable - disable the cipher suites in the list
+ *    2. reset->default   - clear any existing preferences to their default values
+ *    3. enable  - enable the cipher suites in the list
+ *    4. disable - disable the cipher suites in the list
  *
  * By default nothing will be done, unless the user initiates
  *    an enable, disable or reset through UI/config window.
