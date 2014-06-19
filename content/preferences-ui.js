@@ -7,7 +7,8 @@
     "ssleuth-pref-pfs-weight",
     "ssleuth-pref-ev-weight",
     "ssleuth-pref-ffstatus-weight",
-    "ssleuth-pref-certstate-weight"
+    "ssleuth-pref-certstate-weight",
+    "ssleuth-pref-signature-weight"
   ];
   var csRatingIds = [
     "ssleuth-pref-cs-kx-weight",
@@ -64,7 +65,7 @@
         "ssleuth-pref-show-cs-hmac"          : panelInfo.HMAC,
         "ssleuth-pref-show-cs-bulk-cipher"   : panelInfo.bulkCipher,
         "ssleuth-pref-show-cs-key-exchange"  : panelInfo.keyExchange,
-        "ssleuth-pref-show-cs-cert-sig"      : panelInfo.authAlg, 
+        "ssleuth-pref-show-cs-authentication"      : panelInfo.authAlg, 
         "ssleuth-pref-show-cert-validity"    : panelInfo.certValidity, 
         "ssleuth-pref-show-cert-validity-time"  : panelInfo.validityTime, 
         "ssleuth-pref-show-cert-fingerprint"    : panelInfo.certFingerprint, 
@@ -85,6 +86,7 @@
         "ssleuth-pref-ev-weight"            : cxRating.evCert,
         "ssleuth-pref-ffstatus-weight"      : cxRating.ffStatus,
         "ssleuth-pref-certstate-weight"     : cxRating.certStatus,
+        "ssleuth-pref-signature-weight"     : cxRating.signature,
         "ssleuth-pref-cs-kx-weight"         : csRating.keyExchange,
         "ssleuth-pref-cs-cipher-weight"     : csRating.bulkCipher,
         "ssleuth-pref-cs-hmac-weight"       : csRating.hmac
@@ -180,7 +182,7 @@
         "ssleuth-pref-show-cs-hmac"         : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-cs-bulk-cipher"  : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-cs-key-exchange" : prefUI.panelInfoCheck, 
-        "ssleuth-pref-show-cs-cert-sig"     : prefUI.panelInfoCheck, 
+        "ssleuth-pref-show-cs-authentication"     : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-cert-validity"   : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-cert-validity-time"  : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-cert-fingerprint"    : prefUI.panelInfoCheck, 
@@ -217,7 +219,7 @@
       panelInfo.keyExchange = 
         document.getElementById("ssleuth-pref-show-cs-key-exchange").checked;
       panelInfo.authAlg = 
-        document.getElementById("ssleuth-pref-show-cs-cert-sig").checked;
+        document.getElementById("ssleuth-pref-show-cs-authentication").checked;
       panelInfo.certValidity = 
         document.getElementById("ssleuth-pref-show-cert-validity").checked;
       panelInfo.validityTime = 
@@ -492,11 +494,14 @@
         Number(document.getElementById("ssleuth-pref-ffstatus-weight").value);
       cxRating.certStatus = 
         Number(document.getElementById("ssleuth-pref-certstate-weight").value);
+      cxRating.signature = 
+        Number(document.getElementById("ssleuth-pref-signature-weight").value);
       cxRating.total = cxRating.cipherSuite +
                 cxRating.pfs +
                 cxRating.evCert +
                 cxRating.ffStatus +
-                cxRating.certStatus; 
+                cxRating.certStatus +
+                cxRating.signature; 
       prefs.setCharPref(PREF_CX_RATING, 
         JSON.stringify(cxRating)); 
     },

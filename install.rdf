@@ -7,7 +7,7 @@
 		<homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
 		<id>ssleuth@github</id>
 		<name>SSleuth</name>
-		<version>0.2.5</version>
+		<version>0.3.1</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
 
 		<bootstrap>true</bootstrap>
