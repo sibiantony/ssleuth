@@ -93,6 +93,11 @@
     background: -moz-linear-gradient(120deg,  #d1e3c4, rgba(255,255,255,0));
 }
 
+#ssleuth-box-urlbar[rank="blank"], 
+#ssleuth-box-urlbar:hover {
+    background: transparent;
+}
+
 #urlbar[_ssleuthrank="default"] {
 }
 #urlbar[_ssleuthrank="low"] {
@@ -110,10 +115,6 @@
 #urlbar[_ssleuthrank="vhigh"] {
 	background: -moz-linear-gradient(-88deg, rgba(255,255,255,1) 38%,  #d1e3c4) !important; 
     color: #4f941c !important; 
-}
-
-#ssleuth-box-urlbar:hover {
-    background: transparent;
 }
 
 
@@ -231,7 +232,7 @@
 	width: 0.95em;
 }
 .ssleuth-img-state-medium {
-	margin-top: 0.10em; 
+	margin-top: 0.15em; 
 	width: 1.0em;
 }
 .ssleuth-img-state-large {

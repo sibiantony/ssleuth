@@ -413,6 +413,7 @@ function setButtonRank(connectionRank) {
       ssleuthUbRank.textContent = ""; 
     }
     _ssleuthButton(_window()).setAttribute("rank", buttonRank); 
+      // TODO : (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? 'blank' : buttonRank)); 
   }
 
   // URL bar background gradient

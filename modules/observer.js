@@ -62,7 +62,7 @@ var SSleuthHttpObserver = {
 
   response: function(subject, topic, data) {
     if ((topic !== 'http-on-examine-response' ) && 
-        (topic !== 'http-on-examine-cached-response') 
+        (topic !== 'http-on-examine-cached-response') &&
         (topic !== 'http-on-examine-merged-response')) 
       return; 
     if (!(subject instanceof Components.interfaces.nsIHttpChannel)) return; 
@@ -109,7 +109,6 @@ var SSleuthHttpObserver = {
 function tabClosed(e) {
   try {
     var browser = _window().gBrowser.getBrowserForTab(e.target);
-    dump("Tab closed. \n");
     if (browser._ssleuthTabId) {
       dump("ssleuth tab id : " + browser._ssleuthTabId);
       SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
