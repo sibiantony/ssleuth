@@ -77,7 +77,7 @@ var SSleuthUI = {
       // reload the data.
       if (window.document.getElementById('ssleuth-paneltab-domains')
                       .getAttribute('_selected') === 'true') {
-        loadDomains(); 
+        loadDomainsTab(); 
       }
     }
 
@@ -348,8 +348,8 @@ function showPanel(panel, show) {
 
 function panelVisible() {
   // Special case : Firefox does not select menuitems unless the 
-  //    panel is visible. Or loadTabs -> loadCiphers() ?
-  loadCiphers();
+  //    panel is visible. Or loadTabs -> loadCiphersTab() ?
+  loadCiphersTab();
 }
 
 function togglePanel(panel) {
@@ -778,14 +778,14 @@ function forEachOpenWindow(todo) {
 
 function initDomainsPanel(doc) {
   var domainsTab = doc.getElementById('ssleuth-paneltab-domains');
-  domainsTab.addEventListener('click', loadDomains, false);
+  domainsTab.addEventListener('click', loadDomainsTab, false);
 }
 
 function initCiphersPanel(doc) {
-  loadCiphers(); 
+  loadCiphersTab(); 
 }
 
-function loadDomains() {
+function loadDomainsTab() {
   if (!SSleuthUI.prefs.PREFS['domains.watch']) 
     return; 
   try {
@@ -816,33 +816,38 @@ function loadDomains() {
         let str = domain.substring(domain.indexOf(':')+1);
         hb.appendChild(create(doc, 'description', {value : str, 
                                   style: 'font-weight: bold;'})); 
-        str = " " + stats['count'] + "x";
-        hb.appendChild(create(doc, 'description', {value : str}));
+        str = ' ' + stats['count'] + 'x   ';
 
-        str = " "; 
         for (var [ctype, count] in Iterator(stats['ctype'])) {
           switch (ctype) {
-            case "text"   : str += "txt: " ; break;
-            case "image"  : str += "img: "; break;
-            case "application" : str += "app: "; break;
-            case "audio"  : str += "aud: "; break;
-            case "video"  : str += "vid: "; break;
+            case 'text'   : str += 'txt: ' ; break;
+            case 'image'  : str += 'img: '; break;
+            case 'application' : str += 'app: '; break;
+            case 'audio'  : str += 'aud: '; break;
+            case 'video'  : str += 'vid: '; break;
           }
-          str += count + ", "; 
+          str += count + ', '; 
         }
         hb.appendChild(create(doc, 'description', {value : str})); 
           
       } 
 
+      let str = ''; 
       // Cipher suite hbox
       hb = vb.appendChild(create(doc, 'hbox', {})); {
         if (domain.indexOf('https:') != -1) {
-          let str = stats['csRating'].toFixed(1) + " "; 
+          str = stats['csRating'].toFixed(1) + '   ' + stats['cipherName']; 
           hb.appendChild(create(doc, 'description', {value : str}));
-          hb.appendChild(create(doc, 'description', {
-                          value : stats['cipherName'] }));
+        
+          let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
+            str = 'cert : ' + stats['signature'].hmac + '/' 
+                    + stats['signature'].enc + '.  '; 
+            str += 'key : ' + stats['pubKeySize'] + ' bit ' + 
+                    stats['pubKeyAlg']; 
+            hbCert.appendChild(create(doc, 'description', {value : str})); 
+          }
         } else {
-          let str = "Insecure channel!";
+          str = "Insecure channel!";
           // TODO : To stylesheet
           hb.appendChild(create(doc, 'description', {value: str, 
                                           style: 'color: #5e0a0a;'})); 
@@ -867,7 +872,7 @@ function loadDomains() {
     ri.setAttribute('rank', cipherRating); 
   }
 
-  } catch(e) { dump("Error -- loadDomains -- " + e.message + "\n"); }
+  } catch(e) { dump("Error -- loadDomainsTab -- " + e.message + "\n"); }
 }
 
 function resetDomains(doc) {
@@ -879,7 +884,7 @@ function resetDomains(doc) {
 
 }
 
-function loadCiphers() {
+function loadCiphersTab() {
   try {
     var doc = _window().document; 
     var rows = doc.getElementById("ssleuth-paneltab-ciphers-rows"); 
@@ -925,7 +930,7 @@ function loadCiphers() {
 
 
   } catch (e) {
-    dump("Error -- loadCiphers -- " + e.message + "\n"); 
+    dump("Error -- loadCiphersTab -- " + e.message + "\n"); 
   }
 
 }
@@ -969,7 +974,7 @@ function preferencesChanged(branch, name) {
       break;
     case "suites.toggle" : 
       // Prefs set from main
-      loadCiphers(); 
+      loadCiphersTab(); 
       break;
     case "ui.urlbar.colorize":
       SSleuthUI.prefs.PREFS[name] = branch.getBoolPref(name);

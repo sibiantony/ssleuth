@@ -20,7 +20,12 @@ var SSleuth = {
     // TODO : Need to re-think about the callbacks.
     SSleuthHttpObserver.init( {
                             isCertValid: isCertValid,
-                            getCipherSuiteRating: getCipherSuiteRating});
+                            getCipherSuiteRating: getCipherSuiteRating,
+                            getAuthenticationAlg: getAuthenticationAlg,
+                            getKeySize: getKeySize,
+                            checkPFS : checkPFS, 
+                            getConnectionRating: getConnectionRating, 
+                            getSignatureAlg: getSignatureAlg});
     this.prefs = SSleuthPreferences.readInitPreferences();
     prefListener.register(false);
 
@@ -71,8 +76,7 @@ var ProgressListener = {
     var win = Services.wm.getMostRecentWindow("navigator:browser"); 
     if (!win) return; 
 
-    dump("==========================\n"); 
-    dump("onLocationChange : " + uri.spec + "\n");
+    dump("== onLocationChange : " + uri.spec + "\n");
 
     try {
       if (request) {
@@ -139,7 +143,6 @@ function protocolHttp(loc) {
 }
 
 function protocolHttps(progress, request, state, win) {
-  // dump("\nprotocolHttps \n");
   const Cc = Components.classes; 
   const Ci = Components.interfaces;
 
@@ -268,22 +271,17 @@ function protocolHttps(progress, request, state, win) {
             cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
             cipherSuite.HMAC.rank * csWeighting.hmac )/csWeighting.total;
 
-  const ratingParams = SSleuth.prefs.PREFS["rating.params"]; 
   cert.isValid = isCertValid(cert.serverCert); 
 
-  // Get the connection rating. Normalize the params to 10
-  var rating = getConnectionRating(cipherSuite.rank, 
-                  cipherSuite.pfs * 10, 
-                  ((securityState == "Secure") ? 1 : 0) * 10,
-                  Number(!sslStatus.isDomainMismatch && cert.isValid) * 10,
-                  Number(extendedValidation) * 10, 
-                  cert.signatureAlg.rating, 
-                  ratingParams);
-
-  var connectionRank = Number(rating).toFixed(1); 
+  var connectionRating = getConnectionRating(cipherSuite.rank, 
+                  cipherSuite.pfs, 
+                  securityState,
+                  (!sslStatus.isDomainMismatch && cert.isValid),
+                  extendedValidation, 
+                  cert.signatureAlg.rating);
 
   // Invoke the UI to do its job
-  SSleuthUI.fillPanel(connectionRank, 
+  SSleuthUI.fillPanel(connectionRating, 
         cipherSuite,
         securityState,
         cert,
@@ -295,17 +293,32 @@ function getConnectionRating(csRating, pfs,
                               ffStatus,
                               certStatus,
                               evCert,
-                              signature, 
-                              rp) {
-  return ((csRating * rp.cipherSuite + pfs * rp.pfs +
-            ffStatus * rp.ffStatus + certStatus * rp.certStatus +
-            evCert * rp.evCert + signature * rp.signature)/rp.total); 
+                              signature) {
+  const rp = SSleuth.prefs.PREFS["rating.params"]; 
+  // Connection rating. Normalize the params to 10
+  let rating =  (csRating * rp.cipherSuite 
+                  + pfs * 10 * rp.pfs
+                  + ((ffStatus == 'Secure') ? 1:0) * 10 * rp.ffStatus
+                  + Number(certStatus) * 10 * rp.certStatus
+                  + Number(evCert) * 10 * rp.evCert 
+                  + signature * rp.signature)/rp.total; 
+  return Number(rating).toFixed(1); 
 }
 
 function isCertValid(cert) {
   var usecs = new Date().getTime(); 
   return ((usecs > cert.validity.notBefore/1000 && 
            usecs < cert.validity.notAfter/1000) ? true: false); 
+}
+
+function checkPFS(cipherName) {
+  const csP = ssleuthCipherSuites.keyExchange; 
+  for (var i=0; i<csP.length; i++) {
+    if ((cipherName.indexOf(csP[i].name) != -1)) {
+      return Boolean(csP[i].pfs);
+    }
+  }
+  return false; 
 }
 
 function getCipherSuiteRating(cipherName) {
@@ -356,6 +369,7 @@ function getKeySize(cert, auth) {
                 .split('\n')[0]
                 .match(/\d+/g)[0]; 
           break;
+      // TODO : DSS
     }
   } catch (e) { 
     dump("Error getKeySize() : " + e.message + "\n"); 
@@ -387,13 +401,24 @@ function getSignatureAlg(cert) {
         break;
       }
     }
-    dump ("Signature rating " + signature.rating + "\n"); 
-
     return signature; 
 
   } catch (e) { 
     dump("Error getSignatureAlg() : " + e.message + "\n"); 
+
   }
+}
+
+// TODO : optimize, combine the rating, cipher suite string matching 
+//
+function getAuthenticationAlg(cipherName) {
+  const csA = ssleuthCipherSuites.authentication; 
+  for (var i=0; i<csA.length; i++) {
+    if ((cipherName.indexOf(csA[i].name) != -1)) {
+      return csA[i].ui;
+    }
+  }
+  return ''; 
 }
 
 function toggleCipherSuites(prefsOld) {

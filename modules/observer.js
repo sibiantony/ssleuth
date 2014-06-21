@@ -94,6 +94,8 @@ var SSleuthHttpObserver = {
     for (var [atr, val] in Iterator(attrs)) {
         this.responseCache[tabId][atr] = val;
     }
+    // mainly for the connection rating
+    updateHostEntries(tabId); 
   },
 
   deleteLoc: function(tabId) {
@@ -147,8 +149,8 @@ function updateResponseCache(channel) {
     var url = channel.URI.asciiSpec;
     var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
 
-    dump("url : " + url + " content : " + channel.contentType
-        + " host ID : " + hostId + "\n"); 
+    // dump("url : " + url + " content : " + channel.contentType
+      //   + " host ID : " + hostId + "\n"); 
 
     var browser = getTabForReq(channel); 
 
@@ -181,31 +183,46 @@ function updateResponseCache(channel) {
     var hostEntry = obs.responseCache[tab].reqs[hostId];
 
     if (!hostEntry) {
-      dump("index for " + hostId + " not present in reqs list\n"); 
-       
-      obs.responseCache[tab].reqs[hostId] = {
+      hostEntry = obs.responseCache[tab].reqs[hostId] = {
         count : 0, 
         ctype : {}, 
       }
-      hostEntry = obs.responseCache[tab].reqs[hostId]; 
 
       if (channel.securityInfo) {
         var sslStatus = channel.securityInfo
                           .QueryInterface(Ci.nsISSLStatusProvider)
                           .SSLStatus.QueryInterface(Ci.nsISSLStatus); 
-        if (!sslStatus) {
-          dump ("Critical : No sslstatus \n"); 
-        } else {
-          dump("Secure channel :" + sslStatus.cipherName + "\n");
+        if (sslStatus) {
+          hostEntry.cipherName = sslStatus.cipherName; 
+          hostEntry.certValid = obs.utilCb.isCertValid(sslStatus.serverCert);
+          hostEntry.domMatch = !sslStatus.isDomainMismatch;
+          hostEntry.csRating = obs.utilCb.getCipherSuiteRating(hostEntry.cipherName);
+          hostEntry.pfs = obs.utilCb.checkPFS(hostEntry.cipherName); 
+          hostEntry.pubKeyAlg = obs.utilCb.getAuthenticationAlg(hostEntry.cipherName); 
+          hostEntry.signature = obs.utilCb.getSignatureAlg(sslStatus.serverCert); 
+          hostEntry.pubKeySize = obs.utilCb.getKeySize(sslStatus.serverCert, hostEntry.pubKeyAlg ); 
+          // The evCert and ff status is not available per channel. 
+          // Wait for it to be filled in after the main channel request.
+          hostEntry.cxRating = -1; 
         }
-
-        hostEntry.cipherName = sslStatus.cipherName; 
-        hostEntry.certValid = obs.utilCb.isCertValid(sslStatus.serverCert);
-        hostEntry.domMatch = !sslStatus.isDomainMismatch;
-        hostEntry.csRating = obs.utilCb.getCipherSuiteRating(hostEntry.cipherName);
       }
-
     }
+    if ((channel.originalURI.schemeIs('https')) &&
+         ( hostEntry.cxRating == -1)) {
+      var evCert = obs.responseCache[tab]['evCert']; 
+      var ffStatus = obs.responseCache[tab]['ffStatus']; 
+
+      if (ffStatus != null)  {
+        hostEntry.cxRating = obs.utilCb.getConnectionRating (
+                              hostEntry.csRating, 
+                              hostEntry.pfs, 
+                              ffStatus, 
+                              (hostEntry.domMatch && hostEntry.certValid), 
+                              evCert, 
+                              hostEntry.signature.rating); 
+      }
+    }
+
     hostEntry.count++;
 
     // Check content type - only save the top-level type for now. 
@@ -218,6 +235,33 @@ function updateResponseCache(channel) {
   } catch(e) {
     dump("Error updateResponseCache : " + e.message + "\n");
   }
+}
+
+function updateHostEntries(tab) {
+
+  let obs = SSleuthHttpObserver; 
+  let respCache = SSleuthHttpObserver.responseCache[tab];
+  let reqs = respCache['reqs'];
+
+  for (var [domain, hostEntry] in Iterator(reqs)) {
+    if ((domain.indexOf('https:') != -1) &&
+         ( hostEntry.cxRating == -1)) {
+      var evCert = respCache['evCert']; 
+      var ffStatus = respCache['ffStatus']; 
+
+      if (ffStatus != null)  {
+        hostEntry.cxRating = obs.utilCb.getConnectionRating (
+                              hostEntry.csRating, 
+                              hostEntry.pfs, 
+                              ffStatus, 
+                              (hostEntry.domMatch && hostEntry.certValid), 
+                              evCert, 
+                              hostEntry.signature.rating); 
+        respCache['reqs'][domain].cxRating = hostEntry.cxRating; 
+      }
+    }
+  }
+
 }
 
 function getTabForReq(req) {
