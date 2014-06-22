@@ -135,6 +135,14 @@ var SSleuthUI = {
 
   prefListener: function(branch, name) {
     preferencesChanged(branch, name); 
+  }, 
+
+  domainsUpdated: function() {
+    // Reload the tab, only if user is navigating with domains
+    if (_window().document.getElementById('ssleuth-paneltab-domains')
+                    .getAttribute('_selected') === 'true') {
+      loadDomainsTab(); 
+    }
   }
 
 };
@@ -856,18 +864,18 @@ function loadDomainsTab() {
           }
         }
       }
-      var cipherRating = "default"; 
+      var cipherRating = 'low'; 
       if (domain.indexOf('https:') != -1) {
         if (stats['cxRating'] < 0) {
-          // None. Let it be default.
+          cipherRating = 'default'; 
         } else if (stats['cxRating'] < 5) {
-           cipherRating = "low";
+           cipherRating = 'low';
         } else if (stats['cxRating'] < 7) {
-          cipherRating = "medium"; 
+          cipherRating = 'medium'; 
         } else if (stats['cxRating'] < 9) {
-          cipherRating = "high"; 
+          cipherRating = 'high'; 
         } else if (stats['cxRating'] <= 10) {
-          cipherRating = "vhigh"; 
+          cipherRating = 'vhigh'; 
         }
       }
       ri.setAttribute('rank', cipherRating); 

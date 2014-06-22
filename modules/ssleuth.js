@@ -19,6 +19,7 @@ var SSleuth = {
     SSleuthPreferences.init(); 
     // TODO : Need to re-think about the callbacks.
     SSleuthHttpObserver.init( {
+                            domainsUpdated : domainsUpdated, 
                             isCertValid: isCertValid,
                             getCipherSuiteRating: getCipherSuiteRating,
                             getAuthenticationAlg: getAuthenticationAlg,
@@ -124,29 +125,32 @@ var ProgressListener = {
     if (loc.protocol === "https:" ) {
       protocolHttps(progress, request, state, win);
     } else if (loc.protocol === "http:" ) {
-      protocolHttp(loc);
+      protocolHttp(loc, win);
     } else {
-      protocolUnknown(); 
+      protocolUnknown(win); 
     }
     } catch(e) { dump("----------- ERROR : " + e.message + " ------------ \n");}
   }
 
 }; 
 
-function protocolUnknown() {
-  SSleuthUI.protocolChange("unknown", ""); 
+function protocolUnknown(win) {
+  setDomainStates('Insecure', false, win); 
+  SSleuthUI.protocolChange('unknown', ''); 
 }
 
-function protocolHttp(loc) {
-  var httpsURL = loc.toString().replace("http://", "https://"); 
-  SSleuthUI.protocolChange("http", httpsURL);
+function protocolHttp(loc, win) {
+  var httpsURL = loc.toString().replace('http://', 'https://'); 
+
+  setDomainStates('Insecure', false, win); 
+  SSleuthUI.protocolChange('http', httpsURL);
 }
 
 function protocolHttps(progress, request, state, win) {
   const Cc = Components.classes; 
   const Ci = Components.interfaces;
 
-  SSleuthUI.protocolChange("https", ""); 
+  SSleuthUI.protocolChange('https', ''); 
 
   var secUI = win.gBrowser.securityUI; 
   if (!secUI) return;
@@ -157,7 +161,7 @@ function protocolHttps(progress, request, state, win) {
     if (secUI.SSLStatus) {
       sslStatus = secUI.SSLStatus; 
     } else {
-      // dump("\nSSLStatus null \n");
+      // dump('\nSSLStatus null \n');
       // 1. A rather annoying behaviour : Firefox do not seem to populate
       //  SSLStatus if a tab switches to a page with the same URL.
       //
@@ -168,38 +172,31 @@ function protocolHttps(progress, request, state, win) {
 
       // TODO : Recheck urlChanged context for the new redesign
       if (ProgressListener.urlChanged) {
-        SSleuthUI.protocolChange("unknown", "");
+        SSleuthUI.protocolChange('unknown', '');
       }
       return; 
     }
   }
   
   const cs = ssleuthCipherSuites; 
-  var securityState = "";
+  var securityState = '';
   var cipherName = sslStatus.cipherName; 
   var extendedValidation = false;
 
   // Security Info - Firefox states
   if ((state & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
-    securityState = "Secure"; 
+    securityState = 'Secure'; 
   } else if ((state & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
-    securityState = "Insecure"; 
+    securityState = 'Insecure'; 
   } else if ((state & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
-    securityState = "Broken"; 
+    securityState = 'Broken'; 
   }
 
   if (state & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
     extendedValidation = true; 
   }
 
-  try {
-    var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
-    SSleuthHttpObserver.updateLocEntry(tab, 
-                                      {ffStatus : securityState, 
-                                       evCert : extendedValidation});
-  } catch(e) {
-    dump("Error Http Observer : " + e.message + "\n");
-  } 
+  setDomainStates(securityState, extendedValidation, win); 
 
   var cipherSuite = { 
     name: cipherName, 
@@ -264,7 +261,7 @@ function protocolHttps(progress, request, state, win) {
                         cipherSuite.bulkCipher.notes +
                         cipherSuite.HMAC.notes; 
 
-  const csWeighting = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
+  const csWeighting = SSleuth.prefs.PREFS['rating.ciphersuite.params'];
   // Calculate ciphersuite rank  - All the cipher suite params ratings
   // are out of 10, so this will get normalized to 10.
   cipherSuite.rank = ( cipherSuite.keyExchange.rank * csWeighting.keyExchange +
@@ -303,6 +300,22 @@ function getConnectionRating(csRating, pfs,
                   + Number(evCert) * 10 * rp.evCert 
                   + signature * rp.signature)/rp.total; 
   return Number(rating).toFixed(1); 
+}
+
+function setDomainStates(ffStatus, evCert, win) {
+  try {
+    var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
+    SSleuthHttpObserver.updateLocEntry(tab, 
+                                      {ffStatus : ffStatus, 
+                                       evCert : evCert});
+  } catch(e) {
+    dump('Error Http Observer : ' + e.message + '\n');
+  } 
+
+}
+
+function domainsUpdated() {
+  SSleuthUI.domainsUpdated(); 
 }
 
 function isCertValid(cert) {

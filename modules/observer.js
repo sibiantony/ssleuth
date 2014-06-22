@@ -107,16 +107,12 @@ var SSleuthHttpObserver = {
 };
 
 function tabClosed(e) {
-  try {
-    var browser = _window().gBrowser.getBrowserForTab(e.target);
-    if (browser._ssleuthTabId) {
-      dump("ssleuth tab id : " + browser._ssleuthTabId);
-      SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
-      freeTabId(browser._ssleuthTabId);
-    }
-  } catch(e) { dump("Error tabClosed : " + e.message + "\n");}
+  var browser = _window().gBrowser.getBrowserForTab(e.target);
+  if (browser._ssleuthTabId) {
+    SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
+    freeTabId(browser._ssleuthTabId);
+  }
 }
-
 
 // These are to make sure that freed up indexes
 //  are re-used. At the end, there will always be
@@ -194,11 +190,14 @@ function updateResponseCache(channel) {
           hostEntry.cipherName = sslStatus.cipherName; 
           hostEntry.certValid = obs.utilCb.isCertValid(sslStatus.serverCert);
           hostEntry.domMatch = !sslStatus.isDomainMismatch;
-          hostEntry.csRating = obs.utilCb.getCipherSuiteRating(hostEntry.cipherName);
+          hostEntry.csRating = obs.utilCb.getCipherSuiteRating(
+                                    hostEntry.cipherName);
           hostEntry.pfs = obs.utilCb.checkPFS(hostEntry.cipherName); 
-          hostEntry.pubKeyAlg = obs.utilCb.getAuthenticationAlg(hostEntry.cipherName); 
+          hostEntry.pubKeyAlg = obs.utilCb.getAuthenticationAlg(
+                                    hostEntry.cipherName); 
           hostEntry.signature = obs.utilCb.getSignatureAlg(sslStatus.serverCert); 
-          hostEntry.pubKeySize = obs.utilCb.getKeySize(sslStatus.serverCert, hostEntry.pubKeyAlg ); 
+          hostEntry.pubKeySize = obs.utilCb.getKeySize(sslStatus.serverCert, 
+                                    hostEntry.pubKeyAlg ); 
           // The evCert and ff status are not available per channel. 
           // Wait for it to be filled in after the main channel request.
           hostEntry.cxRating = -1; 
@@ -208,6 +207,7 @@ function updateResponseCache(channel) {
     if ((channel.originalURI.schemeIs('https')) &&
          (hostEntry.cxRating == -1)) {
       setHostCxRating(tab, hostId); 
+      obs.utilCb.domainsUpdated(); 
     }
 
     hostEntry.count++;
@@ -251,6 +251,8 @@ function updateHostEntries(tab) {
       setHostCxRating(tab, domain); 
     }
   }
+
+  SSleuthHttpObserver.utilCb.domainsUpdated(); 
 
 }
 
