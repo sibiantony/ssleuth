@@ -786,91 +786,92 @@ function initCiphersPanel(doc) {
 }
 
 function loadDomainsTab() {
+
   if (!SSleuthUI.prefs.PREFS['domains.watch']) 
     return; 
+
   try {
-  const win = _window(); 
-  var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
-  var respCache = SSleuthHttpObserver.responseCache[tab];
+    const win = _window(); 
+    var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
+    var respCache = SSleuthHttpObserver.responseCache[tab];
 
-  const doc = win.document; 
+    const doc = win.document; 
 
-  resetDomains(doc);
+    resetDomains(doc);
 
-  let reqs = respCache['reqs'];
-  let rb = doc.getElementById('ssleuth-paneltab-domains-list');
+    let reqs = respCache['reqs'];
+    let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
-  // Set maxheight to that of the main vbox
-  // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
-  // doc.getElementById('ssleuth-panel-domains-vbox').
-  //    setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-  dump ("Box height -- " + 
-      doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+    // Set maxheight to that of the main vbox
+    // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
+    // doc.getElementById('ssleuth-panel-domains-vbox').
+    //    setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
+    dump ("Box height -- " + 
+        doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
-  for (var [domain, stats] in Iterator(reqs)) {
-    let ri = rb.appendChild(create(doc, 'richlistitem', {
-              class: 'ssleuth-paneltab-domains-item'}));
-    let vb = ri.appendChild(create(doc, 'vbox', {})); {
-      // Domain name + requests hbox
-      let hb = vb.appendChild(create(doc, 'hbox', {})); {
-        let str = domain.substring(domain.indexOf(':')+1);
-        hb.appendChild(create(doc, 'description', {value : str, 
-                                  style: 'font-weight: bold;'})); 
-        str = ' ' + stats['count'] + 'x   ';
+    for (var [domain, stats] in Iterator(reqs)) {
+      let ri = rb.appendChild(create(doc, 'richlistitem', {
+                class: 'ssleuth-paneltab-domains-item'}));
+      let vb = ri.appendChild(create(doc, 'vbox', {})); {
+        // Domain name + requests hbox
+        let hb = vb.appendChild(create(doc, 'hbox', {})); {
+          let str = domain.substring(domain.indexOf(':')+1);
+          hb.appendChild(create(doc, 'description', {value : str, 
+                                    style: 'font-weight: bold;'})); 
+          str = ' ' + stats['count'] + 'x   ';
 
-        for (var [ctype, count] in Iterator(stats['ctype'])) {
-          switch (ctype) {
-            case 'text'   : str += 'txt: ' ; break;
-            case 'image'  : str += 'img: '; break;
-            case 'application' : str += 'app: '; break;
-            case 'audio'  : str += 'aud: '; break;
-            case 'video'  : str += 'vid: '; break;
+          for (var [ctype, count] in Iterator(stats['ctype'])) {
+            switch (ctype) {
+              case 'text'   : str += 'txt: ' ; break;
+              case 'image'  : str += 'img: '; break;
+              case 'application' : str += 'app: '; break;
+              case 'audio'  : str += 'aud: '; break;
+              case 'video'  : str += 'vid: '; break;
+            }
+            str += count + ', '; 
           }
-          str += count + ', '; 
-        }
-        hb.appendChild(create(doc, 'description', {value : str})); 
+          hb.appendChild(create(doc, 'description', {value : str})); 
+            
+        } 
+
+        let str = ''; 
+        // Cipher suite hbox
+        hb = vb.appendChild(create(doc, 'hbox', {})); {
+          if (domain.indexOf('https:') != -1) {
+            str = stats['cxRating'] + '   ' + stats['cipherName']; 
+            hb.appendChild(create(doc, 'description', {value : str}));
           
-      } 
-
-      let str = ''; 
-      // Cipher suite hbox
-      hb = vb.appendChild(create(doc, 'hbox', {})); {
-        if (domain.indexOf('https:') != -1) {
-          str = stats['csRating'].toFixed(1) + '   ' + stats['cipherName']; 
-          hb.appendChild(create(doc, 'description', {value : str}));
-        
-          let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
-            str = 'cert : ' + stats['signature'].hmac + '/' 
-                    + stats['signature'].enc + '.  '; 
-            str += 'key : ' + stats['pubKeySize'] + ' bit ' + 
-                    stats['pubKeyAlg']; 
-            hbCert.appendChild(create(doc, 'description', {value : str})); 
+            let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
+              str = 'cert : ' + stats['signature'].hmac + '/' 
+                      + stats['signature'].enc + '.  '; 
+              str += 'key : ' + stats['pubKeySize'] + ' bit ' + 
+                      stats['pubKeyAlg']; 
+              hbCert.appendChild(create(doc, 'description', {value : str})); 
+            }
+          } else {
+            str = "Insecure channel!";
+            // TODO : To stylesheet
+            hb.appendChild(create(doc, 'description', {value: str, 
+                                            style: 'color: #5e0a0a;'})); 
           }
-        } else {
-          str = "Insecure channel!";
-          // TODO : To stylesheet
-          hb.appendChild(create(doc, 'description', {value: str, 
-                                          style: 'color: #5e0a0a;'})); 
         }
       }
-    }
-    // TODO : The color coding is based only on cipher suite rating.
-    //        The ev status, firefox security status etc. is not available here.
-    //        Identify a way to generlize the ratings as in the front panel
-    var cipherRating = "low"; 
-    if (domain.indexOf('https:') != -1) {
-      if (stats['csRating'] < 5) {
-         cipherRating = "low";
-      } else if (stats['csRating'] < 7) {
-        cipherRating = "medium"; 
-      } else if (stats['csRating'] < 9) {
-        cipherRating = "high"; 
-      } else if (stats['csRating'] <= 10) {
-        cipherRating = "vhigh"; 
+      var cipherRating = "default"; 
+      if (domain.indexOf('https:') != -1) {
+        if (stats['cxRating'] < 0) {
+          // None. Let it be default.
+        } else if (stats['cxRating'] < 5) {
+           cipherRating = "low";
+        } else if (stats['cxRating'] < 7) {
+          cipherRating = "medium"; 
+        } else if (stats['cxRating'] < 9) {
+          cipherRating = "high"; 
+        } else if (stats['cxRating'] <= 10) {
+          cipherRating = "vhigh"; 
+        }
       }
+      ri.setAttribute('rank', cipherRating); 
     }
-    ri.setAttribute('rank', cipherRating); 
-  }
 
   } catch(e) { dump("Error -- loadDomainsTab -- " + e.message + "\n"); }
 }

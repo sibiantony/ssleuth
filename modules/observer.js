@@ -79,8 +79,6 @@ var SSleuthHttpObserver = {
   newLoc: function(url, tabId) {
     this.responseCache[tabId] = { 
         url : url, 
-        // ffStatus : "", 
-        // evCert : false, 
         reqs: {} 
     }; 
     return this.responseCache[tabId];
@@ -201,26 +199,15 @@ function updateResponseCache(channel) {
           hostEntry.pubKeyAlg = obs.utilCb.getAuthenticationAlg(hostEntry.cipherName); 
           hostEntry.signature = obs.utilCb.getSignatureAlg(sslStatus.serverCert); 
           hostEntry.pubKeySize = obs.utilCb.getKeySize(sslStatus.serverCert, hostEntry.pubKeyAlg ); 
-          // The evCert and ff status is not available per channel. 
+          // The evCert and ff status are not available per channel. 
           // Wait for it to be filled in after the main channel request.
           hostEntry.cxRating = -1; 
         }
       }
     }
     if ((channel.originalURI.schemeIs('https')) &&
-         ( hostEntry.cxRating == -1)) {
-      var evCert = obs.responseCache[tab]['evCert']; 
-      var ffStatus = obs.responseCache[tab]['ffStatus']; 
-
-      if (ffStatus != null)  {
-        hostEntry.cxRating = obs.utilCb.getConnectionRating (
-                              hostEntry.csRating, 
-                              hostEntry.pfs, 
-                              ffStatus, 
-                              (hostEntry.domMatch && hostEntry.certValid), 
-                              evCert, 
-                              hostEntry.signature.rating); 
-      }
+         (hostEntry.cxRating == -1)) {
+      setHostCxRating(tab, hostId); 
     }
 
     hostEntry.count++;
@@ -237,28 +224,31 @@ function updateResponseCache(channel) {
   }
 }
 
+function setHostCxRating(tab, hostId) {
+  let obs = SSleuthHttpObserver; 
+  var evCert = obs.responseCache[tab]['evCert']; 
+  var ffStatus = obs.responseCache[tab]['ffStatus']; 
+  let hostEntry = obs.responseCache[tab].reqs[hostId]; 
+
+  if (ffStatus != null)  {
+    hostEntry.cxRating = obs.utilCb.getConnectionRating (
+                          hostEntry.csRating, 
+                          hostEntry.pfs, 
+                          ffStatus, 
+                          (hostEntry.domMatch && hostEntry.certValid), 
+                          evCert, 
+                          hostEntry.signature.rating); 
+  }
+}
+
 function updateHostEntries(tab) {
 
-  let obs = SSleuthHttpObserver; 
-  let respCache = SSleuthHttpObserver.responseCache[tab];
-  let reqs = respCache['reqs'];
+  let reqs = SSleuthHttpObserver.responseCache[tab].reqs;
 
   for (var [domain, hostEntry] in Iterator(reqs)) {
     if ((domain.indexOf('https:') != -1) &&
          ( hostEntry.cxRating == -1)) {
-      var evCert = respCache['evCert']; 
-      var ffStatus = respCache['ffStatus']; 
-
-      if (ffStatus != null)  {
-        hostEntry.cxRating = obs.utilCb.getConnectionRating (
-                              hostEntry.csRating, 
-                              hostEntry.pfs, 
-                              ffStatus, 
-                              (hostEntry.domMatch && hostEntry.certValid), 
-                              evCert, 
-                              hostEntry.signature.rating); 
-        respCache['reqs'][domain].cxRating = hostEntry.cxRating; 
-      }
+      setHostCxRating(tab, domain); 
     }
   }
 

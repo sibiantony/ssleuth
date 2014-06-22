@@ -421,7 +421,8 @@
 }
 
 .ssleuth-paneltab-domains-item[rank="default"] {
-    background: #d8dbdc; 
+    /* background: #d8dbdc; */
+	background: transparent; 
 }
 .ssleuth-paneltab-domains-item[rank="low"] {
     background: #cbb1b1;
