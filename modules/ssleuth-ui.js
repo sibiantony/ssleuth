@@ -803,6 +803,8 @@ function loadDomainsTab() {
     var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
     var respCache = SSleuthHttpObserver.responseCache[tab];
 
+    if (!respCache) return; 
+
     const doc = win.document; 
 
     resetDomains(doc);

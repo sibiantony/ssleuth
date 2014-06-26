@@ -18,6 +18,7 @@ var SSleuth = {
   extensionStartup: function(firstRun, reinstall) {
     SSleuthPreferences.init(); 
     // TODO : Need to re-think about the callbacks.
+    this.prefs = SSleuthPreferences.readInitPreferences();
     SSleuthHttpObserver.init( {
                             domainsUpdated : domainsUpdated, 
                             isCertValid: isCertValid,
@@ -26,8 +27,9 @@ var SSleuth = {
                             getKeySize: getKeySize,
                             checkPFS : checkPFS, 
                             getConnectionRating: getConnectionRating, 
-                            getSignatureAlg: getSignatureAlg});
-    this.prefs = SSleuthPreferences.readInitPreferences();
+                            getSignatureAlg: getSignatureAlg}, 
+                            this.prefs.PREFS['domains.watch']);
+
     prefListener.register(false);
 
     SSleuthUI.startup(this.prefs);
@@ -84,7 +86,6 @@ var ProgressListener = {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId; 
 
         // Re-init. New location, new cache.
-        // TODO : Fix Addon-manager showing up in the list.
         // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
         // TODO : Do we need newLoc and updateLoc here ? Identify which is new
         //          locationChange and which is for update.
@@ -295,7 +296,7 @@ function getConnectionRating(csRating, pfs,
   // Connection rating. Normalize the params to 10
   let rating =  (csRating * rp.cipherSuite 
                   + pfs * 10 * rp.pfs
-                  + ((ffStatus == 'Secure') ? 1:0) * 10 * rp.ffStatus
+                  + Number(ffStatus == 'Secure') * 10 * rp.ffStatus
                   + Number(certStatus) * 10 * rp.certStatus
                   + Number(evCert) * 10 * rp.evCert 
                   + signature * rp.signature)/rp.total; 
@@ -493,6 +494,15 @@ function toggleCipherSuites(prefsOld) {
   }
 }
 
+function toggleHttpObserver(enable) {
+  if (enable) {
+
+  } else {
+
+  }
+
+}
+
 var prefListener = new ssleuthPrefListener(
   SSleuthPreferences.prefBranch,
   function(branch, name) {
@@ -515,6 +525,7 @@ var prefListener = new ssleuthPrefListener(
       case "domains.watch" : 
         SSleuth.prefs.PREFS[name] = 
             JSON.parse(branch.getBoolPref(name));
+        toggleHttpObserver(SSleuth.prefs.PREFS[name]); 
         break;
     }
 

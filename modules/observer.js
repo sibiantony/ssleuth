@@ -14,10 +14,15 @@ var SSleuthHttpObserver = {
   minTabId: null, 
   prefs: null, 
   utilCb: null, 
+  enabled: false, 
 
-  init: function(cb) {
+  init: function(cb, enable) {
     try {
       this.utilCb = cb; 
+      this.enabled = enable; 
+
+      if (!enable) return; 
+
       // TODO : Observer for cached content ?
       Services.obs.addObserver({observe: SSleuthHttpObserver.response},
         'http-on-examine-response', false); 
@@ -34,21 +39,31 @@ var SSleuthHttpObserver = {
   },
   
   initWindow: function(window) {
+    if (!this.enabled) return; 
+
     window.gBrowser.tabContainer
                 .addEventListener('TabClose', tabClosed, false);
   },
 
   uninit: function() {
+    if (!this.enabled) return; 
+
     Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
       'http-on-examine-response', false);
     Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
       'http-on-examine-cached-response', false);
     Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
       'http-on-examine-merged-response', false);
+
+    this.responseCache = []; 
+    this.maxTabId = this.minTabId = 0; 
+    this.enabled = false; 
   },
 
   uninitWindow: function(window) {
     dump ("Uninit window http observer\n");
+    if (!this.enabled) return; 
+
     window.gBrowser.tabContainer
               .removeEventListener('TabClose', tabClosed);
     for (var browser of window.gBrowser.browsers) {
@@ -89,6 +104,9 @@ var SSleuthHttpObserver = {
   },
 
   updateLocEntry: function(tabId, attrs) {
+    // if (!this.responseCache[tabId])
+    //  return; 
+
     for (var [atr, val] in Iterator(attrs)) {
         this.responseCache[tabId][atr] = val;
     }
@@ -153,8 +171,6 @@ function updateResponseCache(channel) {
       return;
     }
 
-    // Checks : 
-    // 1. HTTP/HTTPS
     // 3. Did the tab location url change ?
     //
     
@@ -169,9 +185,6 @@ function updateResponseCache(channel) {
       // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
       //    + browser.contentWindow.location.toString() + "\n");
     }
-
-    // Check for http 
-    // if (!channel.originalURI.schemeIs("https")) {}
 
     var tab = browser._ssleuthTabId; 
     var hostEntry = obs.responseCache[tab].reqs[hostId];
@@ -274,15 +287,15 @@ function getTabForReq(req) {
     // 1. A REST Ajax request
     // Possibly also due to an incomplete response - downloading big files.
     // Error : getTabforReq : Component returned failure code: 
-    //            0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
+    //    0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
     // Requires a stream listener ? 
     // http://www.softwareishard.com/blog/firebug/nsitraceablechannel-intercept-http-traffic/
     //
     // 2. A firefox repeated pull
-    // Error : getTabforReq : Component does not have requested interface'Component does 
-    //          not have requested interface' when calling method: [nsIInterfaceRequestor::getInterface]
-    // 
-    // dump("Error : getTabforReq : " + e.message + "\n");
+    // Error : getTabforReq : Component does not have requested interface
+    //    'Component does not have requested interface' 
+    //    when calling method: [nsIInterfaceRequestor::getInterface]
+    dump("Error : getTabforReq : " + e.message + "\n");
     return null;
   }
 
