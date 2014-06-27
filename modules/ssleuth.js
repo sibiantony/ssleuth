@@ -82,7 +82,7 @@ var ProgressListener = {
     dump("== onLocationChange : " + uri.spec + "\n");
 
     try {
-      if (request) {
+      if (request && SSleuth.prefs.PREFS['domains.watch']) {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId; 
 
         // Re-init. New location, new cache.
@@ -305,10 +305,12 @@ function getConnectionRating(csRating, pfs,
 
 function setDomainStates(ffStatus, evCert, win) {
   try {
-    var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
-    SSleuthHttpObserver.updateLocEntry(tab, 
-                                      {ffStatus : ffStatus, 
-                                       evCert : evCert});
+    if (SSleuth.prefs.PREFS['domains.watch']) {
+      var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
+      SSleuthHttpObserver.updateLocEntry(tab, 
+                                        {ffStatus : ffStatus, 
+                                         evCert : evCert});
+    }
   } catch(e) {
     dump('Error Http Observer : ' + e.message + '\n');
   } 
@@ -496,11 +498,21 @@ function toggleCipherSuites(prefsOld) {
 
 function toggleHttpObserver(enable) {
   if (enable) {
-
+    SSleuthHttpObserver.init( {
+                            domainsUpdated : domainsUpdated, 
+                            isCertValid: isCertValid,
+                            getCipherSuiteRating: getCipherSuiteRating,
+                            getAuthenticationAlg: getAuthenticationAlg,
+                            getKeySize: getKeySize,
+                            checkPFS : checkPFS, 
+                            getConnectionRating: getConnectionRating, 
+                            getSignatureAlg: getSignatureAlg}, 
+                            enable);
+    forEachOpenWindow(SSleuthHttpObserver.initWindow); 
   } else {
-
+    forEachOpenWindow(SSleuthHttpObserver.uninitWindow); 
+    SSleuthHttpObserver.uninit();
   }
-
 }
 
 var prefListener = new ssleuthPrefListener(

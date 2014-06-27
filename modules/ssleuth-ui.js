@@ -72,13 +72,11 @@ var SSleuthUI = {
     // for the first time 
     if (!window) return; 
 
-    if (SSleuthUI.prefs.PREFS['domains.watch']) {
-      // If the user is navigating with the domains tab
-      // reload the data.
-      if (window.document.getElementById('ssleuth-paneltab-domains')
-                      .getAttribute('_selected') === 'true') {
-        loadDomainsTab(); 
-      }
+    // If the user is navigating with the domains tab
+    // reload the data.
+    if (window.document.getElementById('ssleuth-paneltab-domains')
+                    .getAttribute('_selected') === 'true') {
+      loadDomainsTab(); 
     }
 
     // If the user navigates the tabs with the panel open, 
@@ -795,17 +793,25 @@ function initCiphersPanel(doc) {
 
 function loadDomainsTab() {
 
-  if (!SSleuthUI.prefs.PREFS['domains.watch']) 
-    return; 
-
   try {
     const win = _window(); 
+    const doc = win.document; 
+
+    if (!SSleuthUI.prefs.PREFS['domains.watch']) {
+      dump('Domains disabled \n'); 
+      doc.getElementById('ssleuth-paneltab-domains-disabled-text').
+                hidden = false; 
+      return; 
+    }
+    dump('Domains enabled \n'); 
+
+    doc.getElementById('ssleuth-paneltab-domains-disabled-text').
+                hidden = true; 
+
     var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
     var respCache = SSleuthHttpObserver.responseCache[tab];
 
     if (!respCache) return; 
-
-    const doc = win.document; 
 
     resetDomains(doc);
 

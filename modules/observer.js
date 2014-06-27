@@ -39,7 +39,7 @@ var SSleuthHttpObserver = {
   },
   
   initWindow: function(window) {
-    if (!this.enabled) return; 
+    if (!SSleuthHttpObserver.enabled) return; 
 
     window.gBrowser.tabContainer
                 .addEventListener('TabClose', tabClosed, false);
@@ -48,27 +48,33 @@ var SSleuthHttpObserver = {
   uninit: function() {
     if (!this.enabled) return; 
 
-    Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
-      'http-on-examine-response', false);
-    Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
-      'http-on-examine-cached-response', false);
-    Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
-      'http-on-examine-merged-response', false);
+    // TODO : Hits NS_ERROR_FAILURE upon removing the observer.
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=663769
+    try {
+      Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+        'http-on-examine-response', false);
+      Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+        'http-on-examine-cached-response', false);
+      Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+        'http-on-examine-merged-response', false);
+    } catch (e) {
+      dump('Error removing http observer' + e.message + '\n'); 
+    }
 
-    this.responseCache = []; 
+    // this.responseCache = []; 
     this.maxTabId = this.minTabId = 0; 
     this.enabled = false; 
   },
 
   uninitWindow: function(window) {
     dump ("Uninit window http observer\n");
-    if (!this.enabled) return; 
+    if (!SSleuthHttpObserver.enabled) return; 
 
     window.gBrowser.tabContainer
               .removeEventListener('TabClose', tabClosed);
     for (var browser of window.gBrowser.browsers) {
       if (browser._ssleuthTabId) {
-        this.deleteLoc(browser._ssleuthTabId);
+        SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
         freeTabId(browser._ssleuthTabId);
       }
     } 
@@ -81,6 +87,9 @@ var SSleuthHttpObserver = {
         (topic !== 'http-on-examine-merged-response')) 
       return; 
     if (!(subject instanceof Components.interfaces.nsIHttpChannel)) return; 
+    if (!SSleuthHttpObserver.enabled) return; 
+
+    dump ("response \n");
 
     try {
       var channel = subject.QueryInterface(Ci.nsIHttpChannel); 
@@ -104,8 +113,8 @@ var SSleuthHttpObserver = {
   },
 
   updateLocEntry: function(tabId, attrs) {
-    // if (!this.responseCache[tabId])
-    //  return; 
+    if (!this.responseCache[tabId])
+      return; 
 
     for (var [atr, val] in Iterator(attrs)) {
         this.responseCache[tabId][atr] = val;
@@ -289,7 +298,6 @@ function getTabForReq(req) {
     // Error : getTabforReq : Component returned failure code: 
     //    0x80004002 (NS_NOINTERFACE) [nsIInterfaceRequestor.getInterface]
     // Requires a stream listener ? 
-    // http://www.softwareishard.com/blog/firebug/nsitraceablechannel-intercept-http-traffic/
     //
     // 2. A firefox repeated pull
     // Error : getTabforReq : Component does not have requested interface

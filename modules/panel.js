@@ -339,7 +339,13 @@ function SSleuthPanel(win) {
     // Fix richlistbox maxheight when loading the content ?
     // Or follow something like this : 
     //  http://mike.kaply.com/2011/08/05/richlistbox-tricks-for-your-add-on/
-    let domainsVb = create('vbox', {id: 'ssleuth-panel-domains-vbox'}); 
+    let domainsVb = create('vbox', {id: 'ssleuth-panel-domains-vbox'}); {
+      let hb = domainsVb.appendChild(create('hbox', {
+                    id : 'ssleuth-paneltab-domains-disabled-text',
+                    hidden : true})); 
+      domainsVb.appendChild(create('description', {
+                    value : 'Domains observer disabled. Enable from preferences'})); 
+    }
     let rb = domainsVb.appendChild(create('richlistbox', {
                 id : 'ssleuth-paneltab-domains-list', 
                 // TODO : Fix this! css in sheet is not working! 
@@ -347,6 +353,7 @@ function SSleuthPanel(win) {
                 flex: '1', maxheight: "150"})); {
                 //flex: '1'})); {//, maxheight: "150"})); {
     }
+
     return domainsVb; 
   }
 
