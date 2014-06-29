@@ -67,7 +67,6 @@ var SSleuthHttpObserver = {
   },
 
   uninitWindow: function(window) {
-    dump ("Uninit window http observer\n");
     if (!SSleuthHttpObserver.enabled) return; 
 
     window.gBrowser.tabContainer
@@ -88,8 +87,6 @@ var SSleuthHttpObserver = {
       return; 
     if (!(subject instanceof Components.interfaces.nsIHttpChannel)) return; 
     if (!SSleuthHttpObserver.enabled) return; 
-
-    dump ("response \n");
 
     try {
       var channel = subject.QueryInterface(Ci.nsIHttpChannel); 
@@ -226,9 +223,14 @@ function updateResponseCache(channel) {
         }
       }
     }
+
+    // If the ff status/ev cert for main channel had already been filled, 
+    // then set the connection rating
     if ((channel.originalURI.schemeIs('https')) &&
          (hostEntry.cxRating == -1)) {
       setHostCxRating(tab, hostId); 
+      // TODO : do update notif for every response ?
+      //        Need to see perf impact
       obs.utilCb.domainsUpdated(); 
     }
 

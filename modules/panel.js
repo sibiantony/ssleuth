@@ -342,15 +342,16 @@ function SSleuthPanel(win) {
     let domainsVb = create('vbox', {id: 'ssleuth-panel-domains-vbox'}); {
       let hb = domainsVb.appendChild(create('hbox', {
                     id : 'ssleuth-paneltab-domains-disabled-text',
+                    maxheight: '150', 
                     hidden : true})); 
-      domainsVb.appendChild(create('description', {
+      hb.appendChild(create('description', {
                     value : 'Domains observer disabled. Enable from preferences'})); 
     }
     let rb = domainsVb.appendChild(create('richlistbox', {
                 id : 'ssleuth-paneltab-domains-list', 
                 // TODO : Fix this! css in sheet is not working! 
                 style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0);',
-                flex: '1', maxheight: "150"})); {
+                flex: '1', maxheight: '150'})); {
                 //flex: '1'})); {//, maxheight: "150"})); {
     }
 

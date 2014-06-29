@@ -27,6 +27,7 @@
   const PREF_SUITES_TGL = "extensions.ssleuth.suites.toggle"; 
   const PREF_PANEL_INFO = "extensions.ssleuth.panel.info"; 
   const PREF_URL_COLORIZE = "extensions.ssleuth.ui.urlbar.colorize";
+  const PREF_DOMAINS_OBS = "extensions.ssleuth.domains.observe";
 
   var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)); 
   var csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)); 
@@ -75,6 +76,8 @@
 
       document.getElementById("ssleuth-pref-show-urlbar-gradient").checked
         = prefs.getBoolPref(PREF_URL_COLORIZE);
+      document.getElementById("ssleuth-pref-show-domains-observe").checked
+        = prefs.getBoolPref(PREF_DOMAINS_OBS); 
     },
 
     initRatings: function() {
@@ -188,6 +191,7 @@
         "ssleuth-pref-show-cert-fingerprint"    : prefUI.panelInfoCheck, 
         "ssleuth-pref-show-panel-info-reset"    : prefUI.panelInfoReset, 
         "ssleuth-pref-show-urlbar-gradient"     : prefUI.colorizeChange,
+        "ssleuth-pref-show-domains-observe"     : prefUI.domainsObserve,
       }) ) {
         document.getElementById(id)
           .addEventListener("command", func, false); 
@@ -210,6 +214,11 @@
       prefs.setBoolPref(PREF_URL_COLORIZE,
         document.getElementById("ssleuth-pref-show-urlbar-gradient").checked);
     },
+    domainsObserve: function() {
+      prefs.setBoolPref(PREF_DOMAINS_OBS,
+        document.getElementById("ssleuth-pref-show-domains-observe").checked);
+    },
+
 
     panelInfoCheck: function() {
       panelInfo.HMAC = 

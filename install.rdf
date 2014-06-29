@@ -9,8 +9,8 @@
 		<name>SSleuth</name>
 		<version>0.3.1</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
-		<!-- optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
-		<optionsType>3</optionsType-->
+		<optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
+		<optionsType>3</optionsType>
 
 		<bootstrap>true</bootstrap>
 		<type>2</type>

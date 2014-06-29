@@ -127,9 +127,11 @@
 							</hbox>
 					</groupbox>
 					<groupbox>
-						<caption label="URL bar"/>
+						<caption label="Miscellaneous"/>
             <checkbox id="ssleuth-pref-show-urlbar-gradient"
-                label="Colorize url bar"/>
+                label="Colorize url bar : adds a color gradient in the address bar as per the rating"/>
+            <checkbox id="ssleuth-pref-show-domains-observe"
+                label="Domains observer : enable watching all the domain requests"/>
 					</groupbox>
 
 					</vbox>

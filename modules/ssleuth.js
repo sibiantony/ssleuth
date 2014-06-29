@@ -28,7 +28,7 @@ var SSleuth = {
                             checkPFS : checkPFS, 
                             getConnectionRating: getConnectionRating, 
                             getSignatureAlg: getSignatureAlg}, 
-                            this.prefs.PREFS['domains.watch']);
+                            this.prefs.PREFS['domains.observe']);
 
     prefListener.register(false);
 
@@ -82,7 +82,7 @@ var ProgressListener = {
     dump("== onLocationChange : " + uri.spec + "\n");
 
     try {
-      if (request && SSleuth.prefs.PREFS['domains.watch']) {
+      if (request && SSleuth.prefs.PREFS['domains.observe']) {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId; 
 
         // Re-init. New location, new cache.
@@ -305,7 +305,7 @@ function getConnectionRating(csRating, pfs,
 
 function setDomainStates(ffStatus, evCert, win) {
   try {
-    if (SSleuth.prefs.PREFS['domains.watch']) {
+    if (SSleuth.prefs.PREFS['domains.observe']) {
       var tab = win.gBrowser.selectedBrowser._ssleuthTabId; 
       SSleuthHttpObserver.updateLocEntry(tab, 
                                         {ffStatus : ffStatus, 
@@ -534,7 +534,7 @@ var prefListener = new ssleuthPrefListener(
             JSON.parse(branch.getCharPref(name));
         toggleCipherSuites(prefsOld); 
         break;
-      case "domains.watch" : 
+      case "domains.observe" : 
         SSleuth.prefs.PREFS[name] = 
             JSON.parse(branch.getBoolPref(name));
         toggleHttpObserver(SSleuth.prefs.PREFS[name]); 

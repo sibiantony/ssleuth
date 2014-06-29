@@ -796,15 +796,13 @@ function loadDomainsTab() {
   try {
     const win = _window(); 
     const doc = win.document; 
+    resetDomains(doc);
 
-    if (!SSleuthUI.prefs.PREFS['domains.watch']) {
-      dump('Domains disabled \n'); 
+    if (!SSleuthUI.prefs.PREFS['domains.observe']) {
       doc.getElementById('ssleuth-paneltab-domains-disabled-text').
                 hidden = false; 
       return; 
     }
-    dump('Domains enabled \n'); 
-
     doc.getElementById('ssleuth-paneltab-domains-disabled-text').
                 hidden = true; 
 
@@ -812,8 +810,6 @@ function loadDomainsTab() {
     var respCache = SSleuthHttpObserver.responseCache[tab];
 
     if (!respCache) return; 
-
-    resetDomains(doc);
 
     let reqs = respCache['reqs'];
     let rb = doc.getElementById('ssleuth-paneltab-domains-list');
@@ -986,7 +982,7 @@ function preferencesChanged(branch, name) {
     case "rating.params": 
       // Prefs set from main
       break;
-    case "domains.watch" : 
+    case "domains.observe" : 
       // Prefs set from main
       break;
     case "suites.toggle" : 
