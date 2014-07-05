@@ -43,8 +43,8 @@ const ssleuthCipherSuites = {
 
   bulkCipher : [
     { name: "AES_256_GCM",      rank: 10,   ui: "AES GCM",     notes: "" },
-    { name: "CAMELLIA_256_CBC", rank: 10,   ui: "CAMELLIA CBC", notes: "" },
-    { name: "AES_256_CBC",      rank: 10,   ui: "AES CBC",     notes: "" },
+    { name: "CAMELLIA_256_CBC", rank: 9,    ui: "CAMELLIA CBC", notes: "" },
+    { name: "AES_256_CBC",      rank: 9,    ui: "AES CBC",     notes: "" },
     { name: "AES_128_GCM",      rank: 8,    ui: "AES GCM",     notes: "" },
     { name: "AES_128_CBC",      rank: 8,    ui: "AES CBC",     notes: "" },
     { name: "CAMELLIA_128_CBC", rank: 8,    ui: "CAMELLIA CBC", notes: "" },
