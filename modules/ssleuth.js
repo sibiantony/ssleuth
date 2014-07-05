@@ -19,15 +19,7 @@ var SSleuth = {
     SSleuthPreferences.init(); 
     // TODO : Need to re-think about the callbacks.
     this.prefs = SSleuthPreferences.readInitPreferences();
-    SSleuthHttpObserver.init( {
-                            domainsUpdated : domainsUpdated, 
-                            isCertValid: isCertValid,
-                            getCipherSuiteRating: getCipherSuiteRating,
-                            getAuthenticationAlg: getAuthenticationAlg,
-                            getKeySize: getKeySize,
-                            checkPFS : checkPFS, 
-                            getConnectionRating: getConnectionRating, 
-                            getSignatureAlg: getSignatureAlg}, 
+    SSleuthHttpObserver.init(observerCallbacks, 
                             this.prefs.PREFS['domains.observe']);
 
     prefListener.register(false);
@@ -95,6 +87,7 @@ var ProgressListener = {
       }
       dump("response cache so far : " 
               + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
+      dump("maxtab : " + SSleuthHttpObserver.maxTabId + " mintab : " + SSleuthHttpObserver.minTabId + "\n"); 
     } catch(e) { 
       dump("Error onLocationChange " + e.message + "\n"); 
     }
@@ -496,17 +489,20 @@ function toggleCipherSuites(prefsOld) {
   }
 }
 
+var observerCallbacks = {
+  domainsUpdated : domainsUpdated, 
+  isCertValid: isCertValid,
+  getCipherSuiteRating: getCipherSuiteRating,
+  getAuthenticationAlg: getAuthenticationAlg,
+  getKeySize: getKeySize,
+  checkPFS : checkPFS, 
+  getConnectionRating: getConnectionRating, 
+  getSignatureAlg: getSignatureAlg
+};
+
 function toggleHttpObserver(enable) {
   if (enable) {
-    SSleuthHttpObserver.init( {
-                            domainsUpdated : domainsUpdated, 
-                            isCertValid: isCertValid,
-                            getCipherSuiteRating: getCipherSuiteRating,
-                            getAuthenticationAlg: getAuthenticationAlg,
-                            getKeySize: getKeySize,
-                            checkPFS : checkPFS, 
-                            getConnectionRating: getConnectionRating, 
-                            getSignatureAlg: getSignatureAlg}, 
+    SSleuthHttpObserver.init(observerCallbacks, 
                             enable);
     forEachOpenWindow(SSleuthHttpObserver.initWindow); 
   } else {

@@ -10,8 +10,8 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 var SSleuthHttpObserver = {
   responseCache : [],
-  maxTabId: null, 
-  minTabId: null, 
+  maxTabId: 0, 
+  minTabId: 0, 
   prefs: null, 
   utilCb: null, 
   enabled: false, 
@@ -75,6 +75,7 @@ var SSleuthHttpObserver = {
       if (browser._ssleuthTabId) {
         SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
         freeTabId(browser._ssleuthTabId);
+        delete(browser['_ssleuthTabId']); 
       }
     } 
 
@@ -135,6 +136,7 @@ function tabClosed(e) {
   if (browser._ssleuthTabId) {
     SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
     freeTabId(browser._ssleuthTabId);
+    delete(browser['_ssleuthTabId']); 
   }
 }
 

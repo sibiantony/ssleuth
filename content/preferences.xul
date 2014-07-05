@@ -143,7 +143,7 @@
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
 						<caption label="Overall rating"/>
-						<description value="Configure how the rating is calculated. Supports upto 1 decimal place."/> 
+						<description value="Configure overall rating calculation. Supports upto 1 decimal place."/> 
 						<vbox align="baseline">
 							<grid equalsize="always" align="baseline"
 										style="background-color:-moz-dialog; height: 2.0em;">
@@ -210,7 +210,7 @@
 
 				<groupbox>
 					<caption label="Cipher suite rating"/>
-					<description value="Configure how the cipher suite rating is calculated."/> 
+					<description value="Configure cipher suite rating calculation."/> 
 					<vbox align="baseline">
 						<grid equalsize="always" align="baseline"
 									style="background-color:-moz-dialog; height: 2.0em;">

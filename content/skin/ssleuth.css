@@ -230,14 +230,17 @@
 .ssleuth-img-state-small {
 	margin-top: 0.12em; 
 	width: 0.95em;
+	height: auto;
 }
 .ssleuth-img-state-medium {
 	margin-top: 0.15em; 
-	width: 1.0em;
+	width: 1em;
+	height: auto;
 }
 .ssleuth-img-state-large {
 	margin-top: 0.25em; 
 	width: 1.1em;
+	height: auto;
 }
 
 /* .win.gecko .ssleuth-img-state-small {
