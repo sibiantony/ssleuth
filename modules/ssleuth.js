@@ -68,7 +68,7 @@ var ProgressListener = {
   urlChanged: false,
 
   onLocationChange: function(progress, request, uri) {
-    var win = Services.wm.getMostRecentWindow("navigator:browser"); 
+    var win = _window(); 
     if (!win) return; 
 
     dump("== onLocationChange : " + uri.spec + "\n");
@@ -111,7 +111,7 @@ var ProgressListener = {
   },
 
   onSecurityChange: function(progress, request, state) {
-    var win = Services.wm.getMostRecentWindow("navigator:browser");
+    var win = _window(); 
     var loc = win.content.location;
 
     try {
