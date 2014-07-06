@@ -565,7 +565,7 @@ function showCertDetails(cert, domMismatch, ev) {
     .setAttribute("secure", cert.pubKeyMinSecure.toString()); 
 
   doc.getElementById("ssleuth-text-cert-sigalg")
-    .textContent = cert.signatureAlg.hmac + "/" + cert.signatureAlg.enc; 
+    .textContent = cert.signatureAlg.hmac + "/" + cert.signatureAlg.enc;
   rating = Number(cert.signatureAlg.rating * rp.signature/10).toFixed(1);
   doc.getElementById('ssleuth-cert-sigalg-rating')
     .textContent = rating + "/" + rp.signature; 

@@ -130,17 +130,17 @@
 
 .ssleuth-star {
     list-style-image: url("chrome://ssleuth/skin/starred-empty.png"); 
-    width: 15px; 
+    width: 16px; 
     height: auto; 
 }
 .ssleuth-star-half {
     list-style-image: url("chrome://ssleuth/skin/starred-half.png"); 
-    width: 15px; 
+    width: 16px; 
     height: auto; 
 }
 .ssleuth-star-full {
     list-style-image: url("chrome://ssleuth/skin/starred.png"); 
-    width: 15px; 
+    width: 16px; 
     height: auto; 
 }
 
@@ -233,7 +233,7 @@
 	width: 12px; 
 }
 .ssleuth-img-state-medium {
-	margin-top: 0.15em; 
+	margin-top: 0.14em; 
 	/* width: 1em;*/
 	width: 13px; 
 }
