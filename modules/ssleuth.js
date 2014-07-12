@@ -227,7 +227,6 @@ function protocolHttps(progress, request, state, win) {
   cipherSuite.authentication = getCsParam(cs.authentication);
   cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
   cipherSuite.HMAC = getCsParam(cs.HMAC);
-
   cipherSuite.pfs = cipherSuite.keyExchange.pfs;
 
   if (cipherSuite.bulkCipher.name === "") {

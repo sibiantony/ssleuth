@@ -132,9 +132,9 @@
                 label="Colorize : Adds a color gradient in the address bar as per the rating"/>
  					</groupbox>
 					<groupbox>
-						<caption label="Domains tab"/>
+						<caption label="Domains tab (Beta)"/>
              <checkbox id="ssleuth-pref-show-domains-observe"
-                label="Domains observer : enable domain requests monitoring"/>
+                label="Domains observer : enable monitoring requests per domain"/>
 					</groupbox>
 
 					</vbox>
@@ -312,6 +312,9 @@
 					</groupbox>
 					<groupbox>
 						<caption label="Please note:"/>
+						<label class="text-link" 
+														href="https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling"
+														value="More on cipher suites enabling and disabling."/>
 						<html:ul>
 							<html:li>Default = The cipher suites in the list are reset to their default value once.
 								Following which the states are left untouched.</html:li>
@@ -321,10 +324,6 @@
 							<html:li>The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones.</html:li>
 							<html:li>Duplicate names for list names are not allowed</html:li>
 						</html:ul>
-						<label class="text-link" 
-														href="https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling"
-														value="More on cipher suites enabling and disabling."/>
-						<description value=''/>
 
 						<description value="Restore the addon default list. Note that this will remove any user created lists."/>
 						<hbox>

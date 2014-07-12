@@ -24,12 +24,12 @@ var SSleuthHttpObserver = {
       if (!enable) return; 
 
       // TODO : Observer for cached content ?
-      Services.obs.addObserver({observe: SSleuthHttpObserver.response},
+      Services.obs.addObserver(SSleuthHttpObserver,
         'http-on-examine-response', false); 
-      Services.obs.addObserver({observe: SSleuthHttpObserver.response},
+      Services.obs.addObserver(SSleuthHttpObserver,
         'http-on-examine-cached-response', false); 
       // TODO : merged response necessary ? Never seen ff using it.
-      Services.obs.addObserver({observe: SSleuthHttpObserver.response},
+      Services.obs.addObserver(SSleuthHttpObserver,
         'http-on-examine-merged-response', false); 
 
     } catch (e) {
@@ -37,6 +37,24 @@ var SSleuthHttpObserver = {
     }
 
   },
+
+  observe : function(subject, topic, data) {
+    if ((topic !== 'http-on-examine-response' ) && 
+        (topic !== 'http-on-examine-cached-response') &&
+        (topic !== 'http-on-examine-merged-response')) 
+      return; 
+    if (!(subject instanceof Ci.nsIHttpChannel)) return; 
+    if (!SSleuthHttpObserver.enabled) return; 
+
+    try {
+      var channel = subject.QueryInterface(Ci.nsIHttpChannel); 
+      updateResponseCache(channel);
+    } catch(e) {
+      dump("Error http response: " + e.message ); 
+    }
+
+  },
+
   
   initWindow: function(window) {
     if (!SSleuthHttpObserver.enabled) return; 
@@ -48,14 +66,12 @@ var SSleuthHttpObserver = {
   uninit: function() {
     if (!this.enabled) return; 
 
-    // TODO : Hits NS_ERROR_FAILURE upon removing the observer.
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=663769
     try {
-      Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+      Services.obs.removeObserver(SSleuthHttpObserver, 
         'http-on-examine-response', false);
-      Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+      Services.obs.removeObserver(SSleuthHttpObserver, 
         'http-on-examine-cached-response', false);
-      Services.obs.removeObserver({observe: SSleuthHttpObserver.response}, 
+      Services.obs.removeObserver(SSleuthHttpObserver, 
         'http-on-examine-merged-response', false);
     } catch (e) {
       dump('Error removing http observer' + e.message + '\n'); 
@@ -86,7 +102,7 @@ var SSleuthHttpObserver = {
         (topic !== 'http-on-examine-cached-response') &&
         (topic !== 'http-on-examine-merged-response')) 
       return; 
-    if (!(subject instanceof Components.interfaces.nsIHttpChannel)) return; 
+    if (!(subject instanceof Ci.nsIHttpChannel)) return; 
     if (!SSleuthHttpObserver.enabled) return; 
 
     try {
@@ -246,6 +262,8 @@ function updateResponseCache(channel) {
     }
     hostEntry.ctype[cType]++;
   } catch(e) {
+    // TODO : Handle special cases. 'jar' url links (no hostPort),  
+    //          sslStatus.cipherName unavailable etc. 
     dump("Error updateResponseCache : " + e.message + "\n");
   }
 }
