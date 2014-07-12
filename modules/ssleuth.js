@@ -395,6 +395,21 @@ function getSignatureAlg(cert) {
     var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, ''); 
     var signature = { hmac : "", enc : "", rating : 0};  
 
+    // Firefox do not seem to interpret these in the cert 
+    if (sigText.indexOf('Object Identifier') != -1) {
+      if (sigText.indexOf('1 2 840 10045 4 1') != -1) {
+        sigText = 'ECDSA with SHA-1'; 
+      } else if (sigText.indexOf('1 2 840 10045 4 3 1') != -1) {
+        sigText = 'ECDSA with SHA-224'; 
+      } else if (sigText.indexOf('1 2 840 10045 4 3 2') != -1) {
+        sigText = 'ECDSA with SHA-256'; 
+      } else if (sigText.indexOf('1 2 840 10045 4 3 3') != -1) {
+        sigText = 'ECDSA with SHA-384'; 
+      } else if (sigText.indexOf('1 2 840 10045 4 3 4') != -1) {
+        sigText = 'ECDSA with SHA-512'; 
+      }
+    }
+
     const cs = ssleuthCipherSuites;
     for (var i=0; i<cs.HMAC.length; i++) {
       if ((sigText.indexOf(cs.HMAC[i].ui) != -1)) {

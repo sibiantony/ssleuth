@@ -852,7 +852,7 @@ function loadDomainsTab() {
             let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
               str = 'cert : ' + stats['signature'].hmac + '/' 
                       + stats['signature'].enc + '.  '; 
-              str += 'key : ' + stats['pubKeySize'] + ' bit ' + 
+              str += 'key : ' + stats['pubKeySize'] + ' bits ' + 
                       stats['pubKeyAlg']; 
               hbCert.appendChild(create(doc, 'description', {value : str})); 
             }
