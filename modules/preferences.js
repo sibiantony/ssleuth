@@ -31,7 +31,7 @@ var ssleuthDefaultPrefs = {
     "rating.ciphersuite.params"  : ssleuthCipherSuites.weighting,
     "suites.toggle"       : ffToggleDefault,
     "panel.info"          : ssleuthPanelInfo,
-    "domains.observe"       : true
+    "domains.observe"     : true
    }
 }; 
 

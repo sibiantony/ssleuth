@@ -170,12 +170,12 @@ function updateResponseCache(channel) {
     var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
 
     // dump("url : " + url + " content : " + channel.contentType
-      //   + " host ID : " + hostId + "\n"); 
+    //   + " host ID : " + hostId + "\n"); 
 
     var browser = getTabForReq(channel); 
 
     if (!browser) {
-      dump("Critical: No browser! \n");
+      // dump("Critical: No browser! \n");
       return;
     }
 
@@ -183,7 +183,7 @@ function updateResponseCache(channel) {
     //
     
     if (!("_ssleuthTabId" in browser)) {
-      dump("No tab id present \n"); 
+      // dump("No tab id present \n"); 
       // Use a string index - helps with deletion without problems.
       var tabId = browser._ssleuthTabId = getTabId().toString();
 
@@ -296,7 +296,7 @@ function getTabForReq(req) {
     return (cWin ? 
             _window().gBrowser.getBrowserForDocument(cWin.top.document) : null); 
   } catch (e) {
-    // At least 2 different types of errors to handle here:
+    // TODO : At least 2 different types of errors to handle here:
     // 1. A REST Ajax request
     // Possibly also due to an incomplete response - downloading big files.
     // Error : getTabforReq : Component returned failure code: 
@@ -307,7 +307,7 @@ function getTabForReq(req) {
     // Error : getTabforReq : Component does not have requested interface
     //    'Component does not have requested interface' 
     //    when calling method: [nsIInterfaceRequestor::getInterface]
-    dump("Error : getTabforReq : " + e.message + "\n");
+    // dump("Error : getTabforReq : " + e.message + "\n");
     return null;
   }
 

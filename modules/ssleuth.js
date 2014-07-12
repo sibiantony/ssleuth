@@ -43,7 +43,7 @@ var SSleuth = {
   },
 
   initWindow: function(window) {
-    dump("\nSSleuth init Window \n"); 
+    // dump("\nSSleuth init Window \n"); 
     try {
       window.gBrowser.addProgressListener(ProgressListener);
       SSleuthHttpObserver.initWindow(window);
@@ -55,7 +55,6 @@ var SSleuth = {
   },
 
   uninitWindow: function(window) {
-    dump("\nUninit window \n");
     SSleuthHttpObserver.uninitWindow(window);
     SSleuthUI.uninit(window); 
     // Add window remove listener.
@@ -71,7 +70,7 @@ var ProgressListener = {
     var win = _window(); 
     if (!win) return; 
 
-    dump("== onLocationChange : " + uri.spec + "\n");
+    // dump("onLocationChange : " + uri.spec + "\n");
 
     try {
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
@@ -85,9 +84,10 @@ var ProgressListener = {
 
         SSleuthHttpObserver.updateLoc(request);
       }
-      dump("response cache so far : " 
-              + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
-      dump("maxtab : " + SSleuthHttpObserver.maxTabId + " mintab : " + SSleuthHttpObserver.minTabId + "\n"); 
+      // dump("response cache so far : " 
+      //        + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
+      // dump("maxtab : " + SSleuthHttpObserver.maxTabId + " mintab : " 
+      //        + SSleuthHttpObserver.minTabId + "\n"); 
     } catch(e) { 
       dump("Error onLocationChange " + e.message + "\n"); 
     }
@@ -115,15 +115,16 @@ var ProgressListener = {
     var loc = win.content.location;
 
     try {
-    dump("\nonSecurityChange: " + loc.protocol + "\n"); 
-    if (loc.protocol === "https:" ) {
-      protocolHttps(progress, request, state, win);
-    } else if (loc.protocol === "http:" ) {
-      protocolHttp(loc, win);
-    } else {
-      protocolUnknown(win); 
+      if (loc.protocol === "https:" ) {
+        protocolHttps(progress, request, state, win);
+      } else if (loc.protocol === "http:" ) {
+        protocolHttp(loc, win);
+      } else {
+        protocolUnknown(win); 
+      }
+    } catch(e) { 
+      dump("Error onSecurityChange : " + e.message + "\n");
     }
-    } catch(e) { dump("----------- ERROR : " + e.message + " ------------ \n");}
   }
 
 }; 
@@ -567,7 +568,6 @@ var WindowListener = {
     window.addEventListener("load",onWindowLoad);
   },
   onCloseWindow: function(xulWindow) { 
-    dump ("onCloseWindow : \n");
     var window = xulWindow
                   .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
                   .getInterface(Components.interfaces.nsIDOMWindow);

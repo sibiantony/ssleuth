@@ -258,6 +258,8 @@
 										id="ssleuth-pref-cs-ratings-reset"
 										/>
 					</hbox>
+
+					<description value=""/>
 				</groupbox>
 				</vbox>
 				</scrollbox>
@@ -319,6 +321,11 @@
 							<html:li>The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones.</html:li>
 							<html:li>Duplicate names for list names are not allowed</html:li>
 						</html:ul>
+						<label class="text-link" 
+														href="https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling"
+														value="More on cipher suites enabling and disabling."/>
+						<description value=''/>
+
 						<description value="Restore the addon default list. Note that this will remove any user created lists."/>
 						<hbox>
 							<button label="Restore lists" 
@@ -345,7 +352,7 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-						<caption label="SSleuth version 0.2.5"/>
+						<caption label="SSleuth version 0.3.1"/>
 						<description value="Author : Sibi Antony"/>
 						<description class="ssleuth-pref-text" >
 								Your feedback and development/translation support are welcome.
@@ -371,7 +378,7 @@
 
 						<description class="ssleuth-pref-text">
 							This software is distributed in the hope that it will be useful, 
-							but WITHOUT ANY WARRANTY. See the GNU GPL for more details.
+							but WITHOUT ANY WARRANTY. See the GNU General Public License for more details.
 						</description>
 
 					</groupbox>

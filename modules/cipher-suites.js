@@ -49,7 +49,7 @@ const ssleuthCipherSuites = {
     { name: "AES_128_CBC",      rank: 8,    ui: "AES CBC",     notes: "" },
     { name: "CAMELLIA_128_CBC", rank: 8,    ui: "CAMELLIA CBC", notes: "" },
     { name: "SEED_CBC",         rank: 8,    ui: "SEED CBC",   notes: "" },
-    { name: "3DES_EDE_CBC",    rank: 7,  ui: "3DES EDE CBC", notes: "" },
+    { name: "3DES_EDE_CBC",     rank: 7,    ui: "3DES EDE CBC", notes: "" },
     { name: "RC4_128",    rank: 5,  
       ui: "RC4",      notes: "Considered unsafe." },
     { name: "DES_CBC",    rank: 2,  

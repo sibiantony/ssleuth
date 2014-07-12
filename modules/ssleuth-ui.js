@@ -31,8 +31,6 @@ var SSleuthUI = {
   },
 
   init: function(window) {
-    dump ("\nssleuth UI init : \n");
-
     this.ssleuthBtnLocation = this.prefs.PREFS["notifier.location"]; 
     var ssleuthButton = createButton(window); 
     installButton(ssleuthButton,
@@ -54,7 +52,6 @@ var SSleuthUI = {
   }, 
 
   uninit: function(window) {
-    dump("\n SSleuth UI  : uninit \n"); 
     // Cleanup everything! 
     // Removing the button deletes the overlay elements as well 
     try {
@@ -62,7 +59,7 @@ var SSleuthUI = {
       removeButton(_ssleuthButton(window)); 
       deleteKeyShortcut(window.document); 
     } catch (e) { 
-      dump("Error uninit : " + e.message + "\n"); 
+      dump("Error SSleuth UI uninit : " + e.message + "\n"); 
     }
   },
 
@@ -339,7 +336,6 @@ function setBoxHidden(protocol, show) {
       doc.getElementById('ssleuth-panel-vbox-https').hidden = show; 
       break; 
      default :
-      dump("\n Unknown container \n"); 
   }
 }
 
@@ -814,12 +810,12 @@ function loadDomainsTab() {
     let reqs = respCache['reqs'];
     let rb = doc.getElementById('ssleuth-paneltab-domains-list');
 
-    // Set maxheight to that of the main vbox
+    // TODO : Set maxheight to that of the main vbox
     // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
     // doc.getElementById('ssleuth-panel-domains-vbox').
     //    setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-    dump ("Box height -- " + 
-        doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+    // dump ("Box height -- " + 
+    //    doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
     for (var [domain, stats] in Iterator(reqs)) {
       let ri = rb.appendChild(create(doc, 'richlistitem', {
@@ -885,7 +881,9 @@ function loadDomainsTab() {
       ri.setAttribute('rank', cipherRating); 
     }
 
-  } catch(e) { dump("Error -- loadDomainsTab -- " + e.message + "\n"); }
+  } catch(e) { 
+    dump("Error loadDomainsTab " + e.message + "\n"); 
+  }
 }
 
 function resetDomains(doc) {
@@ -943,7 +941,7 @@ function loadCiphersTab() {
 
 
   } catch (e) {
-    dump("Error -- loadCiphersTab -- " + e.message + "\n"); 
+    dump("Error loadCiphersTab " + e.message + "\n"); 
   }
 
 }
