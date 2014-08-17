@@ -7,8 +7,7 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 
 // install & uninstall are called even for disabled extensions
-function install(data, reason) {
-}
+function install(data, reason) {}
 
 function uninstall(data, reason) {
   registerResourceProtocol(data.resourceURI);
@@ -46,7 +45,9 @@ function startup(data, reason) {
     var ss = {};
     Cu.import("resource://ssleuth/ssleuth.js", ss);
     ss.SSleuth.extensionStartup(firstRun, reinstall);
-  } catch(e) { dump("Error bootstrap : " + e.message + "\n");}
+  } catch (e) {
+    dump("Error bootstrap : " + e.message + "\n");
+  }
 }
 
 function shutdown(data, reason) {
@@ -63,19 +64,19 @@ function shutdown(data, reason) {
 }
 
 function unloadModules() {
-  for (var module of ["preferences.js", 
-                        "cipher-suites.js",
-                        "utils.js", 
-                        "panel.js",
-                        "ssleuth-ui.js",
-                        "observer.js",
-                        "ssleuth.js"])
-  Cu.unload("resource://ssleuth/" + module);
+  for (var module of["preferences.js",
+    "cipher-suites.js",
+    "utils.js",
+    "panel.js",
+    "ssleuth-ui.js",
+    "observer.js",
+    "ssleuth.js"])
+    Cu.unload("resource://ssleuth/" + module);
 }
 
 function registerResourceProtocol(uri) { // null to unregister
   var io = Services.io;
   var module = uri ? io.newURI(uri.resolve("modules/"), null, null) : null;
   io.getProtocolHandler("resource").QueryInterface(Ci.nsIResProtocolHandler)
-      .setSubstitution("ssleuth", module);
+    .setSubstitution("ssleuth", module);
 }
