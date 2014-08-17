@@ -67,7 +67,13 @@ var ProgressListener = {
   urlChanged: false,
 
   onLocationChange: function(progress, request, uri) {
-    var win = _window(); 
+    // Get the chrome window from DOM window
+    var win = progress.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+                         .getInterface(Ci.nsIWebNavigation)
+                         .QueryInterface(Ci.nsIDocShellTreeItem)
+                         .rootTreeItem
+                         .QueryInterface(Ci.nsIInterfaceRequestor)
+                         .getInterface(Ci.nsIDOMWindow); 
     if (!win) return; 
 
     // dump("onLocationChange : " + uri.spec + "\n");
@@ -111,7 +117,12 @@ var ProgressListener = {
   },
 
   onSecurityChange: function(progress, request, state) {
-    var win = _window(); 
+    var win = progress.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+                         .getInterface(Ci.nsIWebNavigation)
+                         .QueryInterface(Ci.nsIDocShellTreeItem)
+                         .rootTreeItem
+                         .QueryInterface(Ci.nsIInterfaceRequestor)
+                         .getInterface(Ci.nsIDOMWindow); 
     var loc = win.content.location;
 
     try {
@@ -131,21 +142,21 @@ var ProgressListener = {
 
 function protocolUnknown(win) {
   setDomainStates('Insecure', false, win); 
-  SSleuthUI.protocolChange('unknown', ''); 
+  SSleuthUI.protocolChange('unknown', '', win); 
 }
 
 function protocolHttp(loc, win) {
   var httpsURL = loc.toString().replace('http://', 'https://'); 
 
   setDomainStates('Insecure', false, win); 
-  SSleuthUI.protocolChange('http', httpsURL);
+  SSleuthUI.protocolChange('http', httpsURL, win);
 }
 
 function protocolHttps(progress, request, state, win) {
   const Cc = Components.classes; 
   const Ci = Components.interfaces;
 
-  SSleuthUI.protocolChange('https', ''); 
+  SSleuthUI.protocolChange('https', '', win); 
 
   var secUI = win.gBrowser.securityUI; 
   if (!secUI) return;
@@ -167,7 +178,7 @@ function protocolHttps(progress, request, state, win) {
 
       // TODO : Recheck urlChanged context for the new redesign
       if (ProgressListener.urlChanged) {
-        SSleuthUI.protocolChange('unknown', '');
+        SSleuthUI.protocolChange('unknown', '', win);
       }
       return; 
     }
@@ -228,7 +239,7 @@ function protocolHttps(progress, request, state, win) {
   cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
   cipherSuite.HMAC = getCsParam(cs.HMAC);
   cipherSuite.pfs = cipherSuite.keyExchange.pfs;
-
+  
   if (cipherSuite.bulkCipher.name === "") {
     // Something's missing in our list.
     // Get the security strength from Firefox's own flags.
@@ -277,7 +288,8 @@ function protocolHttps(progress, request, state, win) {
         securityState,
         cert,
         sslStatus.isDomainMismatch,
-        extendedValidation); 
+        extendedValidation, 
+        win); 
 }
 
 function getConnectionRating(csRating, pfs,
@@ -293,7 +305,7 @@ function getConnectionRating(csRating, pfs,
                   + Number(certStatus) * 10 * rp.certStatus
                   + Number(evCert) * 10 * rp.evCert 
                   + signature * rp.signature)/rp.total; 
-  return Number(rating).toFixed(1); 
+  return Number(rating).toFixed(1);
 }
 
 function setDomainStates(ffStatus, evCert, win) {
@@ -305,7 +317,7 @@ function setDomainStates(ffStatus, evCert, win) {
                                          evCert : evCert});
     }
   } catch(e) {
-    dump('Error Http Observer : ' + e.message + '\n');
+    dump('Error setDomainStates : ' + e.message + '\n');
   } 
 
 }
@@ -394,7 +406,7 @@ function getSignatureAlg(cert) {
     var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, ''); 
     var signature = { hmac : "", enc : "", rating : 0};  
 
-    // Firefox do not seem to interpret these in the cert 
+    // Some certs only have OIDs in them.
     if (sigText.indexOf('Object Identifier') != -1) {
       if (sigText.indexOf('1 2 840 10045 4 1') != -1) {
         sigText = 'ECDSA with SHA-1'; 

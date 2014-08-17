@@ -85,19 +85,19 @@ var SSleuthUI = {
 
   },
 
-  protocolChange: function(proto, data) {
-    var doc = _window().document; 
+  protocolChange: function(proto, data, win) {
+    var doc = win.document; 
     switch(proto) {
       case "unknown":
-        setButtonRank(-1);
-        setBoxHidden("https", true);
-        setBoxHidden("http", true); 
+        setButtonRank(-1, win);
+        setBoxHidden("https", true, win);
+        setBoxHidden("http", true, win); 
         doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
         break;
       case "http":
-        setButtonRank(-1);
-        setBoxHidden("https", true);
-        setBoxHidden("http", false);
+        setButtonRank(-1, win);
+        setBoxHidden("https", true, win);
+        setBoxHidden("http", false, win);
         doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
 
         var panelLink = doc.getElementById("ssleuth-panel-https-link"); 
@@ -106,8 +106,8 @@ var SSleuthUI = {
         break;
 
       case "https":
-        setBoxHidden("https", false);
-        setBoxHidden("http", true);
+        setBoxHidden("https", false, win);
+        setBoxHidden("http", true, win);
         doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
         break;
     }
@@ -118,14 +118,15 @@ var SSleuthUI = {
         securityState,
         cert,
         domMismatch,
-        ev) {
-    setButtonRank(connectionRank); 
-    panelConnectionRank(connectionRank); 
+        ev, 
+        win) {
+    setButtonRank(connectionRank, win); 
+    panelConnectionRank(connectionRank, win); 
 
-    showCipherDetails(cipherSuite); 
-    showPFS(cipherSuite.pfs);
-    showFFState(securityState); 
-    showCertDetails(cert, domMismatch, ev);
+    showCipherDetails(cipherSuite, win); 
+    showPFS(cipherSuite.pfs, win);
+    showFFState(securityState, win); 
+    showCertDetails(cert, domMismatch, ev, win);
   },
 
   prefListener: function(branch, name) {
@@ -156,9 +157,8 @@ function _ssleuthButton(window) {
   }
 }
 
-function _ssleuthBtnImg() {
+function _ssleuthBtnImg(win) {
   const ui = SSleuthUI; 
-  const win = _window(); 
   if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
     return win.document.getElementById("ssleuth-tb-button");
   } else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
@@ -326,8 +326,8 @@ function panelEvent(event) {
   }
 }
 
-function setBoxHidden(protocol, show) {
-  var doc = _window().document; 
+function setBoxHidden(protocol, show, win) {
+  var doc = win.document; 
   switch (protocol) {
     case "http" : 
       doc.getElementById('ssleuth-panel-box-http').hidden = show; 
@@ -362,9 +362,9 @@ function togglePanel(panel) {
   }
 }
 
-function panelConnectionRank(rank) {
+function panelConnectionRank(rank, win) {
   var s = []; 
-  var doc = _window().document; 
+  var doc = win.document; 
 
   // I don't see any easy CSS hacks
   // without having to autogenerate spans in html.
@@ -387,9 +387,9 @@ function panelConnectionRank(rank) {
   doc.getElementById("ssleuth-text-cipher-rank-numeric").textContent = (rank + "/10"); 
 }
 
-function setButtonRank(connectionRank) {
+function setButtonRank(connectionRank, win) {
   var buttonRank = "default"; 
-  var doc = _window().document; 
+  var doc = win.document; 
   
   if (connectionRank <= -1 ) {
     buttonRank = "default"; 
@@ -403,7 +403,7 @@ function setButtonRank(connectionRank) {
     buttonRank = "vhigh"; 
   }
 
-  _ssleuthBtnImg().setAttribute("rank", buttonRank); 
+  _ssleuthBtnImg(win).setAttribute("rank", buttonRank); 
 
   if (SSleuthUI.ssleuthBtnLocation == SSleuthUI.ssleuthLoc.URLBAR) {
     var ssleuthUbRank = doc.getElementById("ssleuth-ub-rank");  
@@ -414,7 +414,7 @@ function setButtonRank(connectionRank) {
     } else {
       ssleuthUbRank.textContent = ""; 
     }
-    _ssleuthButton(_window()).setAttribute("rank", buttonRank); 
+    _ssleuthButton(win).setAttribute("rank", buttonRank); 
       // TODO : (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? 'blank' : buttonRank)); 
   }
 
@@ -423,8 +423,8 @@ function setButtonRank(connectionRank) {
     (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? buttonRank : 'default')); 
 }
 
-function showCipherDetails(cipherSuite) {
-  var doc = _window().document; 
+function showCipherDetails(cipherSuite, win) {
+  var doc = win.document; 
   const cs = ssleuthCipherSuites; 
   const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
 
@@ -471,8 +471,8 @@ function showCipherDetails(cipherSuite) {
     = !(panelInfo.keyExchange); 
 }
 
-function showPFS(pfs) {
-  var doc = _window().document; 
+function showPFS(pfs, win) {
+  var doc = win.document; 
   const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
 
   const pfsImg = doc.getElementById("ssleuth-img-p-f-secrecy"); 
@@ -486,8 +486,8 @@ function showPFS(pfs) {
   pfsImg.setAttribute('status', pfsTxt.textContent.toLowerCase());
 }
 
-function showFFState(state) {
-  var doc = _window().document; 
+function showFFState(state, win) {
+  var doc = win.document; 
   const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
 
   doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state); 
@@ -505,10 +505,10 @@ function showFFState(state) {
   }
 }
 
-function showCertDetails(cert, domMismatch, ev) {
+function showCertDetails(cert, domMismatch, ev, win) {
   var svCert = cert.serverCert;
   var validity = svCert.validity.QueryInterface(Ci.nsIX509CertValidity);
-  var doc = _window().document; 
+  var doc = win.document; 
   const rp = SSleuthUI.prefs.PREFS["rating.params"]; 
   const panelInfo = SSleuthUI.prefs.PREFS["panel.info"]; 
 
