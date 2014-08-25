@@ -100,6 +100,7 @@ var ProgressListener = {
     this.urlChanged = !(uri.spec === this.prevURL);
     this.prevURL = uri.spec;
 
+    dump("onLocationChange invoke UI\n"); 
     SSleuthUI.onLocationChange(win, this.urlChanged);
   },
 
@@ -126,10 +127,13 @@ var ProgressListener = {
 
     try {
       if (loc.protocol === "https:") {
+        dump("protocolHttps\n");
         protocolHttps(progress, request, state, win);
       } else if (loc.protocol === "http:") {
+        dump("protocolHttp\n");
         protocolHttp(loc, win);
       } else {
+        dump("protocolUnknown\n");
         protocolUnknown(win);
       }
     } catch (e) {
@@ -152,7 +156,7 @@ function protocolHttp(loc, win) {
 }
 
 function protocolHttps(progress, request, state, win) {
-  SSleuthUI.protocolChange('https', '', win);
+  //SSleuthUI.protocolChange('https', '', win);
 
   var secUI = win.gBrowser.securityUI;
   if (!secUI) return;
@@ -285,6 +289,8 @@ function protocolHttps(progress, request, state, win) {
     sslStatus.isDomainMismatch,
     extendedValidation,
     win);
+  
+  SSleuthUI.protocolChange('https', '', win);
 }
 
 function getConnectionRating(csRating, pfs,

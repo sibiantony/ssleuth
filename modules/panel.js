@@ -453,7 +453,6 @@ function SSleuthPanel(win) {
             class: 'ssleuth-text-body-class'
           }));
           d1.textContent = "Note: The availability of the above link depends on the site\'s offering of the same content over an https connection.";
-
         }
       }
 
@@ -481,7 +480,7 @@ function SSleuthPanel(win) {
         // TODO : Fix this! css in sheet is not working! 
         style: '-moz-appearance: none; background-color: rgba(0, 0, 0, 0);',
         flex: '1',
-        maxheight: '150'
+        // maxheight: '150'
       })); {
         //flex: '1'})); {//, maxheight: "150"})); {
       }

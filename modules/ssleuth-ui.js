@@ -74,10 +74,10 @@ var SSleuthUI = {
 
     // If the user is navigating with the domains tab
     // reload the data.
-    if (window.document.getElementById('ssleuth-paneltab-domains')
-      .getAttribute('_selected') === 'true') {
+    //if (window.document.getElementById('ssleuth-paneltab-domains')
+      //.getAttribute('_selected') === 'true') {
       loadDomainsTab();
-    }
+    //}
 
     // If the user navigates the tabs with the panel open, 
     //  make it appear smooth. 
@@ -111,9 +111,14 @@ var SSleuthUI = {
     case "https":
       setBoxHidden("https", false, win);
       setBoxHidden("http", true, win);
-      doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
+      doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;   
       break;
     }
+    
+    //doc.getElementById('ssleuth-panel-domains-vbox')
+    //  .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
+    //dump ("Box height -- " + 
+    //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
   },
 
   fillPanel: function (connectionRank,
@@ -825,10 +830,13 @@ function loadDomainsTab() {
 
     // TODO : Set maxheight to that of the main vbox
     // rb.maxheight = doc.getElementById('ssleuth-panel-main-vbox').height;
-    // doc.getElementById('ssleuth-panel-domains-vbox').
-    //    setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-    // dump ("Box height -- " + 
-    //    doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+    // TODO : 1) Problem navigate http page/chrome page back and forth
+    //        - Chops off main tab 
+    //        2) Navigate https page to http, main tab is big, empty space.
+    doc.getElementById('ssleuth-panel-domains-vbox')
+      .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
+    dump ("Box height -- " + 
+      doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
     for (var [domain, stats] in Iterator(reqs)) {
       let ri = rb.appendChild(create(doc, 'richlistitem', {
