@@ -1,8 +1,8 @@
 SSleuth
 =======
 
-SSleuth is a firefox addon that ranks an established SSL connection to estimate 
-the connection strength. It also gives a brief summary of the important SSL connection 
+SSleuth is a firefox addon that ranks an established SSL/TLS connection to estimate 
+the connection strength. It also gives a brief summary of the important SSL/TLS connection 
 parameters.
 
 * Mozilla download page : https://addons.mozilla.org/en-US/firefox/addon/ssleuth/
@@ -10,7 +10,7 @@ parameters.
 ![Screenshot mozilla.org](https://addons.cdn.mozilla.net/img/uploads/previews/full/139/139596.png)
 
 This was developed with the intent to rate the encryption ciphers used in an
-SSL connection. The project maintains a list of cipher suites that are shipped with
+SSL/TLS connection. The project maintains a list of cipher suites that are shipped with
 Firefox and a rank for each of them.
 The rankings are mainly inspired from Qualys's SSL labs server testing tool. The 
 SSL labs testing is meant for web servers, more sophisticated and is much more 
