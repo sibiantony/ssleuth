@@ -3,11 +3,11 @@
 			 xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
 	<r:Description about="urn:mozilla:install-manifest">
 		<creator>Sibi Antony</creator>
-		<description>How strong is your SSL connection? SSleuth ranks an established SSL connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
+		<description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
 		<homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
 		<id>ssleuth@github</id>
 		<name>SSleuth</name>
-		<version>0.3.1</version>
+		<version>0.3.2</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
 		<optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
 		<optionsType>3</optionsType>
