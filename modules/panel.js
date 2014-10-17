@@ -194,6 +194,42 @@ function SSleuthPanel(win) {
           }
         } {
           let hb = httpsBox.appendChild(create('hbox', {
+            id: 'ssleuth-hbox-3',
+            align: 'top'
+          })); {
+            let chb = hb.appendChild(create('hbox', {
+              align: 'left',
+              width: IMG_MARGIN_WIDTH
+            }));
+            chb.appendChild(create('image', {
+              id: 'ssleuth-img-tls-version',
+              class: 'ssleuth-img-state'
+            }));
+          } {
+            let chb = hb.appendChild(create('hbox', {
+              align: 'baseline',
+              flex: '2'
+            }));
+            chb.appendChild(create('description', {
+              value: 'SSL/TLS Version: ',
+              class: 'ssleuth-text-title-class'
+            }));
+            chb.appendChild(create('description', {
+              id: 'ssleuth-text-tls-version',
+              class: 'ssleuth-text-title-class'
+            })); /* {
+              let cchb = chb.appendChild(create('hbox', {
+                flex: '2',
+                align: 'right'
+              }));
+              cchb.appendChild(create('description', {
+                id: 'ssleuth-tls-version-rating',
+                class: 'ssleuth-text-body-rating'
+              }));
+            } */
+          }
+        } {
+          let hb = httpsBox.appendChild(create('hbox', {
             id: 'ssleuth-ff-connection-status'
           })); {
             let vb = hb.appendChild(create('vbox', {

@@ -76,7 +76,6 @@ var ProgressListener = {
     if (!win) return;
 
     // dump("onLocationChange : " + uri.spec + "\n");
-
     try {
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
@@ -88,9 +87,12 @@ var ProgressListener = {
         SSleuthHttpObserver.newLoc(uri.asciiSpec, tab);
 
         SSleuthHttpObserver.updateLoc(request);
+        // At times location change event comes after securityChange
+        // So the TLS version has to be set again. 
+        setTLSVersion(request, win); 
       }
-      // dump("response cache so far : " 
-      //        + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
+      // dump("response cache : " 
+      //         + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
       // dump("maxtab : " + SSleuthHttpObserver.maxTabId + " mintab : " 
       //        + SSleuthHttpObserver.minTabId + "\n"); 
     } catch (e) {
@@ -100,7 +102,6 @@ var ProgressListener = {
     this.urlChanged = !(uri.spec === this.prevURL);
     this.prevURL = uri.spec;
 
-    dump("onLocationChange invoke UI\n"); 
     SSleuthUI.onLocationChange(win, this.urlChanged);
   },
 
@@ -127,13 +128,10 @@ var ProgressListener = {
 
     try {
       if (loc.protocol === "https:") {
-        dump("protocolHttps\n");
         protocolHttps(progress, request, state, win);
       } else if (loc.protocol === "http:") {
-        dump("protocolHttp\n");
         protocolHttp(loc, win);
       } else {
-        dump("protocolUnknown\n");
         protocolUnknown(win);
       }
     } catch (e) {
@@ -203,6 +201,7 @@ function protocolHttps(progress, request, state, win) {
   }
 
   setDomainStates(securityState, extendedValidation, win);
+  setTLSVersion(request, win); 
 
   var cipherSuite = {
     name: cipherName,
@@ -322,6 +321,33 @@ function setDomainStates(ffStatus, evCert, win) {
     dump('Error setDomainStates : ' + e.message + '\n');
   }
 
+}
+
+function setTLSVersion(request, win) {
+  try {
+      
+    if (request instanceof Ci.nsIChannel) {
+      var channel = request.QueryInterface(Ci.nsIChannel); 
+      var sec = channel.securityInfo; 
+      if (sec instanceof Ci.nsISSLSocketControl) {
+        var sslSocketCtrl = sec.QueryInterface(Ci.nsISSLSocketControl); 
+
+        var versionStrings = ["SSLv3", "TLSv1.0", "TLSv1.1", "TLSv1.2"]; 
+        var version = versionStrings [sslSocketCtrl.SSLVersionUsed & 0xFF]; 
+
+        // TODO : At the moment, depends on observer module. Change.
+        if (!SSleuth.prefs.PREFS['domains.observe']) 
+          version = "<Enable observer, reload>";
+
+        var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+        SSleuthHttpObserver.updateLocEntry(tab, {
+          tlsVersion: version,
+        });
+      }
+    }
+  } catch (e) {
+    dump('Error setTLSVersion : ' + e.message + '\n');
+  }
 }
 
 function domainsUpdated() {

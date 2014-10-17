@@ -135,6 +135,7 @@ var SSleuthUI = {
     showPFS(cipherSuite.pfs, win);
     showFFState(securityState, win);
     showCertDetails(cert, domMismatch, ev, win);
+    showTLSVersion(win); 
   },
 
   prefListener: function (branch, name) {
@@ -586,6 +587,27 @@ function showCertDetails(cert, domMismatch, ev, win) {
   doc.getElementById("ssleuth-text-cert-fingerprint").hidden = !(panelInfo.certFingerprint);
 }
 
+function showTLSVersion(win) {
+  var doc = win.document; 
+  var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+  var tlsVersion = ""
+  if ( SSleuthHttpObserver.responseCache[tab].tlsVersion ) 
+    tlsVersion = SSleuthHttpObserver.responseCache[tab].tlsVersion;
+
+  if (tlsVersion == "") {
+    tlsVersion = "<Firefox cache. Reload page>";
+  }
+
+  doc.getElementById("ssleuth-text-tls-version").textContent = 
+      tlsVersion; 
+  // TODO : Make more generic.
+  if (tlsVersion == "SSLv3") {
+    doc.getElementById("ssleuth-img-tls-version").setAttribute("state", "bad");
+  } else {
+    doc.getElementById("ssleuth-img-tls-version").setAttribute("state", "good");
+  }
+}
+
 function createKeyShortcut(doc) {
   var keyset = doc.createElement("keyset");
   const shortcut =
@@ -835,8 +857,8 @@ function loadDomainsTab() {
     //        2) Navigate https page to http, main tab is big, empty space.
     doc.getElementById('ssleuth-panel-domains-vbox')
       .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-    dump ("Box height -- " + 
-      doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+    // dump ("Box height -- " + 
+    //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
     for (var [domain, stats] in Iterator(reqs)) {
       let ri = rb.appendChild(create(doc, 'richlistitem', {

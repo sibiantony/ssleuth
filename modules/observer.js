@@ -127,8 +127,10 @@ var SSleuthHttpObserver = {
   },
 
   updateLocEntry: function (tabId, attrs) {
-    if (!this.responseCache[tabId])
+    if (!this.responseCache[tabId]) {
+      // dump("** Empty response cache \n"); 
       return;
+    }
 
     for (var [atr, val] in Iterator(attrs)) {
       this.responseCache[tabId][atr] = val;

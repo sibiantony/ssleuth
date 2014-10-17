@@ -116,7 +116,8 @@
 	background: -moz-linear-gradient(-88deg, rgba(255,255,255,1) 28%,  #d1e3c4) !important; 
     color: #4f941c !important; 
 }
-
+#urlbar:focus {
+}
 
 #ssleuth-img-cipher-rank[status="low"] {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png");
@@ -169,6 +170,13 @@
     list-style-image: url("chrome://ssleuth/skin/status-good.png"); 
 }
 #ssleuth-img-cert-state[state="bad"] {
+    list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
+}
+
+#ssleuth-img-tls-version[state="good"] {
+    list-style-image: url("chrome://ssleuth/skin/status-good.png"); 
+}
+#ssleuth-img-tls-version[state="bad"] {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
 }
 
