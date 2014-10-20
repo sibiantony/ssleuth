@@ -325,7 +325,6 @@ function setDomainStates(ffStatus, evCert, win) {
 
 function setTLSVersion(request, win) {
   try {
-      
     if (request instanceof Ci.nsIChannel) {
       var channel = request.QueryInterface(Ci.nsIChannel); 
       var sec = channel.securityInfo; 
@@ -473,7 +472,6 @@ function getSignatureAlg(cert) {
 
   } catch (e) {
     dump("Error getSignatureAlg() : " + e.message + "\n");
-
   }
 }
 
