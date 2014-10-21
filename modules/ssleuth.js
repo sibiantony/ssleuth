@@ -338,6 +338,10 @@ function setTLSVersion(request, win) {
         if (!SSleuth.prefs.PREFS['domains.observe']) 
           version = "<Enable observer, reload>";
 
+        // TODO : The feature requires FF 29+. Clean up this whole string generation
+        if (Services.vc.compare(Services.appinfo.platformVersion, "29.0") < 0)
+          version = "<Requires Firefox 29+ >"; 
+
         var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
         SSleuthHttpObserver.updateLocEntry(tab, {
           tlsVersion: version,
