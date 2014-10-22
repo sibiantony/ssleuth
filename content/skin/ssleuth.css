@@ -228,6 +228,11 @@
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
 }
 
+#ssleuth-img-panel-pref-icon {
+    list-style-image: url("chrome://ssleuth/skin/panel-pref.png"); 
+    /* height: 14px; */
+}
+
 #ssleuth-text-cipher-suite-kxchange-notes,
 #ssleuth-text-cipher-suite-auth-notes,
 #ssleuth-text-cipher-suite-bulkcipher-notes,

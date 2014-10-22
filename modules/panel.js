@@ -627,10 +627,15 @@ function SSleuthPanel(win) {
             this.setAttribute('_selected', 'true');
           }, false);
 
-          hb.appendChild(create('hbox', {
+          chb = hb.appendChild(create('hbox', {
             class: 'ssleuth-paneltab-tab',
+            align: 'baseline', 
             _selected: 'false'
-          }));
+          })); {
+            chb.appendChild(create('image', {
+              id : 'ssleuth-img-panel-pref-icon',
+            })); 
+          }
         }
       } {
         let deck = panelbox.appendChild(create('deck', {
