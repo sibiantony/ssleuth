@@ -230,7 +230,10 @@
 
 #ssleuth-img-panel-pref-icon {
     list-style-image: url("chrome://ssleuth/skin/panel-pref.png"); 
-    /* height: 14px; */
+	margin-top: 3px;
+}
+#ssleuth-img-panel-pref-icon:hover {
+	opacity: 0.5;
 }
 
 #ssleuth-text-cipher-suite-kxchange-notes,

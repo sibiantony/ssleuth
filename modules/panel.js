@@ -632,7 +632,10 @@ function SSleuthPanel(win) {
             align: 'baseline', 
             _selected: 'false'
           })); {
-            chb.appendChild(create('image', {
+            phb = chb.appendChild(create('hbox', {
+              style: 'margin-left: 70px;'
+            })); 
+            phb.appendChild(create('image', {
               id : 'ssleuth-img-panel-pref-icon',
             })); 
           }
