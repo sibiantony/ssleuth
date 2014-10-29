@@ -230,7 +230,9 @@
 
 #ssleuth-img-panel-pref-icon {
     list-style-image: url("chrome://ssleuth/skin/panel-pref.png"); 
-	margin-top: 3px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+	opacity: 0.2; 
 }
 #ssleuth-img-panel-pref-icon:hover {
 	opacity: 0.5;
@@ -411,7 +413,7 @@
     /* -moz-margin-end: -1px; */
     background-color: rgba(0, 0, 0, 0);
     border: none;
-    font-size: 85%;
+    font-size: 85% !important;
     /* margin-top: 40px;*/
     /* position: relative;*/
 

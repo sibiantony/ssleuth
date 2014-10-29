@@ -870,7 +870,7 @@ function loadDomainsTab() {
           let str = domain.substring(domain.indexOf(':') + 1);
           hb.appendChild(create(doc, 'description', {
             value: str,
-            style: 'font-weight: bold;'
+            style: 'font-size: 115%; font-weight: bold;'
           }));
           str = ' ' + stats['count'] + 'x   ';
 

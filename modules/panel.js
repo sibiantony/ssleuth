@@ -251,7 +251,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-conn-status',
-                value: 'Connection status (firefox): ',
+                value: 'Connection status: ',
                 class: 'ssleuth-text-title-class'
               }));
               hb.appendChild(create('description', {
