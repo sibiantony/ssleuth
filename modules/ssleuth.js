@@ -325,28 +325,28 @@ function setDomainStates(ffStatus, evCert, win) {
 
 function setTLSVersion(request, win) {
   try {
-    var version = ''; 
+    var index = ''; 
     // TODO : At the moment, depends on observer module. Change.
     //
     if (Services.vc.compare(Services.appinfo.platformVersion, "29.0") < 0) {
-      version = "<Requires Firefox 29+ >"; 
+      index = 'ff_29plus'; 
     } else if (!SSleuth.prefs.PREFS['domains.observe']) {
-      version = "<Enable observer, reload>";
+      index = 'ff_obs';
     } else if (request instanceof Ci.nsIChannel) {
       var channel = request.QueryInterface(Ci.nsIChannel); 
       var sec = channel.securityInfo; 
       if (sec instanceof Ci.nsISSLSocketControl) {
         var sslSocketCtrl = sec.QueryInterface(Ci.nsISSLSocketControl); 
 
-        var versionStrings = ["SSLv3", "TLSv1.0", "TLSv1.1", "TLSv1.2"]; 
-        version = versionStrings [sslSocketCtrl.SSLVersionUsed & 0xFF]; 
+        var versionStrings = ["sslv3", "tlsv1_0", "tlsv1_1", "tlsv1_2"]; 
+        index = versionStrings [sslSocketCtrl.SSLVersionUsed & 0xFF]; 
       }
     }
 
-    if (version != '') {
+    if (index != '') {
       var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
       SSleuthHttpObserver.updateLocEntry(tab, {
-        tlsVersion: version,
+        tlsVersion: index,
       });
     }
 

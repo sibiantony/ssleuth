@@ -149,5 +149,12 @@ const ffToggleDefault = [
 ];
 
 const ssleuthTlsVersions = {
-
+  sslv3   : { ui: "SSLv3.0", state: "bad" }, 
+  tlsv1_0 : { ui: "TLSv1.0", state: "med" }, 
+  tlsv1_1 : { ui: "TLSv1.1", state: "okay" },  
+  tlsv1_2 : { ui: "TLSV1.2", state: "okay" }, 
+  
+  ff_cache: { ui: "<Firefox cache. Reload page>", state: "okay" }, 
+  ff_29plus: { ui: "<Requires Firefox 29+ >", state: "med" },
+  ff_obs : { ui: "<Enable observer. reload>", state: "okay" },
 }

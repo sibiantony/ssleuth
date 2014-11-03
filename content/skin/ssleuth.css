@@ -173,12 +173,16 @@
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
 }
 
-#ssleuth-img-tls-version[state="good"] {
+#ssleuth-img-tls-version[state="okay"] {
     list-style-image: url("chrome://ssleuth/skin/status-good.png"); 
 }
 #ssleuth-img-tls-version[state="bad"] {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
 }
+#ssleuth-img-tls-version[state="med"] {
+    list-style-image: url("chrome://ssleuth/skin/status-medium.png"); 
+}
+
 
 #ssleuth-text-cert-extended-validation[ev="Yes"] {
     color: #28802c; 

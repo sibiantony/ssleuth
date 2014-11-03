@@ -590,22 +590,19 @@ function showCertDetails(cert, domMismatch, ev, win) {
 function showTLSVersion(win) {
   var doc = win.document; 
   var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
-  var tlsVersion = ""
-  if ( SSleuthHttpObserver.responseCache[tab].tlsVersion ) 
-    tlsVersion = SSleuthHttpObserver.responseCache[tab].tlsVersion;
+  var tlsIndex = 'ff_cache';
 
-  if (tlsVersion == "") {
-    tlsVersion = "<Firefox cache. Reload page>";
-  }
+  if ( SSleuthHttpObserver.responseCache[tab].tlsVersion ) 
+    tlsIndex = SSleuthHttpObserver.responseCache[tab].tlsVersion;
+
+  if (tlsIndex == '') 
+    tlsIndex = 'ff_cache';
 
   doc.getElementById("ssleuth-text-tls-version").textContent = 
-      tlsVersion; 
-  // TODO : Make more generic.
-  if (tlsVersion == "SSLv3") {
-    doc.getElementById("ssleuth-img-tls-version").setAttribute("state", "bad");
-  } else {
-    doc.getElementById("ssleuth-img-tls-version").setAttribute("state", "good");
-  }
+      ssleuthTlsVersions[tlsIndex].ui; 
+
+  doc.getElementById("ssleuth-img-tls-version").setAttribute('state', 
+      ssleuthTlsVersions[tlsIndex].state);
 }
 
 function createKeyShortcut(doc) {
