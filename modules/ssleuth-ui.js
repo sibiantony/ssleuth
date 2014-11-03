@@ -52,6 +52,7 @@ var SSleuthUI = {
     //        Do init in preferences handler ?
     initDomainsPanel(window.document);
     initCiphersPanel(window.document);
+    initPanelPreferences(window.document);
   },
 
   uninit: function (window) {
@@ -74,10 +75,7 @@ var SSleuthUI = {
 
     // If the user is navigating with the domains tab
     // reload the data.
-    //if (window.document.getElementById('ssleuth-paneltab-domains')
-      //.getAttribute('_selected') === 'true') {
-      loadDomainsTab();
-    //}
+    loadDomainsTab();
 
     // If the user navigates the tabs with the panel open, 
     //  make it appear smooth. 
@@ -91,12 +89,14 @@ var SSleuthUI = {
   protocolChange: function (proto, data, win) {
     var doc = win.document;
     switch (proto) {
+
     case "unknown":
       setButtonRank(-1, win);
       setBoxHidden("https", true, win);
       setBoxHidden("http", true, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
       break;
+
     case "http":
       setButtonRank(-1, win);
       setBoxHidden("https", true, win);
@@ -122,12 +122,12 @@ var SSleuthUI = {
   },
 
   fillPanel: function (connectionRank,
-    cipherSuite,
-    securityState,
-    cert,
-    domMismatch,
-    ev,
-    win) {
+                        cipherSuite,
+                        securityState,
+                        cert,
+                        domMismatch,
+                        ev,
+                        win) {
     setButtonRank(connectionRank, win);
     panelConnectionRank(connectionRank, win);
 
@@ -827,6 +827,14 @@ function initCiphersPanel(doc) {
   loadCiphersTab();
 }
 
+function initPanelPreferences(doc) {
+  var panelPref = doc.getElementById('ssleuth-paneltab-pref-box'); 
+  panelPref.addEventListener('click', function() {
+    SSleuthPreferences.openTab(0);
+    togglePanel(_ssleuthPanel(_window()));
+    }, false); 
+}
+
 function loadDomainsTab() {
 
   try {
@@ -869,7 +877,7 @@ function loadDomainsTab() {
         let hb = vb.appendChild(create(doc, 'hbox', {})); {
           let str = domain.substring(domain.indexOf(':') + 1);
           hb.appendChild(create(doc, 'description', {
-            value: str,
+            value: cropText(str),
             style: 'font-size: 115%; font-weight: bold;'
           }));
           str = ' ' + stats['count'] + 'x   ';
@@ -995,17 +1003,18 @@ function loadCiphersTab() {
       }
       m_popup.addEventListener("command", function (event) {
         var m = event.currentTarget.parentNode.parentNode.firstChild;
-        var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
+        var csTglList = ssleuthCloneArray(
+            SSleuthUI.prefs.PREFS["suites.toggle"]);
         for (var i = 0; i < csTglList.length; i++) {
           if (m.value === csTglList[i].name) {
             csTglList[i].state = event.target.value;
           }
         }
         SSleuthPreferences.prefService
-          .setCharPref("extensions.ssleuth.suites.toggle", JSON.stringify(csTglList));
+          .setCharPref("extensions.ssleuth.suites.toggle", 
+              JSON.stringify(csTglList));
       }, false);
     }
-
 
   } catch (e) {
     dump("Error loadCiphersTab " + e.message + "\n");

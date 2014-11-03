@@ -628,6 +628,7 @@ function SSleuthPanel(win) {
           }, false);
 
           chb = hb.appendChild(create('hbox', {
+            id: 'ssleuth-paneltab-pref-box',
             class: 'ssleuth-paneltab-tab',
             align: 'baseline', 
             _selected: 'false'

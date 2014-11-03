@@ -1,5 +1,5 @@
 var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating",
-            "ffToggleDefault"];
+            "ffToggleDefault", "ssleuthTlsVersions"];
 
 /* The cipher suites ratings are in its early stages now.
  * This is subject to change in future.
@@ -146,4 +146,8 @@ const ffToggleDefault = [
     ],
     state : "default"
   }
-]
+];
+
+const ssleuthTlsVersions = {
+
+}
