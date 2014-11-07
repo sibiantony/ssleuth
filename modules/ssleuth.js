@@ -165,7 +165,6 @@ function protocolHttps(progress, request, state, win) {
     if (secUI.SSLStatus) {
       sslStatus = secUI.SSLStatus;
     } else {
-      // dump('\nSSLStatus null \n');
       // 1. A rather annoying behaviour : Firefox do not seem to populate
       //  SSLStatus if a tab switches to a page with the same URL.
       //

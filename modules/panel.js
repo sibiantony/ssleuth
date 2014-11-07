@@ -3,6 +3,7 @@ var EXPORTED_SYMBOLS = ["SSleuthPanel"]
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 
+Components.utils.import("resource://ssleuth/utils.js");
 /* There are a hell lot of UI elements for the panel.
  *    And an XUL overlay file is the right way to do these kind of stuff.
  *    But now that overlays are not allowed for restartless addons,
@@ -65,7 +66,7 @@ function SSleuthPanel(win) {
             }));
             vb.appendChild(create('description', {
               id: 'ssleuth-text-cipher-suite-label',
-              value: 'Cipher suite',
+              value: getText('ciphersuite.text'),
               class: 'ssleuth-text-title-class'
             })); {
               let hb = vb.appendChild(create('hbox', {
@@ -92,7 +93,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-key-exchange-label',
-                value: 'Key exchange: ',
+                value: getText('keyexchange.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -109,7 +110,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-authentication-label',
-                value: 'Authentication: ',
+                value: getText('authentication.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -126,7 +127,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-bulk-cipher-label',
-                value: 'Bulk cipher: ',
+                value: getText('bulkcipher.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -143,7 +144,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-hmac-label',
-                value: 'HMAC: ',
+                value: getText('hmac.text'), 
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -175,7 +176,7 @@ function SSleuthPanel(win) {
               flex: '2'
             }));
             chb.appendChild(create('description', {
-              value: 'Perfect Forward Secrecy: ',
+              value: getText('pfs.text'), 
               class: 'ssleuth-text-title-class'
             }));
             chb.appendChild(create('description', {
@@ -211,7 +212,7 @@ function SSleuthPanel(win) {
               flex: '2'
             }));
             chb.appendChild(create('description', {
-              value: 'SSL/TLS Version: ',
+              value: getText('ssltlsversion.text'), 
               class: 'ssleuth-text-title-class'
             }));
             chb.appendChild(create('description', {
@@ -251,7 +252,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-conn-status',
-                value: 'Connection status: ',
+                value: getText('connectionstatus.text'), 
                 class: 'ssleuth-text-title-class'
               }));
               hb.appendChild(create('description', {
@@ -270,7 +271,7 @@ function SSleuthPanel(win) {
             }
             vb.appendChild(create('description', {
               id: 'ssleuth-text-ff-connection-status-broken',
-              value: 'This page has either insecure content or a bad certificate.',
+              value: getText('connectionstatus.insecure'),
               hidden: true,
               class: 'ssleuth-text-body-class'
             }));
@@ -297,7 +298,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-label',
-                value: 'Certificate',
+                value: getText('certificate.text'), 
                 class: 'ssleuth-text-title-class'
               })); {
                 let chb = hb.appendChild(create('hbox', {
@@ -312,7 +313,7 @@ function SSleuthPanel(win) {
             }
             vb.appendChild(create('description', {
               id: 'ssleuth-text-cert-domain-mismatch',
-              value: 'Certificate domain name does not match.',
+              value: getText('certificate.dommismatch'),
               class: 'ssleuth-text-body-class'
             })); {
               let hb = vb.appendChild(create('hbox', {
@@ -320,7 +321,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-ev',
-                value: 'Extended validation: ',
+                value: getText('extendedvalidation.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -342,7 +343,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-sigalg-text',
-                value: 'Signature: ',
+                value: getText('signature.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -351,7 +352,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-pub-key-text',
-                value: 'Key: ',
+                value: getText('certificate.key'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -373,7 +374,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-cn-label',
-                value: 'Common name: ',
+                value: getText('certificate.commonname'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -386,7 +387,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-issuedto',
-                value: 'Issued to: ',
+                value: getText('certificate.issuedto'),
                 class: 'ssleuth-text-body-class'
               })); {
                 let vb = hb.appendChild(create('vbox', {
@@ -408,7 +409,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-issuedby',
-                value: 'Issued by: ',
+                value: getText('certificate.issuedby'),
                 class: 'ssleuth-text-body-class'
               })); {
                 let vb = hb.appendChild(create('vbox', {
@@ -431,7 +432,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-validity-text',
-                value: 'Validity: ',
+                value: getText('certificate.validity'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -471,13 +472,13 @@ function SSleuthPanel(win) {
             id: 'ssleuth-text-http-1',
             class: 'ssleuth-text-title-class'
           }));
-          h1.textContent = "Your connection to this site is not encrypted.";
+          h1.textContent = getText('http.unencrypted');
           let h2 = vb.appendChild(create('description', {
             id: 'ssleuth-text-http-2',
             class: 'ssleuth-text-title-class'
           }));
 
-          h2.textContent = "You can attempt connecting to the secure version of the site if available.";
+          h2.textContent = getText('http.connectattempt');
           vb.appendChild(create('label', {
             id: 'ssleuth-panel-https-link',
             class: 'text-link',
@@ -488,7 +489,7 @@ function SSleuthPanel(win) {
             id: 'ssleuth-text-http-note',
             class: 'ssleuth-text-body-class'
           }));
-          d1.textContent = "Note: The availability of the above link depends on the site\'s offering of the same content over an https connection.";
+          d1.textContent = getText('http.link.disclaimer');
         }
       }
 
@@ -508,7 +509,7 @@ function SSleuthPanel(win) {
           hidden: true
         }));
         hb.appendChild(create('description', {
-          value: 'Domains observer disabled. Enable from preferences'
+          value: getText('observer.disabled')
         }));
       }
       let rb = domainsVb.appendChild(create('richlistbox', {
@@ -531,7 +532,7 @@ function SSleuthPanel(win) {
         flex: '1'
       });
       let desc = csVb.appendChild(create('description', {}));
-      desc.textContent = 'The changes are global. Read the instructions.';
+      desc.textContent = getText('tab.ciphersuites.note');
       let grid = csVb.appendChild(create('grid', {})); {
         let cols = grid.appendChild(create('columns', {}));
         cols.appendChild(create('column', {}));
@@ -584,7 +585,7 @@ function SSleuthPanel(win) {
             class: 'ssleuth-paneltab-tab'
           })); {
             chb.appendChild(create('description', {
-              value: 'Primary'
+              value: getText('tab.primary')
             }));
           }
 
@@ -602,7 +603,7 @@ function SSleuthPanel(win) {
             class: 'ssleuth-paneltab-tab'
           })); {
             chb.appendChild(create('description', {
-              value: 'Domains'
+              value: getText('tab.domains')
             }));
           }
           chb.addEventListener('click', function () {
@@ -617,7 +618,7 @@ function SSleuthPanel(win) {
             class: 'ssleuth-paneltab-tab'
           })); {
             chb.appendChild(create('description', {
-              value: 'Cipher suites'
+              value: getText('tab.ciphersuites')
             }));
           }
           chb.addEventListener('click', function () {
@@ -628,12 +629,12 @@ function SSleuthPanel(win) {
           }, false);
 
           chb = hb.appendChild(create('hbox', {
-            id: 'ssleuth-paneltab-pref-box',
             class: 'ssleuth-paneltab-tab',
             align: 'baseline', 
             _selected: 'false'
           })); {
             phb = chb.appendChild(create('hbox', {
+              id: 'ssleuth-paneltab-pref-box',
               style: 'margin-left: 70px;'
             })); 
             phb.appendChild(create('image', {

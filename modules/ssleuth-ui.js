@@ -111,7 +111,7 @@ var SSleuthUI = {
     case "https":
       setBoxHidden("https", false, win);
       setBoxHidden("http", true, win);
-      doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;   
+      doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
       break;
     }
     
@@ -495,8 +495,13 @@ function showPFS(pfs, win) {
   var rating = Number(pfs * rp.pfs).toFixed(1);
   pfsRating.textContent = rating + "/" + rp.pfs;
 
-  pfsTxt.textContent = pfs ? 'Yes' : 'No';
-  pfsImg.setAttribute('status', pfsTxt.textContent.toLowerCase());
+  if (pfs) {
+    pfsTxt.textContent = getText('general.yes');
+    pfsImg.setAttribute('status', 'yes');
+  } else {
+    pfsTxt.textContent = getText('general.no');
+    pfsImg.setAttribute('status', 'no');
+  }
 }
 
 function showFFState(state, win) {
@@ -529,9 +534,13 @@ function showCertDetails(cert, domMismatch, ev, win) {
   var certRating = doc.getElementById("ssleuth-cert-status-rating");
   var evRating = doc.getElementById("ssleuth-cert-ev-rating");
   var elemEV = doc.getElementById("ssleuth-text-cert-extended-validation");
-  var evText = (ev) ? "Yes" : "No";
-  elemEV.textContent = evText;
-  elemEV.setAttribute("ev", evText);
+  if (ev) {
+    elemEV.textContent = getText('general.yes');
+    elemEV.setAttribute('ev', 'Yes');
+  } else {
+    elemEV.textContent = getText('general.no');
+    elemEV.setAttribute('ev', 'No');
+  }
 
   var rating = (Number(ev) * rp.evCert).toFixed(1);
   evRating.textContent = rating + "/" + rp.evCert;
@@ -706,7 +715,7 @@ function menuEvent(event) {
           // FIXME : The SSleuthUI.prefs is a reference to SSleuth.prefs
           //    which in turn seems to be a reference to preferences module var.
           //    This might work here, but not clean.
-          var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
+          var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
           for (var i = 0; i < csTglList.length; i++) {
             if (m.label === csTglList[i].name) {
               csTglList[i].state = event.target.value;
@@ -751,7 +760,7 @@ function menuCommand(event) {
       prefs.clearUserPref(csList[i]);
     }
 
-    var csTglList = ssleuthCloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
+    var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
     for (i = 0; i < csTglList.length; i++) {
       csTglList[i].state = "default";
     }
@@ -915,15 +924,16 @@ function loadDomainsTab() {
             }));
 
             let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
-              str = 'cert : ' + stats['signature'].hmac + '/' + stats['signature'].enc + '.  ';
-              str += 'key : ' + stats['pubKeySize'] + ' bits ' +
-                stats['pubKeyAlg'];
+              str = getText('certificate.short.text') + 
+                    ' : ' + stats['signature'].hmac + '/' + stats['signature'].enc + '.  ';
+              str += getText('certificate.key.short') + ' : ' + stats['pubKeySize'] 
+                  + ' ' + getText('general.bits') + ' ' + stats['pubKeyAlg'];
               hbCert.appendChild(create(doc, 'description', {
                 value: str
               }));
             }
           } else {
-            str = "Insecure channel!";
+            str = getText('domains.insecurechannel');
             // TODO : To stylesheet
             hb.appendChild(create(doc, 'description', {
               value: str,
@@ -1000,7 +1010,7 @@ function loadCiphersTab() {
       }
       m_popup.addEventListener("command", function (event) {
         var m = event.currentTarget.parentNode.parentNode.firstChild;
-        var csTglList = ssleuthCloneArray(
+        var csTglList = cloneArray(
             SSleuthUI.prefs.PREFS["suites.toggle"]);
         for (var i = 0; i < csTglList.length; i++) {
           if (m.value === csTglList[i].name) {

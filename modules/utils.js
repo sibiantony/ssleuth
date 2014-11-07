@@ -1,9 +1,10 @@
 /*jslint plusplus: true*/
 // "use strict"; 
 
-var EXPORTED_SYMBOLS = ["ssleuthCloneArray", "cropText"];
+var EXPORTED_SYMBOLS = ["cloneArray", "cropText", "getText"];
+Components.utils.import("resource://gre/modules/Services.jsm");
 
-function ssleuthCloneArray(obj) {
+function cloneArray(obj) {
   if (Object.prototype.toString.call(obj) === '[object Array]') {
     var out = [],
       i = 0,
@@ -39,3 +40,15 @@ function cropText(str) {
          sep + 
          str.substr(str.length - suffix);
 };
+
+function getText(name) {
+  try {
+    var bundle = Services.strings
+                  .createBundle("chrome://ssleuth/locale/panel.properties"); 
+    return bundle.GetStringFromName(name); 
+  } catch(e) {
+    return ''; 
+  }
+}
+
+
