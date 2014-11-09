@@ -4,6 +4,7 @@ var EXPORTED_SYMBOLS = ["SSleuth"];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
 
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
@@ -67,12 +68,7 @@ var ProgressListener = {
 
   onLocationChange: function (progress, request, uri) {
     // Get the chrome window from DOM window
-    var win = progress.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-      .getInterface(Ci.nsIWebNavigation)
-      .QueryInterface(Ci.nsIDocShellTreeItem)
-      .rootTreeItem
-      .QueryInterface(Ci.nsIInterfaceRequestor)
-      .getInterface(Ci.nsIDOMWindow);
+    var win = getWinFromProgress(progress); 
     if (!win) return;
 
     // dump("onLocationChange : " + uri.spec + "\n");
@@ -93,8 +89,6 @@ var ProgressListener = {
       }
       // dump("response cache : " 
       //         + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
-      // dump("maxtab : " + SSleuthHttpObserver.maxTabId + " mintab : " 
-      //        + SSleuthHttpObserver.minTabId + "\n"); 
     } catch (e) {
       dump("Error onLocationChange " + e.message + "\n");
     }
@@ -114,16 +108,23 @@ var ProgressListener = {
   },
 
   onStateChange: function (progress, request, flag, status) {
-    return;
+    if (flag & Ci.nsIWebProgressListener.STATE_STOP) {
+      // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
+      // TODO : Check status for error codes.
+      
+      dump ('State is stop \n'); 
+      if (request && SSleuth.prefs.PREFS['domains.observe']) {
+        var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
+        var win = getWinFromProgress(progress); 
+
+        setCrossDomainRating(tab); 
+        SSleuthUI.onStateStop(tab, win); 
+      }
+    }
   },
 
   onSecurityChange: function (progress, request, state) {
-    var win = progress.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-                .getInterface(Ci.nsIWebNavigation)
-                .QueryInterface(Ci.nsIDocShellTreeItem)
-                .rootTreeItem
-                .QueryInterface(Ci.nsIInterfaceRequestor)
-                .getInterface(Ci.nsIDOMWindow);
+    var win = getWinFromProgress(progress);
     var loc = win.content.location;
 
     try {
@@ -352,6 +353,36 @@ function setTLSVersion(request, win) {
   } catch (e) {
     dump('Error setTLSVersion : ' + e.message + '\n');
   }
+}
+
+function setCrossDomainRating(tab) {
+  try {
+    var respCache = SSleuthHttpObserver.responseCache[tab];
+    if (!respCache) return; 
+    let reqs = respCache['reqs'];
+
+    var cxRating = 0; 
+    var count = 0; 
+    for (var [domain, stats] in Iterator(reqs)) {
+      count += stats['count']; 
+      // dump ("domain : "  + domain + "stats count " + stats['count'] +
+      //      " cxrartin : " + stats['cxRating'] + "\n"); 
+      if (domain.indexOf('https:') != -1) { 
+        cxRating += stats['count'] * stats['cxRating'];
+      } 
+    }
+
+    if (count == 0) return; 
+
+    var rating = Number(cxRating/count).toFixed(1);
+    SSleuthHttpObserver.updateLocEntry(tab, {
+       domainsRating: rating,
+    });
+
+  } catch (e) {
+    dump('Error setCrossDomainRating : ' + e.message + '\n'); 
+  }
+
 }
 
 function domainsUpdated() {
@@ -601,6 +632,15 @@ var prefListener = new ssleuthPrefListener(
     SSleuthUI.prefListener(branch, name);
   }
 );
+
+function getWinFromProgress(progress) {
+  return progress.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsIWebNavigation)
+      .QueryInterface(Ci.nsIDocShellTreeItem)
+      .rootTreeItem
+      .QueryInterface(Ci.nsIInterfaceRequestor)
+      .getInterface(Ci.nsIDOMWindow);
+}
 
 function _window() {
   return Services.wm.getMostRecentWindow("navigator:browser");

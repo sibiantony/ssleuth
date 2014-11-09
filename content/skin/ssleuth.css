@@ -227,6 +227,26 @@
 	color : #686868;
 	font-size: 0.75em; 
 }
+#ssleuth-text-domains-rating-numeric {
+    font-size: 0.85em;
+	opacity: 0.75;
+    /* font-weight: bold;*/
+}
+#ssleuth-text-domains-rating-numeric[rank="default"]{
+    color: #5b696c; 
+}
+#ssleuth-text-domains-rating-numeric[rank="low"]{
+    color: #5e0a0a; 
+}    
+#ssleuth-text-domains-rating-numeric[rank="medium"]{
+    color: #e88119;
+}    
+#ssleuth-text-domains-rating-numeric[rank="high"]{
+    color: #3f629e; 
+}    
+#ssleuth-text-domains-rating-numeric[rank="vhigh"]{
+    color: #4f941c; 
+}    
 
 #ssleuth-img-http-omg {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 

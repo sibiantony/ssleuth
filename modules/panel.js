@@ -568,6 +568,10 @@ function SSleuthPanel(win) {
           id: 'ssleuth-text-cipher-rank-numeric',
           class: 'ssleuth-text-title-class'
         }));
+
+        hb.appendChild(create('description', {
+          id: 'ssleuth-text-domains-rating-numeric',
+        }));
       } {
         // Why not just use tabs ? Why this mess ?
         // tabs - gives poor rendering on the panel with unneccesary paddings. 

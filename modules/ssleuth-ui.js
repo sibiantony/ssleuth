@@ -121,6 +121,10 @@ var SSleuthUI = {
     //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
   },
 
+  onStateStop : function (tab, win) {
+    showCrossDomainRating(tab, win);
+  }, 
+
   fillPanel: function (connectionRank,
                         cipherSuite,
                         securityState,
@@ -136,6 +140,8 @@ var SSleuthUI = {
     showFFState(securityState, win);
     showCertDetails(cert, domMismatch, ev, win);
     showTLSVersion(win); 
+    //TODO : Fix tab param
+    showCrossDomainRating(-1, win); 
   },
 
   prefListener: function (branch, name) {
@@ -614,6 +620,22 @@ function showTLSVersion(win) {
       ssleuthTlsVersions[tlsIndex].state);
 }
 
+function showCrossDomainRating(tab, win) {
+  var doc = win.document; 
+  var domainsRating = '...';
+  if (tab == -1) 
+    tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+
+  if ( SSleuthHttpObserver.responseCache[tab].domainsRating ) {
+    domainsRating = SSleuthHttpObserver.responseCache[tab].domainsRating;
+  }
+
+  doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
+    ' | domains avg : ' + domainsRating; 
+  doc.getElementById('ssleuth-text-domains-rating-numeric').setAttribute
+      ('rank', getRatingClass(domainsRating));
+}
+
 function createKeyShortcut(doc) {
   var keyset = doc.createElement("keyset");
   const shortcut =
@@ -1074,6 +1096,22 @@ function preferencesChanged(branch, name) {
     SSleuthUI.prefs.PREFS[name] = branch.getBoolPref(name);
     break;
   }
+}
+
+function getRatingClass(rating) {
+  var rank = 'default';
+  if (rating <= -1) {
+    rank = 'default';
+  } else if (rating < 5) {
+    rank = 'low';
+  } else if (rating < 7) {
+    rank = 'medium';
+  } else if (rating < 9) {
+    rank = 'high';
+  } else if (rating <= 10) {
+    rank = 'vhigh';
+  }
+  return rank; 
 }
 
 
