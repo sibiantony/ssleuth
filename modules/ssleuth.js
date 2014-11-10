@@ -112,7 +112,6 @@ var ProgressListener = {
       // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
       // TODO : Check status for error codes.
       
-      dump ('State is stop \n'); 
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
         var win = getWinFromProgress(progress); 

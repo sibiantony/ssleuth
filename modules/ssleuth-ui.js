@@ -412,20 +412,8 @@ function panelConnectionRank(rank, win) {
 }
 
 function setButtonRank(connectionRank, win) {
-  var buttonRank = "default";
   var doc = win.document;
-
-  if (connectionRank <= -1) {
-    buttonRank = "default";
-  } else if (connectionRank < 5) {
-    buttonRank = "low";
-  } else if (connectionRank < 7) {
-    buttonRank = "medium";
-  } else if (connectionRank < 9) {
-    buttonRank = "high";
-  } else if (connectionRank <= 10) {
-    buttonRank = "vhigh";
-  }
+  var buttonRank = getRatingClass(connectionRank);
 
   _ssleuthBtnImg(win).setAttribute("rank", buttonRank);
 
@@ -631,9 +619,9 @@ function showCrossDomainRating(tab, win) {
   }
 
   doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
-    ' | domains avg : ' + domainsRating; 
-  doc.getElementById('ssleuth-text-domains-rating-numeric').setAttribute
-      ('rank', getRatingClass(domainsRating));
+    ' domains : ' + domainsRating; 
+  doc.getElementById('ssleuth-img-domains-rating').setAttribute
+      ('rank', getRatingClass(domainsRating)); 
 }
 
 function createKeyShortcut(doc) {
@@ -966,17 +954,7 @@ function loadDomainsTab() {
       }
       var cipherRating = 'low';
       if (domain.indexOf('https:') != -1) {
-        if (stats['cxRating'] < 0) {
-          cipherRating = 'default';
-        } else if (stats['cxRating'] < 5) {
-          cipherRating = 'low';
-        } else if (stats['cxRating'] < 7) {
-          cipherRating = 'medium';
-        } else if (stats['cxRating'] < 9) {
-          cipherRating = 'high';
-        } else if (stats['cxRating'] <= 10) {
-          cipherRating = 'vhigh';
-        }
+        cipherRating = getRatingClass(stats['cxRating']);
       }
       ri.setAttribute('rank', cipherRating);
     }

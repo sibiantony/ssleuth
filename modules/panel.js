@@ -570,6 +570,14 @@ function SSleuthPanel(win) {
         }));
 
         hb.appendChild(create('description', {
+          id: 'ssleuth-text-domains-rating-separator',
+          value : ' | ',
+        }));
+        hb.appendChild(create('image', {
+          id: 'ssleuth-img-domains-rating', 
+          width: '8',
+        })); 
+        hb.appendChild(create('description', {
           id: 'ssleuth-text-domains-rating-numeric',
         }));
       } {

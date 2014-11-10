@@ -227,26 +227,30 @@
 	color : #686868;
 	font-size: 0.75em; 
 }
+
+#ssleuth-text-domains-rating-separator,
 #ssleuth-text-domains-rating-numeric {
     font-size: 0.85em;
-	opacity: 0.75;
+	color : #686868;
     /* font-weight: bold;*/
 }
-#ssleuth-text-domains-rating-numeric[rank="default"]{
-    color: #5b696c; 
+#ssleuth-img-domains-rating{
+	opacity: 0.8;
 }
-#ssleuth-text-domains-rating-numeric[rank="low"]{
-    color: #5e0a0a; 
-}    
-#ssleuth-text-domains-rating-numeric[rank="medium"]{
-    color: #e88119;
-}    
-#ssleuth-text-domains-rating-numeric[rank="high"]{
-    color: #3f629e; 
-}    
-#ssleuth-text-domains-rating-numeric[rank="vhigh"]{
-    color: #4f941c; 
-}    
+#ssleuth-img-domains-rating[rank="default"]{
+}
+#ssleuth-img-domains-rating[rank="low"]{
+	list-style-image: url("chrome://ssleuth/skin/status-bad.png");
+}
+#ssleuth-img-domains-rating[rank="medium"]{
+	list-style-image: url("chrome://ssleuth/skin/status-medium.png");
+}
+#ssleuth-img-domains-rating[rank="high"]{
+	list-style-image: url("chrome://ssleuth/skin/status-good.png");
+}
+#ssleuth-img-domains-rating[rank="vhigh"]{
+	list-style-image: url("chrome://ssleuth/skin/status-high.png");
+}
 
 #ssleuth-img-http-omg {
     list-style-image: url("chrome://ssleuth/skin/status-bad.png"); 
@@ -410,7 +414,6 @@
 	font-size: 85%;
 	border-top-left-radius: 2px;
 	border-top-right-radius: 2px;
-
 }
 
 .ssleuth-paneltab-tab[_selected="false"] {
@@ -440,7 +443,6 @@
     font-size: 85% !important;
     /* margin-top: 40px;*/
     /* position: relative;*/
-
 }
 
 .ssleuth-paneltab-domains-item {
