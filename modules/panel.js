@@ -567,19 +567,24 @@ function SSleuthPanel(win) {
         hb.appendChild(create('description', {
           id: 'ssleuth-text-cipher-rank-numeric',
           class: 'ssleuth-text-title-class'
-        }));
+        })); {
+          let chb = hb.appendChild(create('hbox', {
+            id: 'ssleuth-domains-rating-box',
+            align: 'baseline',
+          })); 
 
-        hb.appendChild(create('description', {
-          id: 'ssleuth-text-domains-rating-separator',
-          value : ' | ',
-        }));
-        hb.appendChild(create('image', {
-          id: 'ssleuth-img-domains-rating', 
-          width: '8',
-        })); 
-        hb.appendChild(create('description', {
-          id: 'ssleuth-text-domains-rating-numeric',
-        }));
+          chb.appendChild(create('description', {
+            id: 'ssleuth-text-domains-rating-separator',
+            value : ' | ',
+          }));
+          chb.appendChild(create('image', {
+            id: 'ssleuth-img-domains-rating', 
+            width: '8',
+          })); 
+          chb.appendChild(create('description', {
+            id: 'ssleuth-text-domains-rating-numeric',
+          }));
+        }
       } {
         // Why not just use tabs ? Why this mess ?
         // tabs - gives poor rendering on the panel with unneccesary paddings. 

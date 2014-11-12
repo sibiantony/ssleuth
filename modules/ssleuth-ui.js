@@ -610,13 +610,18 @@ function showTLSVersion(win) {
 
 function showCrossDomainRating(tab, win) {
   var doc = win.document; 
+  if (!SSleuthUI.prefs.PREFS['domains.observe']) {
+    doc.getElementById('ssleuth-domains-rating-box').hidden = true;
+    return;
+  }
+  doc.getElementById('ssleuth-domains-rating-box').hidden = false;
+  
   var domainsRating = '...';
   if (tab == -1) 
     tab = win.gBrowser.selectedBrowser._ssleuthTabId;
 
-  if ( SSleuthHttpObserver.responseCache[tab].domainsRating ) {
+  if ( SSleuthHttpObserver.responseCache[tab].domainsRating ) 
     domainsRating = SSleuthHttpObserver.responseCache[tab].domainsRating;
-  }
 
   doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
     ' domains : ' + domainsRating; 
