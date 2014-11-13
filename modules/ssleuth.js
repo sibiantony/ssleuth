@@ -71,7 +71,7 @@ var ProgressListener = {
     var win = getWinFromProgress(progress); 
     if (!win) return;
 
-    // dump("onLocationChange : " + uri.spec + "\n");
+    // dump("[onLocationChange] : " + uri.spec + "\n");
     try {
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
@@ -103,7 +103,7 @@ var ProgressListener = {
     return;
   },
 
-  onStatusChange: function () {
+  onStatusChange: function (progress, req, status, msg) {
     return;
   },
 
@@ -357,18 +357,21 @@ function setTLSVersion(request, win) {
 function setCrossDomainRating(tab) {
   try {
     var respCache = SSleuthHttpObserver.responseCache[tab];
+
     if (!respCache) return; 
     let reqs = respCache['reqs'];
 
-    var cxRating = 0; 
-    var count = 0; 
+    var cxRating = 0,
+        count = 0,
+        mixed = false; 
+
     for (var [domain, stats] in Iterator(reqs)) {
       count += stats['count']; 
-      // dump ("domain : "  + domain + "stats count " + stats['count'] +
-      //      " cxrartin : " + stats['cxRating'] + "\n"); 
       if (domain.indexOf('https:') != -1) { 
         cxRating += stats['count'] * stats['cxRating'];
-      } 
+      } else if (domain.indexOf('http:') != -1) {
+        mixed = true;
+      }
     }
 
     if (count == 0) return; 
@@ -376,6 +379,7 @@ function setCrossDomainRating(tab) {
     var rating = Number(cxRating/count).toFixed(1);
     SSleuthHttpObserver.updateLocEntry(tab, {
        domainsRating: rating,
+       mixedContent: mixed,
     });
 
   } catch (e) {

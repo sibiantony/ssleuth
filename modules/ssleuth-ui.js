@@ -625,8 +625,12 @@ function showCrossDomainRating(tab, win) {
 
   doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
     ' domains : ' + domainsRating; 
+
+  var ratingClass = getRatingClass(domainsRating);
+  if ( SSleuthHttpObserver.responseCache[tab].mixedContent ) 
+    ratingClass = 'low'; 
   doc.getElementById('ssleuth-img-domains-rating').setAttribute
-      ('rank', getRatingClass(domainsRating)); 
+      ('rank', ratingClass); 
 }
 
 function createKeyShortcut(doc) {
