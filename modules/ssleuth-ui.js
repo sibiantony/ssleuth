@@ -619,15 +619,17 @@ function showCrossDomainRating(tab, win) {
   var domainsRating = '...';
   if (tab == -1) 
     tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+  var respCache = SSleuthHttpObserver.responseCache[tab]; 
 
-  if ( SSleuthHttpObserver.responseCache[tab].domainsRating ) 
-    domainsRating = SSleuthHttpObserver.responseCache[tab].domainsRating;
+  if ( respCache.domainsRating &&
+        respCache.domainsRating != -1 ) 
+    domainsRating = respCache.domainsRating;
 
   doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
     ' domains : ' + domainsRating; 
 
   var ratingClass = getRatingClass(domainsRating);
-  if ( SSleuthHttpObserver.responseCache[tab].mixedContent ) 
+  if ( respCache.mixedContent ) 
     ratingClass = 'low'; 
   doc.getElementById('ssleuth-img-domains-rating').setAttribute
       ('rank', ratingClass); 

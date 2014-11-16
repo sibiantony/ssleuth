@@ -89,6 +89,14 @@ var ProgressListener = {
       }
       // dump("response cache : " 
       //         + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
+      
+      if (win.gBrowser.selectedBrowser._ssleuthTabId) {
+        // onStateChange events will only be received for the current tab.
+        // So we won't catch the STOP event to compute ratings
+        // This is a workaround, and inefficient. 
+        setCrossDomainRating(win.gBrowser.selectedBrowser._ssleuthTabId);
+      }
+
     } catch (e) {
       dump("Error onLocationChange " + e.message + "\n");
     }
@@ -111,7 +119,6 @@ var ProgressListener = {
     if (flag & Ci.nsIWebProgressListener.STATE_STOP) {
       // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
       // TODO : Check status for error codes.
-      
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
         var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
         var win = getWinFromProgress(progress); 
