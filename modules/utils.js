@@ -1,7 +1,7 @@
 /*jslint plusplus: true*/
 // "use strict"; 
 
-var EXPORTED_SYMBOLS = ["cloneArray", "cropText", "getText"];
+var EXPORTED_SYMBOLS = ["cloneArray", "cropText", "getText", "getPlatform"];
 Components.utils.import("resource://gre/modules/Services.jsm");
 
 function cloneArray(obj) {
@@ -51,4 +51,8 @@ function getText(name) {
   }
 }
 
+function getPlatform() {
+  return Components.classes["@mozilla.org/xre/app-info;1"]  
+           .getService(Components.interfaces.nsIXULRuntime).OS;  
+}
 

@@ -186,23 +186,35 @@ function _ssleuthPanel(window) {
 }
 
 function loadStyleSheet() {
-  var sss = Cc["@mozilla.org/content/style-sheet-service;1"]
-    .getService(Components.interfaces.nsIStyleSheetService);
-  var ios = Cc["@mozilla.org/network/io-service;1"]
-    .getService(Components.interfaces.nsIIOService);
-  var uri = ios.newURI("chrome://ssleuth/skin/ssleuth.css", null, null);
-  if (!sss.sheetRegistered(uri, sss.USER_SHEET))
-    sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
+  registerSheet('ssleuth.css');
+  if (getPlatform() == 'Darwin')
+    registerSheet('darwin.css');
+
+  function registerSheet(file) {
+    var sss = Cc["@mozilla.org/content/style-sheet-service;1"]
+      .getService(Components.interfaces.nsIStyleSheetService);
+    var ios = Cc["@mozilla.org/network/io-service;1"]
+      .getService(Components.interfaces.nsIIOService);
+    var uri = ios.newURI("chrome://ssleuth/skin/" + file, null, null);
+    if (!sss.sheetRegistered(uri, sss.USER_SHEET))
+      sss.loadAndRegisterSheet(uri, sss.USER_SHEET);
+  }
 }
 
 function removeStyleSheet() {
-  var sss = Cc["@mozilla.org/content/style-sheet-service;1"]
-    .getService(Components.interfaces.nsIStyleSheetService);
-  var ios = Cc["@mozilla.org/network/io-service;1"]
-    .getService(Components.interfaces.nsIIOService);
-  var uri = ios.newURI("chrome://ssleuth/skin/ssleuth.css", null, null);
-  if (sss.sheetRegistered(uri, sss.USER_SHEET))
-    sss.unregisterSheet(uri, sss.USER_SHEET);
+  unregisterSheet('ssleuth.css'); 
+  if (getPlatform() == 'Darwin')
+    unregisterSheet('darwin.css'); 
+
+  function unregisterSheet(file) {
+    var sss = Cc["@mozilla.org/content/style-sheet-service;1"]
+      .getService(Components.interfaces.nsIStyleSheetService);
+    var ios = Cc["@mozilla.org/network/io-service;1"]
+      .getService(Components.interfaces.nsIIOService);
+    var uri = ios.newURI("chrome://ssleuth/skin/" + file, null, null);
+    if (sss.sheetRegistered(uri, sss.USER_SHEET))
+      sss.unregisterSheet(uri, sss.USER_SHEET);
+  }
 }
 
 function createPanel(panelId, position, window) {
