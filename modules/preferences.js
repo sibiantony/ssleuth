@@ -11,7 +11,7 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://ssleuth/cipher-suites.js");
 
 var ssleuthPanelInfo = {
-  keyExchange: false,
+  keyExchange: true,
   authAlg: true,
   bulkCipher: true,
   HMAC: true,
