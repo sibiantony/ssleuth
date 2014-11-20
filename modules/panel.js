@@ -439,11 +439,25 @@ function SSleuthPanel(win) {
                 id: 'ssleuth-text-cert-validity',
                 class: 'ssleuth-text-body-class'
               }));
+            } {
+              let hb = vb.appendChild(create('hbox', {
+                id: 'ssleuth-text-cert-fingerprint-box',
+                align: 'baseline',
+              })); 
+              hb.appendChild(create('description', {
+                value: getText('certificate.fingerprint'),
+                class: 'ssleuth-text-body-class'
+              })); {
+                let vb = hb.appendChild(create('vbox', {
+                  align: 'baseline',
+                  flex: '1'
+                })); 
+                vb.appendChild(create('description', {
+                  id: 'ssleuth-text-cert-fingerprint',
+                  class: 'ssleuth-text-body-class'
+                }));
+              }
             }
-            vb.appendChild(create('description', {
-              id: 'ssleuth-text-cert-fingerprint',
-              class: 'ssleuth-text-body-class'
-            }));
           }
         }
 

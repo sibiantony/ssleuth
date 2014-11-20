@@ -596,10 +596,13 @@ function showCertDetails(cert, domMismatch, ev, win) {
     .textContent = rating + "/" + rp.signature;
 
   doc.getElementById("ssleuth-text-cert-fingerprint")
-    .textContent = svCert.sha1Fingerprint;
+    .textContent = svCert.sha1Fingerprint.substring(0, 30) + ' ' +
+                    svCert.sha1Fingerprint.substring(30);
 
-  doc.getElementById("ssleuth-text-cert-validity-box").hidden = !(panelInfo.certValidity);
-  doc.getElementById("ssleuth-text-cert-fingerprint").hidden = !(panelInfo.certFingerprint);
+  doc.getElementById("ssleuth-text-cert-validity-box").hidden 
+      = !(panelInfo.certValidity);
+  doc.getElementById("ssleuth-text-cert-fingerprint-box").hidden 
+      = !(panelInfo.certFingerprint);
 }
 
 function showTLSVersion(win) {

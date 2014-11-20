@@ -33,8 +33,7 @@ var SSleuth = {
   extensionShutdown: function () {
     forEachOpenWindow(SSleuth.uninitWindow);
     Services.wm.removeListener(WindowListener);
-    SSleuthUI.shutdown();
-
+    SSleuthUI.shutdown(); 
     SSleuthPreferences.uninit();
     SSleuthHttpObserver.uninit();
     prefListener.unregister();
