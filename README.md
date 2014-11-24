@@ -7,7 +7,7 @@ parameters.
 
 * Mozilla download page : https://addons.mozilla.org/en-US/firefox/addon/ssleuth/
 
-![Screenshot mozilla.org](https://addons.cdn.mozilla.net/img/uploads/previews/full/139/139596.png)
+![Screenshot mozilla.org](https://addons.cdn.mozilla.net/user-media/previews/full/145/145102.png)
 
 This was developed with the intent to rate the encryption ciphers used in an
 SSL/TLS connection. The project maintains a list of cipher suites that are shipped with
