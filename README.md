@@ -24,7 +24,7 @@ assessment of the strength of the cipher.
 
 SSleuth attempts to enhance this visibility of ciphers to the user,
 by ranking it and appropriateley color coding it. 
-The addon panel also gives information on perfect forward secrecy, firefox 
+The addon panel also gives information on forward secrecy, firefox 
 connection status and the certificate details.
 
 ## Rating Rationale
