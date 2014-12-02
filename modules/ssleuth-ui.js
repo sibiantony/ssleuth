@@ -98,7 +98,7 @@ var SSleuthUI = {
       break;
 
     case "http":
-      setButtonRank(-1, win);
+      setButtonRank(0, win);
       setBoxHidden("https", true, win);
       setBoxHidden("http", false, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
