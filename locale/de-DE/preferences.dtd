@@ -1,0 +1,17 @@
+<!ENTITY ssleuth.pref.title.label "SSleuth-Einstellungen" >
+<!ENTITY ssleuth.pref.tab.ssleuthui "Allgemein" >
+<!ENTITY ssleuth.pref.tab.ranking "Verbindungs-Wertung" >
+<!ENTITY ssleuth.pref.tab.about "Über" >
+
+<!ENTITY ssleuth.pref.ui.notifier.label "Anzeige der Benachrichtigung" >
+<!ENTITY ssleuth.pref.ui.notifier.urlbar "Adresszeile" >
+<!ENTITY ssleuth.pref.ui.notifier.toolbar "Toolbar-Button" >
+
+<!ENTITY ssleuth.pref.ui.fontsize "Panel-Textgröße">
+<!ENTITY ssleuth.pref.ui.fontsize.default "Klein: ">
+<!ENTITY ssleuth.pref.ui.fontsize.medium "Mittel: ">
+<!ENTITY ssleuth.pref.ui.fontsize.large "Groß: ">
+
+<!ENTITY ssleuth.pref.ui.fontsize.body "Hauptteil">
+<!ENTITY ssleuth.pref.ui.fontsize.header "Kopfzeilen">
+
