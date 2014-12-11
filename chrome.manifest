@@ -1,4 +1,5 @@
 skin 		ssleuth 	classic/1.0 			content/skin/
 content		ssleuth		content/
 
+locale		ssleuth		de-DE		locale/de-DE/
 locale		ssleuth		en-US		locale/en-US/
