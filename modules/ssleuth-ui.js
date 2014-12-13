@@ -115,10 +115,16 @@ var SSleuthUI = {
       break;
     }
     
-    //doc.getElementById('ssleuth-panel-domains-vbox')
-    //  .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
     //dump ("Box height -- " + 
     //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
+    
+    //  Fixing the height of the panel is a pain. For some strange reasons, 
+    //  without setting this twice, the panel height won't be proper.
+    doc.getElementById('ssleuth-panel-domains-vbox')
+      .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
+    doc.getElementById('ssleuth-panel-domains-vbox')
+      .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
+
   },
 
   onStateStop : function (tab, win) {
@@ -142,6 +148,7 @@ var SSleuthUI = {
     showTLSVersion(win); 
     //TODO : Fix tab param
     showCrossDomainRating(-1, win); 
+
   },
 
   prefListener: function (branch, name) {
@@ -353,6 +360,7 @@ function panelEvent(event) {
         event.button == 0 &&
         ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR)) {
         togglePanel(_ssleuthPanel(_window()));
+
       }
 
     } catch (ex) {
@@ -907,8 +915,6 @@ function loadDomainsTab() {
     //        2) Navigate https page to http, main tab is big, empty space.
     doc.getElementById('ssleuth-panel-domains-vbox')
       .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight); 
-    // dump ("Box height -- " + 
-    //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
 
     for (var [domain, stats] in Iterator(reqs)) {
       let ri = rb.appendChild(create(doc, 'richlistitem', {

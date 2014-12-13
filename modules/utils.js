@@ -26,7 +26,7 @@ function cloneArray(obj) {
 }
 
 function cropText(str) {
-  var len = 35;
+  var len = 30;
   if (str.length <= len) return str;
 
   var sep = '...'; 

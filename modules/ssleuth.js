@@ -160,8 +160,6 @@ function protocolHttp(loc, win) {
 }
 
 function protocolHttps(progress, request, state, win) {
-  //SSleuthUI.protocolChange('https', '', win);
-
   var secUI = win.gBrowser.securityUI;
   if (!secUI) return;
 
