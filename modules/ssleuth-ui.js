@@ -90,17 +90,17 @@ var SSleuthUI = {
     var doc = win.document;
     switch (proto) {
 
-    case "unknown":
-      setButtonRank(-1, win);
-      setBoxHidden("https", true, win);
-      setBoxHidden("http", true, win);
+    case 'unknown':
+      setButtonRank(-1, proto, win);
+      setBoxHidden('https', true, win);
+      setBoxHidden('http', true, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
       break;
 
-    case "http":
-      setButtonRank(0, win);
-      setBoxHidden("https", true, win);
-      setBoxHidden("http", false, win);
+    case 'http':
+      setButtonRank('0.0', proto, win);
+      setBoxHidden('https', true, win);
+      setBoxHidden('http', false, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = true;
 
       var panelLink = doc.getElementById("ssleuth-panel-https-link");
@@ -108,9 +108,9 @@ var SSleuthUI = {
       panelLink.setAttribute("value", data);
       break;
 
-    case "https":
-      setBoxHidden("https", false, win);
-      setBoxHidden("http", true, win);
+    case 'https':
+      setBoxHidden('https', false, win);
+      setBoxHidden('http', true, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
       break;
     }
@@ -138,7 +138,7 @@ var SSleuthUI = {
                         domMismatch,
                         ev,
                         win) {
-    setButtonRank(connectionRank, win);
+    setButtonRank(connectionRank, 'https', win);
     panelConnectionRank(connectionRank, win);
 
     showCipherDetails(cipherSuite, win);
@@ -395,6 +395,7 @@ function panelVisible() {
   // Special case : Firefox does not select menuitems unless the 
   //    panel is visible. Or loadTabs -> loadCiphersTab() ?
   loadCiphersTab();
+  // loadDomainsTab();
 }
 
 function togglePanel(panel) {
@@ -431,27 +432,29 @@ function panelConnectionRank(rank, win) {
     .textContent = (rank + "/10");
 }
 
-function setButtonRank(connectionRank, win) {
+function setButtonRank(connectionRank, proto, win) {
   var doc = win.document;
   var buttonRank = getRatingClass(connectionRank);
 
-  _ssleuthBtnImg(win).setAttribute("rank", buttonRank);
+  _ssleuthBtnImg(win).setAttribute('rank', buttonRank);
 
   if (SSleuthUI.ssleuthBtnLocation == SSleuthUI.ssleuthLoc.URLBAR) {
-    var ssleuthUbRank = doc.getElementById("ssleuth-ub-rank");
+    var ssleuthUbRank = doc.getElementById('ssleuth-ub-rank');
 
-    ssleuthUbRank.setAttribute("rank", buttonRank);
-    if (connectionRank != -1) {
+    ssleuthUbRank.setAttribute('rank', buttonRank);
+    if (proto == 'http') {
+      ssleuthUbRank.textContent = 'http';
+    } else if (connectionRank != -1) {
       ssleuthUbRank.textContent = String(Number(connectionRank).toFixed(1));
     } else {
-      ssleuthUbRank.textContent = "";
+      ssleuthUbRank.textContent = '';
     }
-    _ssleuthButton(win).setAttribute("rank", buttonRank);
+    _ssleuthButton(win).setAttribute('rank', buttonRank);
     // TODO : (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? 'blank' : buttonRank)); 
   }
 
   // URL bar background gradient
-  doc.getElementById("urlbar").setAttribute("_ssleuthrank", 
+  doc.getElementById('urlbar').setAttribute('_ssleuthrank', 
       (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? buttonRank : 'default'));
 }
 
