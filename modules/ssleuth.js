@@ -329,21 +329,29 @@ function setDomainStates(ffStatus, evCert, win) {
 function setTLSVersion(request, win) {
   try {
     var index = ''; 
+    var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2']; 
+
     // TODO : At the moment, depends on observer module. Change.
-    //
-    if (Services.vc.compare(Services.appinfo.platformVersion, "29.0") < 0) {
+    if (Services.vc.compare(Services.appinfo.platformVersion, "36.0") > 0) {
+      var secUI = win.gBrowser.securityUI;
+      if (secUI) {
+        var sslStatus = secUI.SSLStatus;
+        if (sslStatus) 
+          index = versionStrings [sslStatus.protocolVersion & 0xFF]; 
+      }
+    } else if (Services.vc.compare(Services.appinfo.platformVersion, "29.0") < 0) {
       index = 'ff_29plus'; 
     } else if (!SSleuth.prefs.PREFS['domains.observe']) {
       index = 'ff_obs';
     } else if (request instanceof Ci.nsIChannel) {
       var channel = request.QueryInterface(Ci.nsIChannel); 
       var sec = channel.securityInfo; 
+      // 29.0 < FF version < 36.0
       if (sec instanceof Ci.nsISSLSocketControl) {
-        var sslSocketCtrl = sec.QueryInterface(Ci.nsISSLSocketControl); 
-
-        var versionStrings = ["sslv3", "tlsv1_0", "tlsv1_1", "tlsv1_2"]; 
-        index = versionStrings [sslSocketCtrl.SSLVersionUsed & 0xFF]; 
-      }
+       var sslSocketCtrl = sec.QueryInterface(Ci.nsISSLSocketControl); 
+       index = versionStrings [sslSocketCtrl.SSLVersionUsed & 0xFF]; 
+      } 
+      
     }
 
     if (index != '') {
