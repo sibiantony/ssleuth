@@ -488,7 +488,8 @@ function getSignatureAlg(cert) {
     };
 
     // Some certs only have OIDs in them.
-    if (sigText.indexOf('Object Identifier') != -1) {
+    // 1 2 840 10045 = ANSI X9.62 ECDSA signatures
+    if (sigText.indexOf('1 2 840 10045') != -1) {
       if (sigText.indexOf('1 2 840 10045 4 1') != -1) {
         sigText = 'ECDSA with SHA-1';
       } else if (sigText.indexOf('1 2 840 10045 4 3 1') != -1) {
