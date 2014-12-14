@@ -1136,12 +1136,14 @@ function copyToClipboard() {
   switch (SSleuthUI.clipboard.proto) {
     case 'unknown' : 
       break;
+
     case 'http'    : 
       str = getText('http.unencrypted') + '\n' +
               getText('http.connectattempt') + '\n' + 
               data + '\n' + 
               getText('http.link.disclaimer') ;
       break;
+
     case 'https'   :
       str = getText('ciphersuite.text') + ' ' + 
               data.cipherSuite.name + '\n\t' + 
@@ -1150,34 +1152,46 @@ function copyToClipboard() {
             getText('authentication.text') + ' ' + 
               data.cipherSuite.authentication.ui + '\n\t' + 
             getText('bulkcipher.text') + ' ' + 
-              data.cipherSuite.bulkCipher.ui + ' ' + data.cipherSuite.cipherKeyLen + ' ' + getText('general.bits') + '\n\t' + 
+              data.cipherSuite.bulkCipher.ui + ' ' + 
+              data.cipherSuite.cipherKeyLen + ' ' + 
+              getText('general.bits') + '\n\t' + 
+
             getText('hmac.text') + ' ' + 
               data.cipherSuite.HMAC.ui + '\n' + 
             getText('pfs.text') + ' ' + 
-              ( data.cipherSuite.pfs ? getText('general.yes') : getText('general.no')) + '\n' + 
+              ( data.cipherSuite.pfs ? getText('general.yes') 
+                : getText('general.no')) + '\n' + 
             getText('ssltlsversion.text') + ' ' + '\n' + // TODO
             getText('connectionstatus.text') + ' ' + data.state + '\n' + 
             getText('certificate.text') + '\n\t' + 
             getText('extendedvalidation.text') + ' ' + 
-              ( data.cert.ev ? getText('general.yes') : getText('general.no') ) + '\n\t' + 
+              ( data.cert.ev ? getText('general.yes') 
+                : getText('general.no') ) + '\n\t' + 
             getText('signature.text') + ' ' + 
-              data.cert.signatureAlg.hmac + "/" + data.cert.signatureAlg.enc + '\n\t' + 
+              data.cert.signatureAlg.hmac + "/" + 
+              data.cert.signatureAlg.enc + '\n\t' + 
+
             getText('certificate.key') + ' ' + 
-              data.cert.pubKeySize + ' ' + getText('general.bits') + ' ' + data.cert.pubKeyAlg + '\n\t' + 
-            getText('certificate.commonname') + ' ' + 
-              data.cert.serverCert.commonName + '\n\t' + 
+              data.cert.pubKeySize + ' ' + getText('general.bits') 
+              + ' ' + data.cert.pubKeyAlg + '\n\t' ; 
+
+      var svCert = data.cert.serverCert; 
+      str += getText('certificate.commonname') + ' ' + 
+              svCert.commonName + '\n\t' + 
             getText('certificate.issuedto') + ' ' + 
-              data.cert.serverCert.organization + ' ' + 
-              data.cert.serverCert.organizationalUnit + '\n\t' + 
+              svCert.organization + ' ' + 
+              svCert.organizationalUnit + '\n\t' + 
             getText('certificate.issuedby') + ' ' + 
-              data.cert.serverCert.issuerOrganization + ' ' + 
-              data.cert.serverCert.issuerOrganizationUnit + '\n\t' ; 
-      var validity = data.cert.serverCert.validity.QueryInterface(Ci.nsIX509CertValidity);
+              svCert.issuerOrganization + ' ' + 
+              svCert.issuerOrganizationUnit + '\n\t' ; 
+
+      var validity = svCert.validity.QueryInterface(Ci.nsIX509CertValidity);
       str += getText('certificate.validity') + ' ' +  validity.notBeforeGMT +
               ' - ' + validity.notAfterGMT + '\n\t' + 
                 getText('certificate.fingerprint') + ' '  + 
-                data.cert.serverCert.sha1Fingerprint;
+                svCert.sha1Fingerprint;
       break;
+
   }
   clipboardHelper.copyString(str);
 
