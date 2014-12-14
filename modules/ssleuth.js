@@ -6,12 +6,12 @@ const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://ssleuth/cipher-suites.js");
-Components.utils.import("resource://ssleuth/observer.js");
-Components.utils.import("resource://ssleuth/ssleuth-ui.js");
-Components.utils.import("resource://ssleuth/preferences.js");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://ssleuth/cipher-suites.js");
+Cu.import("resource://ssleuth/observer.js");
+Cu.import("resource://ssleuth/ssleuth-ui.js");
+Cu.import("resource://ssleuth/preferences.js");
 
 var SSleuth = {
   prefs: null,
@@ -284,15 +284,14 @@ function protocolHttps(progress, request, state, win) {
     cert.signatureAlg.rating);
 
   // Invoke the UI to do its job
-  SSleuthUI.fillPanel(connectionRating,
-    cipherSuite,
-    securityState,
-    cert,
-    sslStatus.isDomainMismatch,
-    extendedValidation,
-    win);
-  
-  SSleuthUI.protocolChange('https', '', win);
+  SSleuthUI.protocolChange('https', 
+      {rating: connectionRating, 
+       cipherSuite : cipherSuite, 
+       state : securityState, 
+       cert : cert, 
+       domMismatch : sslStatus.isDomainMismatch,
+       ev : extendedValidation }, 
+      win);
 }
 
 function getConnectionRating(csRating, pfs,

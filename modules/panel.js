@@ -666,10 +666,15 @@ function SSleuthPanel(win) {
           })); {
             phb = chb.appendChild(create('hbox', {
               id: 'ssleuth-paneltab-pref-box',
-              style: 'margin-left: 70px;'
+              style: 'margin-left: 50px;'
+            })); 
+            var clipboard = phb.appendChild(create('image', {
+              id : 'ssleuth-img-panel-clipboard',
+              tooltiptext : getText('panel.tooltip.clipboard'), 
             })); 
             phb.appendChild(create('image', {
               id : 'ssleuth-img-panel-pref-icon',
+              tooltiptext : getText('panel.tooltip.preferences'), 
             })); 
           }
         }

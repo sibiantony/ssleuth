@@ -4,15 +4,16 @@ var EXPORTED_SYMBOLS = ["SSleuthUI"]
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
+const Cu = Components.utils;
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/Services.jsm");
+Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+Cu.import("resource://gre/modules/Services.jsm");
 
-Components.utils.import("resource://ssleuth/utils.js");
-Components.utils.import("resource://ssleuth/cipher-suites.js");
-Components.utils.import("resource://ssleuth/preferences.js");
-Components.utils.import("resource://ssleuth/observer.js");
-Components.utils.import("resource://ssleuth/panel.js");
+Cu.import("resource://ssleuth/utils.js");
+Cu.import("resource://ssleuth/cipher-suites.js");
+Cu.import("resource://ssleuth/preferences.js");
+Cu.import("resource://ssleuth/observer.js");
+Cu.import("resource://ssleuth/panel.js");
 
 var SSleuthUI = {
   ssleuthLoc: {
@@ -23,6 +24,8 @@ var SSleuthUI = {
   // Reference to SSleuth.prefs
   prefs: null,
   panelMenuTemplate: null,
+
+  clipboard : { proto : null, data : null},
 
   startup: function (prefs) {
     this.prefs = prefs;
@@ -112,8 +115,16 @@ var SSleuthUI = {
       setBoxHidden('https', false, win);
       setBoxHidden('http', true, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
+
+      fillPanel (data.rating, 
+                  data.cipherSuite, 
+                  data.state,
+                  data.cert, 
+                  data.domMismatch,
+                  data.ev, win); 
       break;
     }
+    SSleuthUI.clipboard = { proto: proto, data: data }; 
     
     //dump ("Box height -- " + 
     //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");
@@ -130,26 +141,6 @@ var SSleuthUI = {
   onStateStop : function (tab, win) {
     showCrossDomainRating(tab, win);
   }, 
-
-  fillPanel: function (connectionRank,
-                        cipherSuite,
-                        securityState,
-                        cert,
-                        domMismatch,
-                        ev,
-                        win) {
-    setButtonRank(connectionRank, 'https', win);
-    panelConnectionRank(connectionRank, win);
-
-    showCipherDetails(cipherSuite, win);
-    showPFS(cipherSuite.pfs, win);
-    showFFState(securityState, win);
-    showCertDetails(cert, domMismatch, ev, win);
-    showTLSVersion(win); 
-    //TODO : Fix tab param
-    showCrossDomainRating(-1, win); 
-
-  },
 
   prefListener: function (branch, name) {
     preferencesChanged(branch, name);
@@ -432,6 +423,25 @@ function panelConnectionRank(rank, win) {
     .textContent = (rank + "/10");
 }
 
+function fillPanel(connectionRank,
+                        cipherSuite,
+                        securityState,
+                        cert,
+                        domMismatch,
+                        ev,
+                        win) {
+    setButtonRank(connectionRank, 'https', win);
+    panelConnectionRank(connectionRank, win);
+
+    showCipherDetails(cipherSuite, win);
+    showPFS(cipherSuite.pfs, win);
+    showFFState(securityState, win);
+    showCertDetails(cert, domMismatch, ev, win);
+    showTLSVersion(win); 
+    //TODO : Fix tab param
+    showCrossDomainRating(-1, win); 
+}
+ 
 function setButtonRank(connectionRank, proto, win) {
   var doc = win.document;
   var buttonRank = getRatingClass(connectionRank);
@@ -881,11 +891,17 @@ function initCiphersPanel(doc) {
 }
 
 function initPanelPreferences(doc) {
-  var panelPref = doc.getElementById('ssleuth-paneltab-pref-box'); 
+  var panelPref = doc.getElementById('ssleuth-img-panel-pref-icon'); 
   panelPref.addEventListener('click', function() {
     SSleuthPreferences.openTab(0);
     togglePanel(_ssleuthPanel(_window()));
     }, false); 
+
+  panelPref = doc.getElementById('ssleuth-img-panel-clipboard');
+  panelPref.addEventListener('click', function() {
+    copyToClipboard();
+    }, false); 
+
 }
 
 function loadDomainsTab() {
@@ -1109,6 +1125,66 @@ function preferencesChanged(branch, name) {
     SSleuthUI.prefs.PREFS[name] = branch.getBoolPref(name);
     break;
   }
+}
+
+function copyToClipboard() {
+  try {
+  const clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
+                            .getService(Ci.nsIClipboardHelper);
+  var str = ''; 
+  var data = SSleuthUI.clipboard.data;
+  switch (SSleuthUI.clipboard.proto) {
+    case 'unknown' : 
+      break;
+    case 'http'    : 
+      str = getText('http.unencrypted') + '\n' +
+              getText('http.connectattempt') + '\n' + 
+              data + '\n' + 
+              getText('http.link.disclaimer') ;
+      break;
+    case 'https'   :
+      str = getText('ciphersuite.text') + ' ' + 
+              data.cipherSuite.name + '\n\t' + 
+            getText('keyexchange.text') + ' ' + 
+              data.cipherSuite.keyExchange.ui + '\n\t' +
+            getText('authentication.text') + ' ' + 
+              data.cipherSuite.authentication.ui + '\n\t' + 
+            getText('bulkcipher.text') + ' ' + 
+              data.cipherSuite.bulkCipher.ui + ' ' + data.cipherSuite.cipherKeyLen + ' ' + getText('general.bits') + '\n\t' + 
+            getText('hmac.text') + ' ' + 
+              data.cipherSuite.HMAC.ui + '\n' + 
+            getText('pfs.text') + ' ' + 
+              ( data.cipherSuite.pfs ? getText('general.yes') : getText('general.no')) + '\n' + 
+            getText('ssltlsversion.text') + ' ' + '\n' + // TODO
+            getText('connectionstatus.text') + ' ' + data.state + '\n' + 
+            getText('certificate.text') + '\n\t' + 
+            getText('extendedvalidation.text') + ' ' + 
+              ( data.cert.ev ? getText('general.yes') : getText('general.no') ) + '\n\t' + 
+            getText('signature.text') + ' ' + 
+              data.cert.signatureAlg.hmac + "/" + data.cert.signatureAlg.enc + '\n\t' + 
+            getText('certificate.key') + ' ' + 
+              data.cert.pubKeySize + ' ' + getText('general.bits') + ' ' + data.cert.pubKeyAlg + '\n\t' + 
+            getText('certificate.commonname') + ' ' + 
+              data.cert.serverCert.commonName + '\n\t' + 
+            getText('certificate.issuedto') + ' ' + 
+              data.cert.serverCert.organization + ' ' + 
+              data.cert.serverCert.organizationalUnit + '\n\t' + 
+            getText('certificate.issuedby') + ' ' + 
+              data.cert.serverCert.issuerOrganization + ' ' + 
+              data.cert.serverCert.issuerOrganizationUnit + '\n\t' ; 
+      var validity = data.cert.serverCert.validity.QueryInterface(Ci.nsIX509CertValidity);
+      str += getText('certificate.validity') + ' ' +  validity.notBeforeGMT +
+              ' - ' + validity.notAfterGMT + '\n\t' + 
+                getText('certificate.fingerprint') + ' '  + 
+                data.cert.serverCert.sha1Fingerprint;
+      break;
+  }
+  clipboardHelper.copyString(str);
+
+  } catch (e) {
+    dump ('copyToClipboard error ' + e.message + '\n'); 
+  }
+
 }
 
 function getRatingClass(rating) {

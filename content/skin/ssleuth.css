@@ -260,11 +260,23 @@
     list-style-image: url("chrome://ssleuth/skin/panel-pref.png"); 
 	margin-top: 2px;
 	margin-bottom: 2px;
+    margin-left: 5px;
 	opacity: 0.2; 
 }
 #ssleuth-img-panel-pref-icon:hover {
 	opacity: 0.5;
 }
+
+#ssleuth-img-panel-clipboard {
+    list-style-image: url("chrome://ssleuth/skin/panel-clipboard.png"); 
+	margin-top: 2px;
+	margin-bottom: 2px;
+	opacity: 0.2; 
+}
+#ssleuth-img-panel-clipboard:hover {
+	opacity: 0.5;
+}
+
 
 #ssleuth-text-cipher-suite-kxchange-notes,
 #ssleuth-text-cipher-suite-auth-notes,
