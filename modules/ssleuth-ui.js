@@ -1213,7 +1213,7 @@ function getRatingClass(rating) {
 }
 
 function _fmt(n) {
-  // TODO return ( isNaN(n) && n ); 
+  if (isNaN(n)) return n; 
 
   // Check if we need decimals 
   return ( (String(n).indexOf('.') != -1)? 
