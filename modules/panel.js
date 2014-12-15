@@ -176,6 +176,7 @@ function SSleuthPanel(win) {
               flex: '2'
             }));
             chb.appendChild(create('description', {
+              id: 'ssleuth-text-p-f-secrecy-label',
               value: getText('pfs.text'), 
               class: 'ssleuth-text-title-class'
             }));
@@ -212,6 +213,7 @@ function SSleuthPanel(win) {
               flex: '2'
             }));
             chb.appendChild(create('description', {
+              id: 'ssleuth-text-tls-version-label', 
               value: getText('ssltlsversion.text'), 
               class: 'ssleuth-text-title-class'
             }));
@@ -445,6 +447,7 @@ function SSleuthPanel(win) {
                 align: 'baseline',
               })); 
               hb.appendChild(create('description', {
+                id: 'ssleuth-text-cert-fingerprint-label', 
                 value: getText('certificate.fingerprint'),
                 class: 'ssleuth-text-body-class'
               })); {

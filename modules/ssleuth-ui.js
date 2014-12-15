@@ -1,5 +1,3 @@
-"use strict";
-
 var EXPORTED_SYMBOLS = ["SSleuthUI"]
 
 const Cc = Components.classes;
@@ -24,8 +22,6 @@ var SSleuthUI = {
   // Reference to SSleuth.prefs
   prefs: null,
   panelMenuTemplate: null,
-
-  clipboard : { proto : null, data : null},
 
   startup: function (prefs) {
     this.prefs = prefs;
@@ -1132,64 +1128,62 @@ function copyToClipboard() {
   const clipboardHelper = Cc["@mozilla.org/widget/clipboardhelper;1"]
                             .getService(Ci.nsIClipboardHelper);
   var str = ''; 
-  var data = SSleuthUI.clipboard.data;
-  switch (SSleuthUI.clipboard.proto) {
-    case 'unknown' : 
+  var win = _window(); 
+  var doc = win.document; 
+
+  function elem(id) {
+    return doc.getElementById(id); 
+  }
+
+  switch (win.content.location.protocol) {
+    case 'http:'    : 
+      str = elem('ssleuth-text-http-1').textContent + '\n' +
+              elem('ssleuth-text-http-2').textContent + '\n' + 
+              elem('ssleuth-panel-https-link').href + '\n' + 
+              elem('ssleuth-text-http-note').textContent; 
       break;
 
-    case 'http'    : 
-      str = getText('http.unencrypted') + '\n' +
-              getText('http.connectattempt') + '\n' + 
-              data + '\n' + 
-              getText('http.link.disclaimer') ;
+    case 'https:'   :
+      str = elem('ssleuth-text-cipher-suite-label').value + '\n' + 
+              elem('ssleuth-text-cipher-suite').textContent + '\n\t' + 
+              elem('ssleuth-text-key-exchange-label').value + ' ' + 
+              elem('ssleuth-text-cipher-suite-kxchange').textContent + '\n\t' + 
+              elem('ssleuth-text-authentication-label').value + ' ' + 
+              elem('ssleuth-text-cipher-suite-auth').textContent + '\n\t' +
+              elem('ssleuth-text-bulk-cipher-label').value + ' ' + 
+              elem('ssleuth-text-cipher-suite-bulkcipher').textContent + '\n\t' + 
+              elem('ssleuth-text-hmac-label').value + ' ' + 
+              elem('ssleuth-text-cipher-suite-hmac').textContent + '\n';
+
+      str += elem('ssleuth-text-p-f-secrecy-label').value + ' ' + 
+              elem('ssleuth-text-p-f-secrecy').textContent + '\n' +
+              elem('ssleuth-text-tls-version-label').value + ' ' + 
+              elem('ssleuth-text-tls-version').textContent + '\n' +
+              elem('ssleuth-text-conn-status').value + ' ' + 
+              elem('ssleuth-text-ff-connection-status').textContent + '\n';
+             
+      str += elem('ssleuth-text-cert-label').value + '\n\t' + 
+              elem('ssleuth-text-cert-ev').value + ' ' + 
+              elem('ssleuth-text-cert-extended-validation').textContent + '\n\t' +
+              elem('ssleuth-text-cert-sigalg-text').value + ' ' + 
+              elem('ssleuth-text-cert-sigalg').textContent + '\n\t' + 
+              elem('ssleuth-text-cert-pub-key-text').value + ' ' + 
+              elem('ssleuth-text-cert-pub-key').textContent + '\n\t' +
+              elem('ssleuth-text-cert-cn-label').value + ' ' +
+              elem('ssleuth-text-cert-common-name').textContent + '\n\t' +
+              elem('ssleuth-text-cert-issuedto').value + ' ' +
+              elem('ssleuth-text-cert-org').textContent + ' ' + 
+              elem('ssleuth-text-cert-org-unit').textContent + '\n\t' + 
+              elem('ssleuth-text-cert-issuedby').value + ' ' +
+              elem('ssleuth-text-cert-issuer-org').textContent + ' ' + 
+              elem('ssleuth-text-cert-issuer-org-unit').textContent + '\n\t' + 
+              elem('ssleuth-text-cert-validity-text').value + ' ' +
+              elem('ssleuth-text-cert-validity').textContent + '\n\t' +
+              elem('ssleuth-text-cert-fingerprint-label').value + ' ' +
+              elem('ssleuth-text-cert-fingerprint').textContent ; 
       break;
 
-    case 'https'   :
-      str = getText('ciphersuite.text') + ' ' + 
-              data.cipherSuite.name + '\n\t' + 
-            getText('keyexchange.text') + ' ' + 
-              data.cipherSuite.keyExchange.ui + '\n\t' +
-            getText('authentication.text') + ' ' + 
-              data.cipherSuite.authentication.ui + '\n\t' + 
-            getText('bulkcipher.text') + ' ' + 
-              data.cipherSuite.bulkCipher.ui + ' ' + 
-              data.cipherSuite.cipherKeyLen + ' ' + 
-              getText('general.bits') + '\n\t' + 
-
-            getText('hmac.text') + ' ' + 
-              data.cipherSuite.HMAC.ui + '\n' + 
-            getText('pfs.text') + ' ' + 
-              ( data.cipherSuite.pfs ? getText('general.yes') 
-                : getText('general.no')) + '\n' + 
-            getText('ssltlsversion.text') + ' ' + '\n' + // TODO
-            getText('connectionstatus.text') + ' ' + data.state + '\n' + 
-            getText('certificate.text') + '\n\t' + 
-            getText('extendedvalidation.text') + ' ' + 
-              ( data.cert.ev ? getText('general.yes') 
-                : getText('general.no') ) + '\n\t' + 
-            getText('signature.text') + ' ' + 
-              data.cert.signatureAlg.hmac + "/" + 
-              data.cert.signatureAlg.enc + '\n\t' + 
-
-            getText('certificate.key') + ' ' + 
-              data.cert.pubKeySize + ' ' + getText('general.bits') 
-              + ' ' + data.cert.pubKeyAlg + '\n\t' ; 
-
-      var svCert = data.cert.serverCert; 
-      str += getText('certificate.commonname') + ' ' + 
-              svCert.commonName + '\n\t' + 
-            getText('certificate.issuedto') + ' ' + 
-              svCert.organization + ' ' + 
-              svCert.organizationalUnit + '\n\t' + 
-            getText('certificate.issuedby') + ' ' + 
-              svCert.issuerOrganization + ' ' + 
-              svCert.issuerOrganizationUnit + '\n\t' ; 
-
-      var validity = svCert.validity.QueryInterface(Ci.nsIX509CertValidity);
-      str += getText('certificate.validity') + ' ' +  validity.notBeforeGMT +
-              ' - ' + validity.notAfterGMT + '\n\t' + 
-                getText('certificate.fingerprint') + ' '  + 
-                svCert.sha1Fingerprint;
+    default:
       break;
 
   }
