@@ -416,7 +416,7 @@ function panelConnectionRank(rank, win) {
     }
   }
   doc.getElementById("ssleuth-text-cipher-rank-numeric")
-    .textContent = (rank + "/10");
+    .textContent = (_fmt(rank) + "/10");
 }
 
 function fillPanel(connectionRank,
@@ -451,7 +451,7 @@ function setButtonRank(connectionRank, proto, win) {
     if (proto == 'http') {
       ssleuthUbRank.textContent = 'http';
     } else if (connectionRank != -1) {
-      ssleuthUbRank.textContent = String(Number(connectionRank).toFixed(1));
+      ssleuthUbRank.textContent = _fmt(Number(connectionRank).toFixed(1));
     } else {
       ssleuthUbRank.textContent = '';
     }
@@ -484,7 +484,7 @@ function showCipherDetails(cipherSuite, win) {
 
   var rating = Number(cipherSuite.rank * rp.cipherSuite / 10).toFixed(1);
   doc.getElementById("ssleuth-cipher-suite-rating").textContent =
-    (rating + "/" + rp.cipherSuite);
+    (_fmt(rating) + "/" + _fmt(rp.cipherSuite));
 
   doc.getElementById("ssleuth-text-cipher-suite-kxchange").textContent =
     (cipherSuite.keyExchange.ui + '.');
@@ -492,7 +492,8 @@ function showCipherDetails(cipherSuite, win) {
     (cipherSuite.authentication.ui + '. ');
 
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent =
-    (cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen + " bits.");
+    (cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen + 
+    " " + getText('general.bits') + ".");
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher-notes").textContent =
     cipherSuite.bulkCipher.notes;
   doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent =
@@ -516,7 +517,7 @@ function showPFS(pfs, win) {
   const pfsRating = doc.getElementById("ssleuth-p-f-secrecy-rating");
 
   var rating = Number(pfs * rp.pfs).toFixed(1);
-  pfsRating.textContent = rating + "/" + rp.pfs;
+  pfsRating.textContent = _fmt(rating) + "/" + _fmt(rp.pfs);
 
   if (pfs) {
     pfsTxt.textContent = getText('general.yes');
@@ -532,12 +533,12 @@ function showFFState(state, win) {
   const rp = SSleuthUI.prefs.PREFS["rating.params"];
 
   doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state);
-  doc.getElementById("ssleuth-text-ff-connection-status").textContent = state;
+  doc.getElementById("ssleuth-text-ff-connection-status").textContent = getText(state);
   const statusRating = doc.getElementById("ssleuth-ff-connection-status-rating");
   var brokenText = doc.getElementById("ssleuth-text-ff-connection-status-broken");
 
   var rating = Number(((state == "Secure") ? 1 : 0) * rp.ffStatus).toFixed(1);
-  statusRating.textContent = rating + "/" + rp.ffStatus;
+  statusRating.textContent = _fmt(rating) + "/" + _fmt(rp.ffStatus);
 
   if (state == "Broken" || state == "Insecure") {
     brokenText.setAttribute("hidden", "false");
@@ -566,7 +567,7 @@ function showCertDetails(cert, domMismatch, ev, win) {
   }
 
   var rating = (Number(ev) * rp.evCert).toFixed(1);
-  evRating.textContent = rating + "/" + rp.evCert;
+  evRating.textContent = _fmt(rating) + "/" + _fmt(rp.evCert);
 
   for (var [id, text] in Iterator({
     "ssleuth-text-cert-org": svCert.organization,
@@ -592,7 +593,7 @@ function showCertDetails(cert, domMismatch, ev, win) {
   doc.getElementById("ssleuth-text-cert-domain-mismatch").hidden = !domMismatch;
 
   var rating = (Number(cert.isValid && !domMismatch) * rp.certStatus).toFixed(1);
-  certRating.textContent = rating + "/" + rp.certStatus;
+  certRating.textContent = _fmt(rating) + "/" + _fmt(rp.certStatus);
 
   if (cert.isValid && !domMismatch) {
     doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "good");
@@ -600,9 +601,9 @@ function showCertDetails(cert, domMismatch, ev, win) {
     doc.getElementById("ssleuth-img-cert-state").setAttribute("state", "bad");
   }
 
-  // Need to localize 'bits'. XUL - may not need ids. 
   doc.getElementById("ssleuth-text-cert-pub-key")
-    .textContent = (cert.pubKeySize + " bits " + cert.pubKeyAlg);
+    .textContent = (cert.pubKeySize + ' ' + getText('general.bits') 
+    + ' '  + cert.pubKeyAlg);
   doc.getElementById("ssleuth-text-cert-pub-key")
     .setAttribute("secure", cert.pubKeyMinSecure.toString());
 
@@ -610,7 +611,7 @@ function showCertDetails(cert, domMismatch, ev, win) {
     .textContent = cert.signatureAlg.hmac + "/" + cert.signatureAlg.enc;
   rating = Number(cert.signatureAlg.rating * rp.signature / 10).toFixed(1);
   doc.getElementById('ssleuth-cert-sigalg-rating')
-    .textContent = rating + "/" + rp.signature;
+    .textContent = _fmt(rating) + "/" + _fmt(rp.signature);
 
   doc.getElementById("ssleuth-text-cert-fingerprint")
     .textContent = svCert.sha1Fingerprint.substring(0, 30) + ' ' +
@@ -658,7 +659,7 @@ function showCrossDomainRating(tab, win) {
     domainsRating = respCache.domainsRating;
 
   doc.getElementById("ssleuth-text-domains-rating-numeric").textContent = 
-    ' domains : ' + domainsRating; 
+    ' domains : ' + _fmt(domainsRating); 
 
   var ratingClass = getRatingClass(domainsRating);
   if ( respCache.mixedContent ) 
@@ -948,19 +949,19 @@ function loadDomainsTab() {
           for (var [ctype, count] in Iterator(stats['ctype'])) {
             switch (ctype) {
             case 'text':
-              str += 'txt: ';
+              str += getText('domains.text.short') + ' ';
               break;
             case 'image':
-              str += 'img: ';
+              str += getText('domains.image.short') + ' ';
               break;
             case 'application':
-              str += 'app: ';
+              str += getText('domains.application.short') + ' ';
               break;
             case 'audio':
-              str += 'aud: ';
+              str += getText('domains.audio.short') + ' ';
               break;
             case 'video':
-              str += 'vid: ';
+              str += getText('domains.video.short') + ' ';
               break;
             }
             str += count + ', ';
@@ -975,7 +976,7 @@ function loadDomainsTab() {
         // Cipher suite hbox
         hb = vb.appendChild(create(doc, 'hbox', {})); {
           if (domain.indexOf('https:') != -1) {
-            str = stats['cxRating'] + '   ' + stats['cipherName'];
+            str = _fmt(stats['cxRating']) + '   ' + stats['cipherName'];
             hb.appendChild(create(doc, 'description', {
               value: str
             }));
@@ -1211,6 +1212,14 @@ function getRatingClass(rating) {
   return rank; 
 }
 
+function _fmt(n) {
+  // TODO return ( isNaN(n) && n ); 
+
+  // Check if we need decimals 
+  return ( (String(n).indexOf('.') != -1)? 
+    Number(n).toLocaleString(undefined, {minimumFractionDigits: 1}):
+    Number(n).toLocaleString() );
+}
 
 function create(doc, elem, attrs) {
   // createElement() Regex warnings are targeting 'script' elements.

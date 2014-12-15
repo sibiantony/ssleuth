@@ -47,7 +47,7 @@ function getText(name) {
                   .createBundle("chrome://ssleuth/locale/panel.properties"); 
     return bundle.GetStringFromName(name); 
   } catch(e) {
-    return ''; 
+    return name; 
   }
 }
 
