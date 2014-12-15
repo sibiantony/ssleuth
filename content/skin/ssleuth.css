@@ -276,7 +276,9 @@
 #ssleuth-img-panel-clipboard:hover {
 	opacity: 0.5;
 }
-
+#ssleuth-img-panel-clipboard:active {
+	opacity: 1.0;
+}
 
 #ssleuth-text-cipher-suite-kxchange-notes,
 #ssleuth-text-cipher-suite-auth-notes,
