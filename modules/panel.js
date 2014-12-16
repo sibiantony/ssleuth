@@ -233,7 +233,8 @@ function SSleuthPanel(win) {
           }
         } {
           let hb = httpsBox.appendChild(create('hbox', {
-            id: 'ssleuth-ff-connection-status'
+            id: 'ssleuth-ff-connection-status',
+            flex: '2'
           })); {
             let vb = hb.appendChild(create('vbox', {
               align: 'left',
@@ -246,7 +247,7 @@ function SSleuthPanel(win) {
           } {
             let vb = hb.appendChild(create('vbox', {
               id: 'ssleuth-ff-connection-status-text-vbox',
-              flex: '2'
+              flex: '1'
             })); {
               let hb = vb.appendChild(create('hbox', {
                 id: 'ssleuth-ff-connection-status-text-hbox',
@@ -271,12 +272,12 @@ function SSleuthPanel(win) {
                 }));
               }
             }
-            vb.appendChild(create('description', {
+            let desc1 = vb.appendChild(create('description', {
               id: 'ssleuth-text-ff-connection-status-broken',
-              value: getText('connectionstatus.insecure'),
               hidden: true,
               class: 'ssleuth-text-body-class'
             }));
+            desc1.textContent = getText('connectionstatus.insecure');
           }
         } {
           let hb = httpsBox.appendChild(create('hbox', {
