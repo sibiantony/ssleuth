@@ -1,9 +1,37 @@
 @-moz-document url(chrome://browser/content/browser.xul) {
 
-description {
+/* MACOS Firefox has something wrong with description
+ * paddings
+ */
+#ssleuth-text-cipher-rank-numeric,
+#ssleuth-text-domains-rating-separator,
+#ssleuth-text-domains-rating-numeric,
+#ssleuth-text-cipher-suite-kxchange,
+#ssleuth-text-cipher-suite-kxchange-notes,
+#ssleuth-text-cipher-suite-auth,
+#ssleuth-text-cipher-suite-auth-notes,
+#ssleuth-text-cipher-suite-bulkcipher,
+#ssleuth-text-cipher-suite-bulkcipher-notes,
+#ssleuth-text-cipher-suite-hmac,
+#ssleuth-text-cipher-suite-hmac-notes,
+#ssleuth-text-p-f-secrecy,
+#ssleuth-text-tls-version,
+#ssleuth-text-ff-connection-status,
+#ssleuth-text-cert-extended-validation,
+#ssleuth-text-cert-sigalg,
+#ssleuth-text-cert-pub-key-text,
+#ssleuth-text-cert-pub-key,
+#ssleuth-text-cert-common-name,
+#ssleuth-text-cert-org,
+#ssleuth-text-cert-org-unit,
+#ssleuth-text-cert-issuer-org,
+#ssleuth-text-cert-issuer-org-unit,
+#ssleuth-text-cert-validity,
+#ssleuth-text-cert-fingerprint
+		{
 	padding-left: 6px;
-	/* color: #003366;*/
+}
+
 }
 
 
-}

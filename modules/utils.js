@@ -31,8 +31,7 @@ function cropText(str) {
 
   var sep = '...'; 
 
-  var sepLen = sep.length,
-      chars = len - sepLen,
+  var chars = len - sep.length,
       prefix = Math.ceil(chars/2),
       suffix = Math.floor(chars/2);
 
@@ -43,6 +42,7 @@ function cropText(str) {
 
 function getText(name) {
   try {
+    // TODO : flush bundle, and create new bundle
     var bundle = Services.strings
                   .createBundle("chrome://ssleuth/locale/panel.properties"); 
     return bundle.GetStringFromName(name); 

@@ -81,7 +81,7 @@
 <!ENTITY ssleuth.pref.about.author "Author : " >
 <!ENTITY ssleuth.pref.about.thanks "Thanks to ">
 <!ENTITY ssleuth.pref.about.translations "Translations : " >
-<!ENTITY ssleuth.pref.about.license "License " >
+<!ENTITY ssleuth.pref.about.license "License" >
 
 <!-- Buttons -->
 <!ENTITY ssleuth.pref.ui.button.apply "Apply" >
