@@ -361,6 +361,7 @@
     border: medium none;
     margin-top: 40px;
     position: relative;
+	width: 230px;
 }
 .ssleuth-pref-category {
 	-moz-appearance: none;

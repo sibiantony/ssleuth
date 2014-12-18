@@ -15,3 +15,79 @@
 <!ENTITY ssleuth.pref.ui.fontsize.body "Hauptteil">
 <!ENTITY ssleuth.pref.ui.fontsize.header "Kopfzeilen">
 
+<!-- New locale strings : 19/12/2014 -->
+<!ENTITY ssleuth.pref.tab.ciphersuites "Cipher suites" >
+
+<!ENTITY ssleuth.pref.panel.panelinfo "Panel information" >
+<!ENTITY ssleuth.pref.panel.ciphersuite "Cipher suite : " >
+<!ENTITY ssleuth.pref.panel.certificate "Certificate : " >
+<!ENTITY ssleuth.pref.panel.keyexchange "Show Key exchange algorithm" >
+<!ENTITY ssleuth.pref.panel.authentication "Show authentication algorithm" >
+<!ENTITY ssleuth.pref.panel.bulkcipher "Show Bulk cipher" >
+<!ENTITY ssleuth.pref.panel.hmac "Show HMAC" >
+<!ENTITY ssleuth.pref.panel.validity "Show validity" >
+<!ENTITY ssleuth.pref.panel.validitytime "Show GMT/UTC time in validity" >
+<!ENTITY ssleuth.pref.panel.fingerprint "Show SHA-1 fingerprint" >
+
+<!ENTITY ssleuth.pref.ui.urlbar "URL bar" >
+<!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorize : Adds a color gradient in the address bar as per the rating" >
+
+<!ENTITY ssleuth.pref.panel.domainstab "Domains tab" >
+<!ENTITY ssleuth.pref.panel.domains.observer "Domains observer : Enable monitoring requests per domain" >
+
+<!-- Configure rating -->
+
+<!ENTITY ssleuth.pref.rating.overall "Overall rating" >
+<!ENTITY ssleuth.pref.rating.total "Total" >
+<!ENTITY ssleuth.pref.rating.overall.desc "Configure overall rating calculation. Supports up to 1 decimal place" >
+<!ENTITY ssleuth.pref.rating.ciphersuite "Cipher suite" >
+<!ENTITY ssleuth.pref.rating.forwardsecrecy "Forward secrecy" >
+<!ENTITY ssleuth.pref.rating.extendedvalidation "Extended validation" >
+<!ENTITY ssleuth.pref.rating.connectionstatus "Connection status" >
+<!ENTITY ssleuth.pref.rating.certstate "Certificate state" >
+<!ENTITY ssleuth.pref.rating.signaturealg "Signature algorithm" >
+
+<!ENTITY ssleuth.pref.rating.ciphersuite "Cipher suite rating" >
+<!ENTITY ssleuth.pref.rating.ciphersuite.desc "Configure cipher suite rating calculation." >
+<!ENTITY ssleuth.pref.rating.keyexchange "Key exchange" >
+<!ENTITY ssleuth.pref.rating.bulkcipher "Bulk cipher" >
+<!ENTITY ssleuth.pref.rating.hmac "HMAC" >
+
+<!-- Cipher suites toggle -->
+
+<!ENTITY ssleuth.pref.ciphersuites.title "Manage cipher suites toggle list" >
+<!ENTITY ssleuth.pref.ciphersuites.desc1 "Manage custom cipher suites list that can be enabled and disabled. The configured lists will appear in the notifier right click menu." >
+<!ENTITY ssleuth.pref.ciphersuites.desc2 "Add a new entry in the left side box, and choose the list of cipher suites from the right side box." >
+<!ENTITY ssleuth.pref.ciphersuites.name "Name" >
+<!ENTITY ssleuth.pref.ciphersuites.state "State" >
+
+<!ENTITY ssleuth.pref.ciphersuites.note.title "Please note:" >
+<!ENTITY ssleuth.pref.ciphersuites.note.1 "Default = The cipher suites in the list are reset to their default value once." >
+<!ENTITY ssleuth.pref.ciphersuites.note.2 "Enable = The cipher suites in the list are enabled for use." >
+<!ENTITY ssleuth.pref.ciphersuites.note.3 "Disable = The cipher suites in the list are disabled from use." >
+<!ENTITY ssleuth.pref.ciphersuites.note.4 "Avoid creating multiple lists that has cipher suites in common." >
+<!ENTITY ssleuth.pref.ciphersuites.note.5 "The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones." >
+<!ENTITY ssleuth.pref.ciphersuites.note.6 "Duplicate names for list names are not allowed." >
+
+<!ENTITY ssleuth.pref.ciphersuites.note.restore "Restore the addon default list. Note that this will remove any user created lists." >
+
+<!ENTITY ssleuth.pref.ciphersuites.reset.title "Reset settings" >
+<!ENTITY ssleuth.pref.ciphersuites.reset.desc "Reset all the cipher suites states to their firefox default values" >
+
+<!ENTITY ssleuth.pref.ui.button.restore "Restore lists" >
+<!ENTITY ssleuth.pref.ui.button.resetall "Reset all" >
+
+<!-- About -->
+<!ENTITY ssleuth.pref.about.author "Author : " >
+<!ENTITY ssleuth.pref.about.thanks "Thanks to ">
+<!ENTITY ssleuth.pref.about.translations "Translations : " >
+<!ENTITY ssleuth.pref.about.license "License" >
+
+<!-- Buttons -->
+<!ENTITY ssleuth.pref.ui.button.apply "Apply" >
+<!ENTITY ssleuth.pref.ui.button.reset "Reset" >
+<!ENTITY ssleuth.pref.ui.button.cancel "Cancel" >
+<!ENTITY ssleuth.pref.ui.button.new "New" >
+<!ENTITY ssleuth.pref.ui.button.edit "Edit" >
+<!ENTITY ssleuth.pref.ui.button.remove "Remove" >
+

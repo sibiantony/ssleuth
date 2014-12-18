@@ -20,20 +20,16 @@
 			<listitem class="ssleuth-pref-category"
 					image=""
 					label="&ssleuth.pref.tab.ssleuthui;"
-					selected="true"
-					tooltiptext="Localize"/>
+					selected="true"/>
 			<listitem class="ssleuth-pref-category"
 					image=""
-					label="&ssleuth.pref.tab.ranking;"
-					tooltiptext="Localize"/>
+					label="&ssleuth.pref.tab.ranking;"/>
 			<listitem class="ssleuth-pref-category"
 					image=""
-					label="Cipher suites"
-					tooltiptext="Localize"/>
+					label="&ssleuth.pref.tab.ciphersuites;"/>
 			<listitem class="ssleuth-pref-category"
 					image=""
-					label="&ssleuth.pref.tab.about;"
-					tooltiptext="Localize"/>
+					label="&ssleuth.pref.tab.about;"/>
 		</listbox>
 
 		<box flex="1" class="ssleuth-pref-main-content">
@@ -103,38 +99,38 @@
 						</radiogroup>
 					</groupbox>
 					<groupbox>
-							<caption label="Panel information"/>
+							<caption label="&ssleuth.pref.panel.panelinfo;"/>
 							<checkbox id="ssleuth-pref-show-cs-key-exchange"
-									label="Cipher suite : Show Key exchange algorithm"/>
+									label="&ssleuth.pref.panel.ciphersuite; &ssleuth.pref.panel.keyexchange;"/>
 							<checkbox id="ssleuth-pref-show-cs-authentication"
-									label="Cipher suite : Show authentication algorithm"/>
+									label="&ssleuth.pref.panel.ciphersuite; &ssleuth.pref.panel.authentication;"/>
 							<checkbox id="ssleuth-pref-show-cs-bulk-cipher"
-									label="Cipher suite : Show Bulk cipher"/>
+									label="&ssleuth.pref.panel.ciphersuite; &ssleuth.pref.panel.bulkcipher;"/>
 							<checkbox id="ssleuth-pref-show-cs-hmac"
-									label="Cipher suite : Show HMAC"/>
+									label="&ssleuth.pref.panel.ciphersuite; &ssleuth.pref.panel.hmac;"/>
 
 							<checkbox id="ssleuth-pref-show-cert-validity"
-									label="Certificate : Show validity"/>
+									label="&ssleuth.pref.panel.certificate; &ssleuth.pref.panel.validity;"/>
 							<checkbox id="ssleuth-pref-show-cert-validity-time"
-									label="Certificate : Show GMT/UTC time in validity"/>
+									label="&ssleuth.pref.panel.certificate; &ssleuth.pref.panel.validitytime;"/>
 							<checkbox id="ssleuth-pref-show-cert-fingerprint"
-									label="Certificate : Show SHA-1 fingerprint"/>
+									label="&ssleuth.pref.panel.certificate; &ssleuth.pref.panel.fingerprint;"/>
 							<!-- checkbox id="ssleuth-pref-show-urlbar-icon"
 									label="Certificate : Show icon in URL bar notifier"/-->
 							<hbox>
-								<button label="Reset" 
+								<button label="&ssleuth.pref.ui.button.reset;" 
 												id="ssleuth-pref-show-panel-info-reset"/>
 							</hbox>
 					</groupbox>
 					<groupbox>
-						<caption label="URL bar"/>
+						<caption label="&ssleuth.pref.ui.urlbar;"/>
             <checkbox id="ssleuth-pref-show-urlbar-gradient"
-                label="Colorize : Adds a color gradient in the address bar as per the rating"/>
+                label="&ssleuth.pref.ui.urlbar.colorize;" />
  					</groupbox>
 					<groupbox>
-						<caption label="Domains tab (Beta)"/>
+						<caption label="&ssleuth.pref.panel.domainstab; (Beta)"/>
              <checkbox id="ssleuth-pref-show-domains-observe"
-                label="Domains observer : enable monitoring requests per domain"/>
+                label="&ssleuth.pref.panel.domains.observer;" />
 					</groupbox>
 
 					</vbox>
@@ -145,8 +141,8 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-						<caption label="Overall rating"/>
-						<description value="Configure overall rating calculation. Supports upto 1 decimal place."/> 
+						<caption label="&ssleuth.pref.rating.overall;"/>
+						<description value="&ssleuth.pref.rating.overall.desc;"/> 
 						<vbox align="baseline">
 							<grid equalsize="always" align="baseline"
 										style="background-color:-moz-dialog; height: 2.0em;">
@@ -161,13 +157,13 @@
 								</columns>
 								<rows>
 									<row>
-										<label value="Cipher suite" flex="1"/>
-										<label value="Forward secrecy" flex="1"/>
-										<label value="Extended validation" flex="1"/>
-										<label value="Firefox status" flex="1"/>
-										<label value="Certificate state" flex="1"/>
-										<label value="Signature algorithm" flex="1"/>
-										<label value="Total" flex="1"/>
+										<label value="&ssleuth.pref.rating.ciphersuite;" flex="1"/>
+										<label value="&ssleuth.pref.rating.forwardsecrecy;" flex="1"/>
+										<label value="&ssleuth.pref.rating.extendedvalidation;" flex="1"/>
+										<label value="&ssleuth.pref.rating.connectionstatus;" flex="1"/>
+										<label value="&ssleuth.pref.rating.certstate;" flex="1"/>
+										<label value="&ssleuth.pref.rating.signaturealg;" flex="1"/>
+										<label value="&ssleuth.pref.rating.total;" flex="1"/>
 									</row>
 									<row align='baseline'>
 										<box flex="1">
@@ -200,10 +196,10 @@
 							</grid>
 							<description value=""/>
 							<hbox>
-								<button label="Apply" 
+								<button label="&ssleuth.pref.ui.button.apply;" 
 												id="ssleuth-pref-cx-ratings-apply"
 												/>
-								<button label="Reset"
+								<button label="&ssleuth.pref.ui.button.reset;"
 												id="ssleuth-pref-cx-ratings-reset"
 												/>
 							</hbox>
@@ -212,8 +208,8 @@
 				<description value=""/>
 
 				<groupbox>
-					<caption label="Cipher suite rating"/>
-					<description value="Configure cipher suite rating calculation."/> 
+					<caption label="&ssleuth.pref.rating.ciphersuite;"/>
+					<description value="&ssleuth.pref.rating.ciphersuite.desc;"/> 
 					<vbox align="baseline">
 						<grid equalsize="always" align="baseline"
 									style="background-color:-moz-dialog; height: 2.0em;">
@@ -225,12 +221,12 @@
 							</columns>
 							<rows>
 								<row>
-									<label value="Key exchange" flex="1"/>
-									<label value="Bulk cipher" flex="1"/>
-									<label value="HMAC" flex="1"/>
-									<label value="Total" flex="1"/>
+									<label value="&ssleuth.pref.rating.keyexchange;" flex="1"/>
+									<label value="&ssleuth.pref.rating.bulkcipher;" flex="1"/>
+									<label value="&ssleuth.pref.rating.hmac;" flex="1"/>
+									<label value="&ssleuth.pref.rating.total;" flex="1"/>
 								</row>
-								<row>
+								<row align='baseline'>
 									<box flex="1">
 										<textbox width="50" type="number" 
 											id="ssleuth-pref-cs-kx-weight" decimalplaces="1"/>
@@ -251,10 +247,10 @@
 					</vbox>
 
 					<hbox>
-						<button label="Apply"
+						<button label="&ssleuth.pref.ui.button.apply;"
 										id="ssleuth-pref-cs-ratings-apply"
 										/>
-						<button label="Reset"
+						<button label="&ssleuth.pref.ui.button.reset;"
 										id="ssleuth-pref-cs-ratings-reset"
 										/>
 					</hbox>
@@ -270,16 +266,16 @@
 				<vbox class="ssleuth-pref-view-container">
 
 					<groupbox>
-						<caption label="Manage cipher suites toggle list"/>
-						<description value="Manage custom cipher suites list that can be enabled and disabled. The configured lists will appear in the notifier right click menu."/>
-						<description value="Add a new entry in the left side box, and choose the list of cipher suites from the right side box." />
+						<caption label="&ssleuth.pref.ciphersuites.title;"/>
+						<description value="&ssleuth.pref.ciphersuites.desc1;"/>
+						<description value="&ssleuth.pref.ciphersuites.desc2;" />
 
 						<hbox flex="1">
 							<richlistbox id="ssleuth-pref-mng-cs-entrybox" flex="1">
 								<listheader equalsize="always" id="ssleuth-pref-mng-cs-header"
 										style="border: 0; padding: 0; -moz-appearance: none;">
-									<treecol label="Name" flex="1"/>
-									<treecol label="State" flex="1"/>
+									<treecol label="&ssleuth.pref.ciphersuites.name;" flex="1"/>
+									<treecol label="&ssleuth.pref.ciphersuites.state;" flex="1"/>
 								</listheader>
 							</richlistbox>
 
@@ -290,44 +286,43 @@
 
 						<hbox>
 							<hbox>
-								<button label="New" 
+								<button label="&ssleuth.pref.ui.button.new;" 
 												id="ssleuth-pref-mng-cs-entry-new"
 												/>
-								<button label="Edit" 
+								<button label="&ssleuth.pref.ui.button.edit;" 
 												id="ssleuth-pref-mng-cs-entry-edit"
 												/>
-								<button label="Remove" 
+								<button label="&ssleuth.pref.ui.button.remove;" 
 												id="ssleuth-pref-mng-cs-entry-remove"
 												/>
 							</hbox>
 							<hbox id="ssleuth-pref-mng-cs-edit-buttons" hidden="true">
-								<button label="Apply"
+								<button label="&ssleuth.pref.ui.button.apply;"
 												id="ssleuth-pref-mng-cs-edit-apply"
 												/>
-								<button label="Cancel"
+								<button label="&ssleuth.pref.ui.button.cancel;"
 												id="ssleuth-pref-mng-cs-edit-cancel"
 												/>
 							</hbox>
 						</hbox>
 					</groupbox>
 					<groupbox>
-						<caption label="Please note:"/>
+						<caption label="&ssleuth.pref.ciphersuites.note.title;"/>
 						<label class="text-link" 
 														href="https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling"
-														value="More on cipher suites enabling and disabling."/>
+														value="Project wiki - Cipher suites enabling and disabling."/>
 						<html:ul>
-							<html:li>Default = The cipher suites in the list are reset to their default value once.
-								Following which the states are left untouched.</html:li>
-							<html:li>Enable = The cipher suites in the list are enabled for use.</html:li>
-							<html:li>Disable = The cipher suites in the list are disabled from use.</html:li>
-							<html:li>Please avoid creating multiple lists that has common cipher suites.</html:li>
-							<html:li>The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones.</html:li>
-							<html:li>Duplicate names for list names are not allowed</html:li>
+							<html:li>&ssleuth.pref.ciphersuites.note.1;</html:li>
+							<html:li>&ssleuth.pref.ciphersuites.note.2;</html:li>
+							<html:li>&ssleuth.pref.ciphersuites.note.3;</html:li>
+							<html:li>&ssleuth.pref.ciphersuites.note.4;</html:li>
+							<html:li>&ssleuth.pref.ciphersuites.note.5;</html:li>
+							<html:li>&ssleuth.pref.ciphersuites.note.6;</html:li>
 						</html:ul>
 
-						<description value="Restore the addon default list. Note that this will remove any user created lists."/>
+						<description value="&ssleuth.pref.ciphersuites.note.restore;"/>
 						<hbox>
-							<button label="Restore lists" 
+							<button label="&ssleuth.pref.ui.button.restore;" 
 											id="ssleuth-pref-mng-cs-entry-restore-default"
 											/>
 						</hbox>
@@ -335,10 +330,10 @@
 					</groupbox>
 
 					<groupbox>
-						<caption label="Reset settings"/>
-						<description value="Reset all the cipher suites states to their firefox default values"/>
+						<caption label="&ssleuth.pref.ciphersuites.reset.title;"/>
+						<description value="&ssleuth.pref.ciphersuites.reset.desc;"/>
 						<hbox>
-							<button label="Reset all"
+							<button label="&ssleuth.pref.ui.button.resetall;"
 											id="ssleuth-pref-cs-reset-all-cs"/>
 						</hbox>
 					</groupbox>
@@ -351,8 +346,8 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-						<caption label="SSleuth version 0.3.4"/>
-						<description value="Author : Sibi Antony"/>
+						<caption label="SSleuth v0.3.4"/>
+						<description value="&ssleuth.pref.about.author; Sibi Antony"/>
 						<description class="ssleuth-pref-text" >
 								Your feedback and development/translation support are welcome.
 								See the project page for more details.
@@ -362,12 +357,14 @@
 														value="https://github.com/sibiantony/ssleuth"/>
 					</groupbox>
 					<groupbox>
-						<caption label="Thanks to"/>
-							<description value="John Souvestre - Beta tests"/>
+						<caption label='&ssleuth.pref.about.thanks;' />
+							<description value=' • John Souvestre (beta tests)'/>
+							<description value='&ssleuth.pref.about.translations;'/>
+							<description value=' • Jei Four (de-DE)' />
 					</groupbox>
 
 					<groupbox>
-						<caption label="License"/>
+						<caption label="&ssleuth.pref.about.license;"/>
 						<description class="ssleuth-pref-text">
 							SSleuth is free software: You can redistribute it and/or modify 
 							it under the terms of the GNU General Public License as published by 
