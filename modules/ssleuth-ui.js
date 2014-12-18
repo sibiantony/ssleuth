@@ -32,45 +32,45 @@ var SSleuthUI = {
     removeStyleSheet();
   },
 
-  init: function (window) {
+  init: function (win) {
     this.ssleuthBtnLocation = this.prefs.PREFS["notifier.location"];
-    var ssleuthButton = createButton(window);
+    var ssleuthButton = createButton(win);
     installButton(ssleuthButton,
       true,
-      window.document);
+      win.document);
 
-    createPanelMenu(window.document);
+    createPanelMenu(win.document);
 
-    createKeyShortcut(window.document);
+    createKeyShortcut(win.document);
 
-    var ssleuthPanel = _ssleuthPanel(window);
-    var panelVbox = SSleuthPanel(window);
+    var ssleuthPanel = _ssleuthPanel(win);
+    var panelVbox = SSleuthPanel(win);
     ssleuthPanel.appendChild(panelVbox);
-    setPanelFont(this.prefs.PREFS["panel.fontsize"], window.document);
+    setPanelFont(this.prefs.PREFS["panel.fontsize"], win.document);
     // TODO : Optimize this handlings. Only when HTTP obs enabled ?
     //        Do init in preferences handler ?
-    initDomainsPanel(window.document);
-    initCiphersPanel(window.document);
-    initPanelPreferences(window.document);
+    initDomainsPanel(win.document);
+    initCiphersPanel(win.document);
+    initPanelPreferences(win.document);
   },
 
-  uninit: function (window) {
+  uninit: function (win) {
     // Cleanup everything! 
     // Removing the button deletes the overlay elements as well 
     try {
-      removePanelMenu(window.document);
-      removeButton(_ssleuthButton(window));
-      deleteKeyShortcut(window.document);
+      removePanelMenu(win.document);
+      removeButton(_ssleuthButton(win));
+      deleteKeyShortcut(win.document);
     } catch (e) {
       dump("Error SSleuth UI uninit : " + e.message + "\n");
     }
   },
 
-  onLocationChange: function (window, urlChanged) {
+  onLocationChange: function (win, urlChanged) {
     // The document elements are not available until a 
     // successful init. So we need to add the child panel
     // for the first time 
-    if (!window) return;
+    if (!win) return;
 
     // If the user is navigating with the domains tab
     // reload the data.
@@ -78,7 +78,7 @@ var SSleuthUI = {
 
     // If the user navigates the tabs with the panel open, 
     //  make it appear smooth. 
-    var ssleuthPanel = _ssleuthPanel(window);
+    var ssleuthPanel = _ssleuthPanel(win);
     if (ssleuthPanel.state == "open") {
       showPanel(ssleuthPanel, true);
     }
@@ -112,12 +112,7 @@ var SSleuthUI = {
       setBoxHidden('http', true, win);
       doc.getElementById('ssleuth-img-cipher-rank-star').hidden = false;
 
-      fillPanel (data.rating, 
-                  data.cipherSuite, 
-                  data.state,
-                  data.cert, 
-                  data.domMismatch,
-                  data.ev, win); 
+      fillPanel(data, win); 
       break;
     }
     SSleuthUI.clipboard = { proto: proto, data: data }; 
@@ -156,9 +151,8 @@ function _window() {
   return Services.wm.getMostRecentWindow("navigator:browser");
 }
 
-function _ssleuthButton(window) {
+function _ssleuthButton(win) {
   const ui = SSleuthUI;
-  const win = window;
   if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
     return win.document.getElementById("ssleuth-tb-button");
   } else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
@@ -175,8 +169,8 @@ function _ssleuthBtnImg(win) {
   }
 }
 
-function _ssleuthPanel(window) {
-  return window.document.getElementById("ssleuth-panel");
+function _ssleuthPanel(win) {
+  return win.document.getElementById("ssleuth-panel");
 }
 
 function loadStyleSheet() {
@@ -211,8 +205,8 @@ function removeStyleSheet() {
   }
 }
 
-function createPanel(panelId, position, window) {
-  var panel = create(window.document, 'panel', {
+function createPanel(panelId, position, win) {
+  var panel = create(win.document, 'panel', {
     id: panelId,
     position: position,
     type: 'arrow'
@@ -272,9 +266,9 @@ function installButton(ssleuthButton, firstRun, document) {
   }
 }
 
-function createButton(window) {
+function createButton(win) {
   try {
-    const doc = window.document;
+    const doc = win.document;
     const ui = SSleuthUI;
     var button;
     var panelPosition;
@@ -310,7 +304,7 @@ function createButton(window) {
     button.addEventListener("keypress", panelEvent, false);
 
     button.appendChild(createPanel("ssleuth-panel",
-      panelPosition, window));
+      panelPosition, win));
 
     if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
       button.appendChild(create(doc, 'description', {
@@ -419,20 +413,15 @@ function panelConnectionRank(rank, win) {
     .textContent = (_fmt(rank) + "/10");
 }
 
-function fillPanel(connectionRank,
-                        cipherSuite,
-                        securityState,
-                        cert,
-                        domMismatch,
-                        ev,
-                        win) {
-    setButtonRank(connectionRank, 'https', win);
-    panelConnectionRank(connectionRank, win);
+function fillPanel(data, win) {
 
-    showCipherDetails(cipherSuite, win);
-    showPFS(cipherSuite.pfs, win);
-    showFFState(securityState, win);
-    showCertDetails(cert, domMismatch, ev, win);
+    setButtonRank(data.rating, 'https', win);
+    panelConnectionRank(data.rating, win);
+
+    showCipherDetails(data.cipherSuite, win);
+    showPFS(data.cipherSuite.pfs, win);
+    showFFState(data.state, win);
+    showCertDetails(data.cert, data.domMismatch, data.ev, win);
     showTLSVersion(win); 
     //TODO : Fix tab param
     showCrossDomainRating(-1, win); 
