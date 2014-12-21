@@ -577,10 +577,10 @@ function showCertDetails(cert, domMismatch, ev, win) {
 
   if (panelInfo.validityTime)
     certValidity.textContent = validity.notBeforeGMT +
-    " till " + validity.notAfterGMT;
+    " -- " + validity.notAfterGMT;
   else
     certValidity.textContent = validity.notBeforeLocalDay +
-    " till " + validity.notAfterLocalDay;
+    " -- " + validity.notAfterLocalDay;
 
   doc.getElementById("ssleuth-text-cert-domain-mismatch").hidden = !domMismatch;
 
