@@ -74,7 +74,11 @@ var SSleuthUI = {
 
     // If the user is navigating with the domains tab
     // reload the data.
-    loadDomainsTab();
+    // resetDomains(win.doc);
+    if (win.document.getElementById('ssleuth-paneltab-domains')
+     .getAttribute('_selected') === 'true') {
+      loadDomainsTab();
+    }
 
     // If the user navigates the tabs with the panel open, 
     //  make it appear smooth. 
@@ -115,7 +119,6 @@ var SSleuthUI = {
       fillPanel(data, win); 
       break;
     }
-    SSleuthUI.clipboard = { proto: proto, data: data }; 
     
     //dump ("Box height -- " + 
     //  doc.getElementById('ssleuth-panel-main-vbox').scrollHeight + "\n");

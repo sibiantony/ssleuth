@@ -44,7 +44,7 @@ function SSleuthPanel(win) {
           id: 'ssleuth-panel-vbox-https',
           flex: '2',
           width: HTTPS_PANEL_WIDTH,
-          height: '250',
+          // height: '250',
           hidden: 'true'
         })); {
           let hb = httpsBox.appendChild(create('hbox', {
@@ -471,7 +471,7 @@ function SSleuthPanel(win) {
           align: 'baseline',
           flex: '2',
           width: HTTP_PANEL_WIDTH,
-          height: '100',
+          //height: '100',
           hidden: 'true'
         })); {
           let vb = httpBox.appendChild(create('vbox', {
@@ -523,7 +523,7 @@ function SSleuthPanel(win) {
       }); {
         let hb = domainsVb.appendChild(create('hbox', {
           id: 'ssleuth-paneltab-domains-disabled-text',
-          maxheight: '150',
+          //maxheight: '150',
           hidden: true
         }));
         hb.appendChild(create('description', {
@@ -630,7 +630,7 @@ function SSleuthPanel(win) {
             doc.getElementById('ssleuth-panel-deck').selectedIndex = 0;
             doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
             doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
-            this.setAttribute('_selected', 'true');
+            doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'true');
           }, false);
           chb = hb.appendChild(create('hbox', {
             id: 'ssleuth-paneltab-domains',
@@ -645,7 +645,7 @@ function SSleuthPanel(win) {
             doc.getElementById('ssleuth-panel-deck').selectedIndex = 1;
             doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
             doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'false');
-            this.setAttribute('_selected', 'true');
+            doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'true');
           }, false);
           chb = hb.appendChild(create('hbox', {
             id: 'ssleuth-paneltab-cipher',
@@ -660,7 +660,7 @@ function SSleuthPanel(win) {
             doc.getElementById('ssleuth-panel-deck').selectedIndex = 2;
             doc.getElementById('ssleuth-paneltab-main').setAttribute('_selected', 'false');
             doc.getElementById('ssleuth-paneltab-domains').setAttribute('_selected', 'false');
-            this.setAttribute('_selected', 'true');
+            doc.getElementById('ssleuth-paneltab-cipher').setAttribute('_selected', 'true');
           }, false);
 
           chb = hb.appendChild(create('hbox', {
