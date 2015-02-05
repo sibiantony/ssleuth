@@ -73,7 +73,9 @@ var ProgressListener = {
     // dump("[onLocationChange] : " + uri.spec + "\n");
     try {
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
-        var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
+        // var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
+        var domWin = progress.DOMWindow;
+        var tab = win.gBrowser.getBrowserForDocument(domWin.top.document)._ssleuthTabId; 
 
         // Re-init. New location, new cache.
         // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
@@ -119,8 +121,11 @@ var ProgressListener = {
       // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
       // TODO : Check status for error codes.
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
-        var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
+        // var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
         var win = getWinFromProgress(progress); 
+
+        var domWin = progress.DOMWindow;
+        var tab = win.gBrowser.getBrowserForDocument(domWin.top.document)._ssleuthTabId; 
 
         setCrossDomainRating(tab); 
         SSleuthUI.onStateStop(tab, win); 
