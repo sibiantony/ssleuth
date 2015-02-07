@@ -64,7 +64,7 @@ var SSleuthHttpObserver = {
   },
 
   uninit: function () {
-    if (!this.enabled) return;
+    if (!SSleuthHttpObserver.enabled) return;
 
     try {
       Services.obs.removeObserver(SSleuthHttpObserver,
@@ -104,6 +104,7 @@ var SSleuthHttpObserver = {
       return;
     if (!(subject instanceof Ci.nsIHttpChannel)) return;
     if (!SSleuthHttpObserver.enabled) return;
+
 
     try {
       var channel = subject.QueryInterface(Ci.nsIHttpChannel);
@@ -188,7 +189,7 @@ function updateResponseCache(channel) {
     var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
 
     // dump("url : " + url + " content : " + channel.contentType
-    //   + " host ID : " + hostId + "\n"); 
+       // + " host ID : " + hostId + "\n"); 
 
     var browser = getTabForReq(channel);
 
