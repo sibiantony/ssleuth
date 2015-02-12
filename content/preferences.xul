@@ -310,7 +310,7 @@
 						<caption label="&ssleuth.pref.ciphersuites.note.title;"/>
 						<label class="text-link" 
 														href="https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling"
-														value="Project wiki - Cipher suites enabling and disabling."/>
+														value="&ssleuth.pref.ciphersuites.wiki;"/>
 						<html:ul>
 							<html:li>&ssleuth.pref.ciphersuites.note.1;</html:li>
 							<html:li>&ssleuth.pref.ciphersuites.note.2;</html:li>

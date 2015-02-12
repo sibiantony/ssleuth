@@ -73,6 +73,7 @@
 
 <!ENTITY ssleuth.pref.ciphersuites.reset.title "Reset settings" >
 <!ENTITY ssleuth.pref.ciphersuites.reset.desc "Reset all the cipher suites states to their firefox default values" >
+<!ENTITY ssleuth.pref.ciphersuites.wiki "Project wiki - Cipher suites enabling and disabling." >
 
 <!ENTITY ssleuth.pref.ui.button.restore "Restore lists" >
 <!ENTITY ssleuth.pref.ui.button.resetall "Reset all" >

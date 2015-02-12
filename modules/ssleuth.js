@@ -221,7 +221,6 @@ function protocolHttps(progress, request, state, win) {
     name: cipherName,
     rank: cs.cipherSuiteStrength.LOW,
     pfs: 0,
-    notes: '',
     cipherKeyLen: sslStatus.secretKeyLength,
     keyExchange: null,
     authentication: null,
@@ -275,9 +274,9 @@ function protocolHttps(progress, request, state, win) {
   // Weak keys are rated down.
   !cert.pubKeyMinSecure && (cert.signatureAlg.rating = 0);
 
-  cipherSuite.notes = cipherSuite.keyExchange.notes +
-    cipherSuite.bulkCipher.notes +
-    cipherSuite.HMAC.notes;
+  // cipherSuite.notes = cipherSuite.keyExchange.notes +
+  //  cipherSuite.bulkCipher.notes +
+  //  cipherSuite.HMAC.notes;
 
   const csWeighting = SSleuth.prefs.PREFS['rating.ciphersuite.params'];
   // Calculate ciphersuite rank  - All the cipher suite params ratings

@@ -133,10 +133,10 @@
         rg = document.createElement("radiogroup");
         rg.setAttribute("orient", "horizontal");
         rg.setAttribute("flex", "1");
-        for (var s of ["Default", "Enable", "Disable"]) {
+        for (var s of ["default", "enable", "disable"]) {
           rd = document.createElement("radio"); 
-          rd.setAttribute("label", s);
-          rd.setAttribute("value", s.toLowerCase()); 
+          rd.setAttribute("label", prefUI.getText('general.' + s));
+          rd.setAttribute("value", s); 
           if (cs.state == s.toLowerCase()) {
             rd.setAttribute("selected", "true");
           }
@@ -537,6 +537,28 @@
     csRatingReset : function() {
       prefs.clearUserPref(PREF_CS_RATING);
       prefUI.initRatings();
+    },
+
+    getText : function(name) {
+      try {
+        // TODO : flush bundle, and create new bundle. Cleanup
+        // var bundle = Services.strings
+        //              .createBundle("chrome://ssleuth/locale/panel.properties"); 
+        var src="chrome://ssleuth/locale/panel.properties";
+        var localeService =
+            Components.classes["@mozilla.org/intl/nslocaleservice;1"]
+            .getService(Components.interfaces.nsILocaleService);
+        var appLocale = localeService.getApplicationLocale();
+        var stringBundleService =
+            Components.classes["@mozilla.org/intl/stringbundle;1"]
+            .getService(Components.interfaces.nsIStringBundleService);
+        var bundle = stringBundleService.createBundle(src, appLocale);
+        return bundle.GetStringFromName(name); 
+
+      } catch(e) {
+        dump("Error preferences ui : " + e.message); 
+        return name; 
+      }
     },
 
   };

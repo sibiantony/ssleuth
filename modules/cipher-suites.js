@@ -21,9 +21,9 @@ const ssleuthCipherSuites = {
     { name: "SSL_RSA_FIPS",  rank: 5,  pfs: 0, 
       ui: "RSA",     notes: "" },
     { name: "TLS_RSA_EXPORT",  rank: 2, pfs: 0, 
-      ui: "RSA EXPORT",   notes: "Weak Kx. " },
+      ui: "RSA EXPORT",   notes: "" },
     { name: "",         rank: 0,  pfs: 0,
-      ui: "Unknown",  notes: "Unknown key exchange type" },
+      ui: "Unknown",  notes: "" },
   ],
 
   // No known weaknesses for the algorithms here. Except for the key length.
@@ -51,17 +51,17 @@ const ssleuthCipherSuites = {
     { name: "SEED_CBC",         rank: 8,    ui: "SEED CBC",   notes: "" },
     { name: "3DES_EDE_CBC",     rank: 7,    ui: "3DES EDE CBC", notes: "" },
     { name: "RC4_128",    rank: 5,  
-      ui: "RC4",      notes: "Considered unsafe." },
+      ui: "RC4",      notes: "note.unsafe" },
     { name: "DES_CBC",    rank: 2,  
-      ui: "DES CBC",  notes: "Weak" },
+      ui: "DES CBC",  notes: "note.weak" },
     { name: "DES40_CBC",  rank: 2,  
-      ui: "DES CBC",  notes: "Weak" },
+      ui: "DES CBC",  notes: "note.weak" },
     { name: "RC2_CBC_40", rank: 2,  
-      ui: "RC2 CBC",  notes: "Weak" },
+      ui: "RC2 CBC",  notes: "note.weak" },
     { name: "RC4_40",     rank: 2,  
-      ui: "RC4",      notes: "Weak" },
+      ui: "RC4",      notes: "note.weak" },
     { name: "",           rank: 0, 
-      ui: "Unknown",  notes: "Unknown bulk cipher"}, 
+      ui: "Unknown",  notes: ""}, 
   ],
 
   // Again, ui fields are used in identifying TLS hash. Don't modify.
@@ -70,9 +70,9 @@ const ssleuthCipherSuites = {
     { name: "SHA384",   rank: 10,  ui: "SHA-384",  notes: ""},
     { name: "SHA256",   rank: 10,  ui: "SHA-256",  notes: ""},
     { name: "SHA224",   rank:  8,  ui: "SHA-224",  notes: ""}, 
-    { name: "SHA",      rank:  4,  ui: "SHA-1",    notes: "Reportedly weak. "},
-    { name: "MD5",      rank:  2,  ui: "MD5",      notes: "Broken. "},
-    { name: "",         rank:  0,  ui: "Unknown",  notes: "Unknown MAC algorithm."},
+    { name: "SHA",      rank:  4,  ui: "SHA-1",    notes: "note.reportedlyweak"},
+    { name: "MD5",      rank:  2,  ui: "MD5",      notes: "note.broken"},
+    { name: "",         rank:  0,  ui: "Unknown",  notes: ""},
   ],
 
   cipherSuiteStrength : {

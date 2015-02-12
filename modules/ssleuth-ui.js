@@ -487,11 +487,11 @@ function showCipherDetails(cipherSuite, win) {
     (cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen + 
     " " + getText('general.bits') + ".");
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher-notes").textContent =
-    cipherSuite.bulkCipher.notes;
+    getText(cipherSuite.bulkCipher.notes);
   doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent =
     (cipherSuite.HMAC.ui + ". ");
   doc.getElementById("ssleuth-text-cipher-suite-hmac-notes").textContent =
-    cipherSuite.HMAC.notes;
+    getText(cipherSuite.HMAC.notes);
 
   const panelInfo = SSleuthUI.prefs.PREFS["panel.info"];
   doc.getElementById("ssleuth-text-authentication").hidden = !(panelInfo.authAlg);
@@ -525,7 +525,8 @@ function showFFState(state, win) {
   const rp = SSleuthUI.prefs.PREFS["rating.params"];
 
   doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state);
-  doc.getElementById("ssleuth-text-ff-connection-status").textContent = getText(state);
+  doc.getElementById("ssleuth-text-ff-connection-status").textContent = 
+      getText('connectionstatus.text.' + state.toLowerCase());
   const statusRating = doc.getElementById("ssleuth-ff-connection-status-rating");
   var brokenText = doc.getElementById("ssleuth-text-ff-connection-status-broken");
 
@@ -747,12 +748,12 @@ function menuEvent(event) {
         });
 
         var m_popup = doc.createElement("menupopup");
-        for (var rd of["Default", "Enable", "Disable"]) {
+        for (var rd of["default", "enable", "disable"]) {
           var m_item = create(doc, 'menuitem', {
             type: 'radio',
-            label: rd,
-            value: rd.toLowerCase(),
-            checked: (csList[i].state === rd.toLowerCase())
+            label: getText('general.' + rd),
+            value: rd,
+            checked: (csList[i].state === rd)
           });
           m_popup.appendChild(m_item);
         }
@@ -835,21 +836,21 @@ function createPanelMenu(doc) {
   // the remaining option is to go with an in-line listener.
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-open-preferences',
-    label: 'Preferences'
+    label: getText('menu.preferences')
   }));
   menupopup.appendChild(doc.createElement("menuseparator"));
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-cs-reset-all',
-    label: 'Reset All'
+    label: getText('menu.resetall')
   }));
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-cs-custom-list',
-    label: 'Custom list'
+    label: getText('menu.customlist')
   }));
   menupopup.appendChild(doc.createElement("menuseparator"));
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-open-about',
-    label: 'About'
+    label: getText('menu.about')
   }));
   SSleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
 
@@ -1037,10 +1038,10 @@ function loadCiphersTab() {
       var m_list = row.appendChild(doc.createElement('menulist'));
       var m_popup = m_list.appendChild(doc.createElement("menupopup"));
 
-      for (var rd of["Default", "Enable", "Disable"]) {
+      for (var rd of["default", "enable", "disable"]) {
         var mi = m_popup.appendChild(create(doc, 'menuitem', {
-          label: rd,
-          value: rd.toLowerCase()
+          label: getText('general.' + rd),
+          value: rd
         }));
         // TODO : Some optimizations here in Firefox. Unless the panel is 
         //        visible, the selected item is not applied??

@@ -91,3 +91,7 @@
 <!ENTITY ssleuth.pref.ui.button.edit "Bearbeiten" >
 <!ENTITY ssleuth.pref.ui.button.remove "Löschen" >
 
+
+<!-- New locale strings : 12/02/2015 -->
+<!ENTITY ssleuth.pref.ciphersuites.wiki "Project wiki - Cipher suites enabling and disabling." >
+
