@@ -16,78 +16,78 @@
 <!ENTITY ssleuth.pref.ui.fontsize.header "Kopfzeilen">
 
 <!-- New locale strings : 19/12/2014 -->
-<!ENTITY ssleuth.pref.tab.ciphersuites "Cipher suites" >
+<!ENTITY ssleuth.pref.tab.ciphersuites "Cipher Suites" >
 
-<!ENTITY ssleuth.pref.panel.panelinfo "Panel information" >
-<!ENTITY ssleuth.pref.panel.ciphersuite "Cipher suite : " >
-<!ENTITY ssleuth.pref.panel.certificate "Certificate : " >
-<!ENTITY ssleuth.pref.panel.keyexchange "Show Key exchange algorithm" >
-<!ENTITY ssleuth.pref.panel.authentication "Show authentication algorithm" >
-<!ENTITY ssleuth.pref.panel.bulkcipher "Show Bulk cipher" >
-<!ENTITY ssleuth.pref.panel.hmac "Show HMAC" >
-<!ENTITY ssleuth.pref.panel.validity "Show validity" >
-<!ENTITY ssleuth.pref.panel.validitytime "Show GMT/UTC time in validity" >
-<!ENTITY ssleuth.pref.panel.fingerprint "Show SHA-1 fingerprint" >
+<!ENTITY ssleuth.pref.panel.panelinfo "Panel-Informationen" >
+<!ENTITY ssleuth.pref.panel.ciphersuite "Cipher Suite : " >
+<!ENTITY ssleuth.pref.panel.certificate "Zertifikat : " >
+<!ENTITY ssleuth.pref.panel.keyexchange "Schlüsselaustausch-Algorithmus anzeigen" >
+<!ENTITY ssleuth.pref.panel.authentication "Authenfizierungs-Algorithmus anzeigen" >
+<!ENTITY ssleuth.pref.panel.bulkcipher "Verschlüsselungs-Algorithmus anzeigen" >
+<!ENTITY ssleuth.pref.panel.hmac "HMAC anzeigen" >
+<!ENTITY ssleuth.pref.panel.validity "Gültigkeits-Status anzeigen" >
+<!ENTITY ssleuth.pref.panel.validitytime "GMT/UTC-Zeitstempel der Gültigkeitsdauer anzeigen" >
+<!ENTITY ssleuth.pref.panel.fingerprint "SHA-1 Fingerabdruck anzeigen" >
 
-<!ENTITY ssleuth.pref.ui.urlbar "URL bar" >
-<!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorize : Adds a color gradient in the address bar as per the rating" >
+<!ENTITY ssleuth.pref.ui.urlbar "Adressleiste" >
+<!ENTITY ssleuth.pref.ui.urlbar.colorize "Einfärben : Färbt die Adressleiste abhängig vom Rating ein" >
 
-<!ENTITY ssleuth.pref.panel.domainstab "Domains tab" >
-<!ENTITY ssleuth.pref.panel.domains.observer "Domains observer : Enable monitoring requests per domain" >
+<!ENTITY ssleuth.pref.panel.domainstab "Domains-Tab" >
+<!ENTITY ssleuth.pref.panel.domains.observer "Domain-Beobachter : Aktiviert die Überwachung von Anfragen per Domain" >
 
 <!-- Configure rating -->
 
-<!ENTITY ssleuth.pref.rating.overall "Overall rating" >
-<!ENTITY ssleuth.pref.rating.total "Total" >
-<!ENTITY ssleuth.pref.rating.overall.desc "Configure overall rating calculation. Supports up to 1 decimal place" >
-<!ENTITY ssleuth.pref.rating.ciphersuite "Cipher suite" >
-<!ENTITY ssleuth.pref.rating.forwardsecrecy "Forward secrecy" >
-<!ENTITY ssleuth.pref.rating.extendedvalidation "Extended validation" >
-<!ENTITY ssleuth.pref.rating.connectionstatus "Connection status" >
-<!ENTITY ssleuth.pref.rating.certstate "Certificate state" >
-<!ENTITY ssleuth.pref.rating.signaturealg "Signature algorithm" >
+<!ENTITY ssleuth.pref.rating.overall "Endergebnis-Berechnung" >
+<!ENTITY ssleuth.pref.rating.total "Insgesamt" >
+<!ENTITY ssleuth.pref.rating.overall.desc "Konfiguriere die Berechnung des Endergebnisses. Unterstützt wird maximal 1 Nachkommastelle." >
+<!ENTITY ssleuth.pref.rating.ciphersuite "Cipher Suite" >
+<!ENTITY ssleuth.pref.rating.forwardsecrecy "Forward Secrecy" >
+<!ENTITY ssleuth.pref.rating.extendedvalidation "Extended Validation" >
+<!ENTITY ssleuth.pref.rating.connectionstatus "Verbindungs-Status" >
+<!ENTITY ssleuth.pref.rating.certstate "Zertifikat" >
+<!ENTITY ssleuth.pref.rating.signaturealg "Signatur-Algorithmus" >
 
-<!ENTITY ssleuth.pref.rating.ciphersuite "Cipher suite rating" >
-<!ENTITY ssleuth.pref.rating.ciphersuite.desc "Configure cipher suite rating calculation." >
-<!ENTITY ssleuth.pref.rating.keyexchange "Key exchange" >
-<!ENTITY ssleuth.pref.rating.bulkcipher "Bulk cipher" >
+<!ENTITY ssleuth.pref.rating.ciphersuite "Cipher Suite-Einstufung" >
+<!ENTITY ssleuth.pref.rating.ciphersuite.desc "Konfiguriere die Gewichtung einzelner Aspekte einer Cipher Suite." >
+<!ENTITY ssleuth.pref.rating.keyexchange "Schlüsselaustausch" >
+<!ENTITY ssleuth.pref.rating.bulkcipher "Verschlüsselungs-Algorithmus" >
 <!ENTITY ssleuth.pref.rating.hmac "HMAC" >
 
 <!-- Cipher suites toggle -->
 
-<!ENTITY ssleuth.pref.ciphersuites.title "Manage cipher suites toggle list" >
-<!ENTITY ssleuth.pref.ciphersuites.desc1 "Manage custom cipher suites list that can be enabled and disabled. The configured lists will appear in the notifier right click menu." >
-<!ENTITY ssleuth.pref.ciphersuites.desc2 "Add a new entry in the left side box, and choose the list of cipher suites from the right side box." >
+<!ENTITY ssleuth.pref.ciphersuites.title "Bearbeite Cipher Suite-Listen" >
+<!ENTITY ssleuth.pref.ciphersuites.desc1 "Verwalte hier eigene Cipher Suite-Listen, die du im Rechtsklick-Menü aktivieren und deaktivieren kannst." >
+<!ENTITY ssleuth.pref.ciphersuites.desc2 "Füge eine neue Liste in der linken Box hinzu, und wähle die gewünschten Cipher Suites aus der rechten Box aus." >
 <!ENTITY ssleuth.pref.ciphersuites.name "Name" >
-<!ENTITY ssleuth.pref.ciphersuites.state "State" >
+<!ENTITY ssleuth.pref.ciphersuites.state "Status" >
 
-<!ENTITY ssleuth.pref.ciphersuites.note.title "Please note:" >
-<!ENTITY ssleuth.pref.ciphersuites.note.1 "Default = The cipher suites in the list are reset to their default value once." >
-<!ENTITY ssleuth.pref.ciphersuites.note.2 "Enable = The cipher suites in the list are enabled for use." >
-<!ENTITY ssleuth.pref.ciphersuites.note.3 "Disable = The cipher suites in the list are disabled from use." >
-<!ENTITY ssleuth.pref.ciphersuites.note.4 "Avoid creating multiple lists that has cipher suites in common." >
-<!ENTITY ssleuth.pref.ciphersuites.note.5 "The lists are enabled/disabled based on the order in which they appear in this list. The final entry takes precedence over all the previous ones." >
-<!ENTITY ssleuth.pref.ciphersuites.note.6 "Duplicate names for list names are not allowed." >
+<!ENTITY ssleuth.pref.ciphersuites.note.title "Bitte beachten:" >
+<!ENTITY ssleuth.pref.ciphersuites.note.1 "Standard = Die Cipher Suites in der Liste werden einmalig auf ihren Standardwert zurückgesetzt." >
+<!ENTITY ssleuth.pref.ciphersuites.note.2 "Aktiviert = Die Cipher Suites in der Liste werden aktiviert." >
+<!ENTITY ssleuth.pref.ciphersuites.note.3 "Deaktiviert = Die Cipher Suites in der Liste werden deaktiviert." >
+<!ENTITY ssleuth.pref.ciphersuites.note.4 "Vermeide es Listen zu erstellen, deren Einträge sich überlappen." >
+<!ENTITY ssleuth.pref.ciphersuites.note.5 "Die Cipher Suites werden in der Reihenfolge aktiviert bzw. deaktiviert, in der sie hier aufgelistet werden. Der letzte Eintrag hat somit Priorität." >
+<!ENTITY ssleuth.pref.ciphersuites.note.6 "Mehrere Listen mit gleichen Namen sind nicht zugelassen." >
 
-<!ENTITY ssleuth.pref.ciphersuites.note.restore "Restore the addon default list. Note that this will remove any user created lists." >
+<!ENTITY ssleuth.pref.ciphersuites.note.restore "Stelle die Standard-Listen des Add-Ons wieder her. Beachte bitte, dass dies jegliche selbsterstellte Listen entfernt." >
 
-<!ENTITY ssleuth.pref.ciphersuites.reset.title "Reset settings" >
-<!ENTITY ssleuth.pref.ciphersuites.reset.desc "Reset all the cipher suites states to their firefox default values" >
+<!ENTITY ssleuth.pref.ciphersuites.reset.title "Einstellungen zurücksetzen" >
+<!ENTITY ssleuth.pref.ciphersuites.reset.desc "Stelle alle Einstellungen bezüglich Cipher Suite-Aktivierung auf die Firefox Standardwerte zurück." >
 
-<!ENTITY ssleuth.pref.ui.button.restore "Restore lists" >
-<!ENTITY ssleuth.pref.ui.button.resetall "Reset all" >
+<!ENTITY ssleuth.pref.ui.button.restore "Listen wiederherstellen" >
+<!ENTITY ssleuth.pref.ui.button.resetall "Alles zurücksetzen" >
 
 <!-- About -->
-<!ENTITY ssleuth.pref.about.author "Author : " >
-<!ENTITY ssleuth.pref.about.thanks "Thanks to ">
-<!ENTITY ssleuth.pref.about.translations "Translations : " >
-<!ENTITY ssleuth.pref.about.license "License" >
+<!ENTITY ssleuth.pref.about.author "Autor : " >
+<!ENTITY ssleuth.pref.about.thanks "Viele Dank an ">
+<!ENTITY ssleuth.pref.about.translations "Übersetzungen : " >
+<!ENTITY ssleuth.pref.about.license "Software-Lizenz" >
 
 <!-- Buttons -->
-<!ENTITY ssleuth.pref.ui.button.apply "Apply" >
-<!ENTITY ssleuth.pref.ui.button.reset "Reset" >
-<!ENTITY ssleuth.pref.ui.button.cancel "Cancel" >
-<!ENTITY ssleuth.pref.ui.button.new "New" >
-<!ENTITY ssleuth.pref.ui.button.edit "Edit" >
-<!ENTITY ssleuth.pref.ui.button.remove "Remove" >
+<!ENTITY ssleuth.pref.ui.button.apply "Anwenden" >
+<!ENTITY ssleuth.pref.ui.button.reset "Zurücksetzen" >
+<!ENTITY ssleuth.pref.ui.button.cancel "Abbrechen" >
+<!ENTITY ssleuth.pref.ui.button.new "Neu" >
+<!ENTITY ssleuth.pref.ui.button.edit "Bearbeiten" >
+<!ENTITY ssleuth.pref.ui.button.remove "Löschen" >
 
