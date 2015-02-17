@@ -519,17 +519,17 @@ function SSleuthPanel(win) {
       // Or follow something like this : 
       //  http://mike.kaply.com/2011/08/05/richlistbox-tricks-for-your-add-on/
       let domainsVb = create('vbox', {
-        id: 'ssleuth-panel-domains-vbox'
-      }); {
-        let hb = domainsVb.appendChild(create('hbox', {
+        id: 'ssleuth-panel-domains-vbox',
+        width: HTTPS_PANEL_WIDTH,
+        flex: '1' 
+      }); 
+
+      let desc = domainsVb.appendChild(create('description', {
           id: 'ssleuth-paneltab-domains-disabled-text',
-          //maxheight: '150',
-          hidden: true
-        }));
-        hb.appendChild(create('description', {
-          value: getText('observer.disabled')
-        }));
-      }
+          hidden: true,
+      }));
+      desc.textContent = getText('observer.disabled');
+
       let rb = domainsVb.appendChild(create('richlistbox', {
         id: 'ssleuth-paneltab-domains-list',
         // TODO : Fix this! css in sheet is not working! 
