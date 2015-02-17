@@ -1,58 +1,61 @@
 /*jslint plusplus: true*/
 // "use strict"; 
 
-var EXPORTED_SYMBOLS = ["cloneArray", "cropText", "getText", "getPlatform"];
+// var EXPORTED_SYMBOLS = ["cloneArray", "cropText", "getText", "getPlatform"];
+var EXPORTED_SYMBOLS = ["utils"]
 Components.utils.import("resource://gre/modules/Services.jsm");
 
-function cloneArray(obj) {
-  if (Object.prototype.toString.call(obj) === '[object Array]') {
-    var out = [],
-      i = 0,
-      len = obj.length;
-    for (i; i < len; i++) {
-      out[i] = arguments.callee(obj[i]);
+var utils = { 
+  cloneArray : function(obj) {
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+      var out = [],
+        i = 0,
+        len = obj.length;
+      for (i; i < len; i++) {
+        out[i] = arguments.callee(obj[i]);
+      }
+      return out;
     }
-    return out;
-  }
-  if (typeof obj === 'object') {
-    var out = {},
-      i;
-    for (i in obj) {
-      out[i] = arguments.callee(obj[i]);
+    if (typeof obj === 'object') {
+      var out = {},
+        i;
+      for (i in obj) {
+        out[i] = arguments.callee(obj[i]);
+      }
+      return out;
     }
-    return out;
-  }
-  return obj;
-}
+    return obj;
+  }, 
 
-function cropText(str) {
-  var len = 30;
-  if (str.length <= len) return str;
+  cropText : function(str) {
+    var len = 30;
+    if (str.length <= len) return str;
 
-  var sep = '...'; 
+    var sep = '...'; 
 
-  var chars = len - sep.length,
-      prefix = Math.ceil(chars/2),
-      suffix = Math.floor(chars/2);
+    var chars = len - sep.length,
+        prefix = Math.ceil(chars/2),
+        suffix = Math.floor(chars/2);
 
-  return str.substr(0, prefix) + 
-         sep + 
-         str.substr(str.length - suffix);
-};
+    return str.substr(0, prefix) + 
+           sep + 
+           str.substr(str.length - suffix);
+  }, 
 
-function getText(name) {
-  try {
-    // TODO : flush bundle, and create new bundle
-    var bundle = Services.strings
-                  .createBundle("chrome://ssleuth/locale/panel.properties"); 
-    return bundle.GetStringFromName(name); 
-  } catch(e) {
-    return name; 
-  }
-}
+  getText : function(name) {
+    try {
+      // TODO : flush bundle, and create new bundle
+      var bundle = Services.strings
+                    .createBundle("chrome://ssleuth/locale/panel.properties"); 
+      return bundle.GetStringFromName(name); 
+    } catch(e) {
+      return name; 
+    }
+  }, 
 
-function getPlatform() {
-  return Components.classes["@mozilla.org/xre/app-info;1"]  
-           .getService(Components.interfaces.nsIXULRuntime).OS;  
-}
+  getPlatform : function() {
+    return Components.classes["@mozilla.org/xre/app-info;1"]  
+             .getService(Components.interfaces.nsIXULRuntime).OS;  
+  },
 
+}; 

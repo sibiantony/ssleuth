@@ -178,7 +178,7 @@ function _ssleuthPanel(win) {
 
 function loadStyleSheet() {
   registerSheet('ssleuth.css');
-  if (getPlatform() == 'Darwin')
+  if (utils.getPlatform() == 'Darwin')
     registerSheet('darwin.css');
 
   function registerSheet(file) {
@@ -194,7 +194,7 @@ function loadStyleSheet() {
 
 function removeStyleSheet() {
   unregisterSheet('ssleuth.css'); 
-  if (getPlatform() == 'Darwin')
+  if (utils.getPlatform() == 'Darwin')
     unregisterSheet('darwin.css'); 
 
   function unregisterSheet(file) {
@@ -487,13 +487,13 @@ function showCipherDetails(cipherSuite, win) {
 
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher").textContent =
     (cipherSuite.bulkCipher.ui + " " + cipherSuite.cipherKeyLen + 
-    " " + getText('general.bits') + ".");
+    " " + utils.getText('general.bits') + ".");
   doc.getElementById("ssleuth-text-cipher-suite-bulkcipher-notes").textContent =
-    getText(cipherSuite.bulkCipher.notes);
+    utils.getText(cipherSuite.bulkCipher.notes);
   doc.getElementById("ssleuth-text-cipher-suite-hmac").textContent =
     (cipherSuite.HMAC.ui + ". ");
   doc.getElementById("ssleuth-text-cipher-suite-hmac-notes").textContent =
-    getText(cipherSuite.HMAC.notes);
+    utils.getText(cipherSuite.HMAC.notes);
 
   const panelInfo = SSleuthUI.prefs.PREFS["panel.info"];
   doc.getElementById("ssleuth-text-authentication").hidden = !(panelInfo.authAlg);
@@ -514,10 +514,10 @@ function showPFS(pfs, win) {
   pfsRating.textContent = _fmt(rating) + "/" + _fmt(rp.pfs);
 
   if (pfs) {
-    pfsTxt.textContent = getText('general.yes');
+    pfsTxt.textContent = utils.getText('general.yes');
     pfsImg.setAttribute('status', 'yes');
   } else {
-    pfsTxt.textContent = getText('general.no');
+    pfsTxt.textContent = utils.getText('general.no');
     pfsImg.setAttribute('status', 'no');
   }
 }
@@ -528,7 +528,7 @@ function showFFState(state, win) {
 
   doc.getElementById("ssleuth-img-ff-connection-status").setAttribute("state", state);
   doc.getElementById("ssleuth-text-ff-connection-status").textContent = 
-      getText('connectionstatus.text.' + state.toLowerCase());
+      utils.getText('connectionstatus.text.' + state.toLowerCase());
   const statusRating = doc.getElementById("ssleuth-ff-connection-status-rating");
   var brokenText = doc.getElementById("ssleuth-text-ff-connection-status-broken");
 
@@ -554,10 +554,10 @@ function showCertDetails(cert, domMismatch, ev, win) {
   var evRating = doc.getElementById("ssleuth-cert-ev-rating");
   var elemEV = doc.getElementById("ssleuth-text-cert-extended-validation");
   if (ev) {
-    elemEV.textContent = getText('general.yes');
+    elemEV.textContent = utils.getText('general.yes');
     elemEV.setAttribute('ev', 'Yes');
   } else {
-    elemEV.textContent = getText('general.no');
+    elemEV.textContent = utils.getText('general.no');
     elemEV.setAttribute('ev', 'No');
   }
 
@@ -597,7 +597,7 @@ function showCertDetails(cert, domMismatch, ev, win) {
   }
 
   doc.getElementById("ssleuth-text-cert-pub-key")
-    .textContent = (cert.pubKeySize + ' ' + getText('general.bits') 
+    .textContent = (cert.pubKeySize + ' ' + utils.getText('general.bits') 
     + ' '  + cert.pubKeyAlg);
   doc.getElementById("ssleuth-text-cert-pub-key")
     .setAttribute("secure", cert.pubKeyMinSecure.toString());
@@ -755,7 +755,7 @@ function menuEvent(event) {
         for (var rd of["default", "enable", "disable"]) {
           var m_item = create(doc, 'menuitem', {
             type: 'radio',
-            label: getText('general.' + rd),
+            label: utils.getText('general.' + rd),
             value: rd,
             checked: (csList[i].state === rd)
           });
@@ -766,7 +766,7 @@ function menuEvent(event) {
           // FIXME : The SSleuthUI.prefs is a reference to SSleuth.prefs
           //    which in turn seems to be a reference to preferences module var.
           //    This might work here, but not clean.
-          var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
+          var csTglList = utils.cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
           for (var i = 0; i < csTglList.length; i++) {
             if (m.label === csTglList[i].name) {
               csTglList[i].state = event.target.value;
@@ -811,7 +811,7 @@ function menuCommand(event) {
       prefs.clearUserPref(csList[i]);
     }
 
-    var csTglList = cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
+    var csTglList = utils.cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
     for (i = 0; i < csTglList.length; i++) {
       csTglList[i].state = "default";
     }
@@ -840,21 +840,21 @@ function createPanelMenu(doc) {
   // the remaining option is to go with an in-line listener.
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-open-preferences',
-    label: getText('menu.preferences')
+    label: utils.getText('menu.preferences')
   }));
   menupopup.appendChild(doc.createElement("menuseparator"));
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-cs-reset-all',
-    label: getText('menu.resetall')
+    label: utils.getText('menu.resetall')
   }));
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-cs-custom-list',
-    label: getText('menu.customlist')
+    label: utils.getText('menu.customlist')
   }));
   menupopup.appendChild(doc.createElement("menuseparator"));
   menupopup.appendChild(create(doc, 'menuitem', {
     id: 'ssleuth-menu-open-about',
-    label: getText('menu.about')
+    label: utils.getText('menu.about')
   }));
   SSleuthUI.panelMenuTemplate = menupopup.cloneNode(true);
 
@@ -938,7 +938,7 @@ function loadDomainsTab() {
         let hb = vb.appendChild(create(doc, 'hbox', {})); {
           let str = domain.substring(domain.indexOf(':') + 1);
           hb.appendChild(create(doc, 'description', {
-            value: cropText(str),
+            value: utils.cropText(str),
             style: 'font-size: 115%; font-weight: bold;'
           }));
           str = ' ' + stats['count'] + 'x   ';
@@ -946,19 +946,19 @@ function loadDomainsTab() {
           for (var [ctype, count] in Iterator(stats['ctype'])) {
             switch (ctype) {
             case 'text':
-              str += getText('domains.text.short') + ' ';
+              str += utils.getText('domains.text.short') + ' ';
               break;
             case 'image':
-              str += getText('domains.image.short') + ' ';
+              str += utils.getText('domains.image.short') + ' ';
               break;
             case 'application':
-              str += getText('domains.application.short') + ' ';
+              str += utils.getText('domains.application.short') + ' ';
               break;
             case 'audio':
-              str += getText('domains.audio.short') + ' ';
+              str += utils.getText('domains.audio.short') + ' ';
               break;
             case 'video':
-              str += getText('domains.video.short') + ' ';
+              str += utils.getText('domains.video.short') + ' ';
               break;
             }
             str += count + ', ';
@@ -979,16 +979,16 @@ function loadDomainsTab() {
             }));
 
             let hbCert = vb.appendChild(create(doc, 'hbox', {})); {
-              str = getText('certificate.short.text') + 
+              str = utils.getText('certificate.short.text') + 
                     ' : ' + stats['signature'].hmac + '/' + stats['signature'].enc + '.  ';
-              str += getText('certificate.key.short') + ' : ' + stats['pubKeySize'] 
-                  + ' ' + getText('general.bits') + ' ' + stats['pubKeyAlg'];
+              str += utils.getText('certificate.key.short') + ' : ' + stats['pubKeySize'] 
+                  + ' ' + utils.getText('general.bits') + ' ' + stats['pubKeyAlg'];
               hbCert.appendChild(create(doc, 'description', {
                 value: str
               }));
             }
           } else {
-            str = getText('domains.insecurechannel');
+            str = utils.getText('domains.insecurechannel');
             // TODO : To stylesheet
             hb.appendChild(create(doc, 'description', {
               value: str,
@@ -1044,7 +1044,7 @@ function loadCiphersTab() {
 
       for (var rd of["default", "enable", "disable"]) {
         var mi = m_popup.appendChild(create(doc, 'menuitem', {
-          label: getText('general.' + rd),
+          label: utils.getText('general.' + rd),
           value: rd
         }));
         // TODO : Some optimizations here in Firefox. Unless the panel is 
@@ -1055,7 +1055,7 @@ function loadCiphersTab() {
       }
       m_popup.addEventListener("command", function (event) {
         var m = event.currentTarget.parentNode.parentNode.firstChild;
-        var csTglList = cloneArray(
+        var csTglList = utils.cloneArray(
             SSleuthUI.prefs.PREFS["suites.toggle"]);
         for (var i = 0; i < csTglList.length; i++) {
           if (m.value === csTglList[i].name) {

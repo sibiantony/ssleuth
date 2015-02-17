@@ -66,7 +66,7 @@ function SSleuthPanel(win) {
             }));
             vb.appendChild(create('description', {
               id: 'ssleuth-text-cipher-suite-label',
-              value: getText('ciphersuite.text'),
+              value: utils.getText('ciphersuite.text'),
               class: 'ssleuth-text-title-class'
             })); {
               let hb = vb.appendChild(create('hbox', {
@@ -93,7 +93,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-key-exchange-label',
-                value: getText('keyexchange.text'),
+                value: utils.getText('keyexchange.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -110,7 +110,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-authentication-label',
-                value: getText('authentication.text'),
+                value: utils.getText('authentication.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -127,7 +127,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-bulk-cipher-label',
-                value: getText('bulkcipher.text'),
+                value: utils.getText('bulkcipher.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -144,7 +144,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-hmac-label',
-                value: getText('hmac.text'), 
+                value: utils.getText('hmac.text'), 
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -177,7 +177,7 @@ function SSleuthPanel(win) {
             }));
             chb.appendChild(create('description', {
               id: 'ssleuth-text-p-f-secrecy-label',
-              value: getText('pfs.text'), 
+              value: utils.getText('pfs.text'), 
               class: 'ssleuth-text-title-class'
             }));
             chb.appendChild(create('description', {
@@ -214,7 +214,7 @@ function SSleuthPanel(win) {
             }));
             chb.appendChild(create('description', {
               id: 'ssleuth-text-tls-version-label', 
-              value: getText('ssltlsversion.text'), 
+              value: utils.getText('ssltlsversion.text'), 
               class: 'ssleuth-text-title-class'
             }));
             chb.appendChild(create('description', {
@@ -255,7 +255,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-conn-status',
-                value: getText('connectionstatus.text'), 
+                value: utils.getText('connectionstatus.text'), 
                 class: 'ssleuth-text-title-class'
               }));
               hb.appendChild(create('description', {
@@ -277,7 +277,7 @@ function SSleuthPanel(win) {
               hidden: true,
               class: 'ssleuth-text-body-class'
             }));
-            desc1.textContent = getText('connectionstatus.insecure');
+            desc1.textContent = utils.getText('connectionstatus.insecure');
           }
         } {
           let hb = httpsBox.appendChild(create('hbox', {
@@ -301,7 +301,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-label',
-                value: getText('certificate.text'), 
+                value: utils.getText('certificate.text'), 
                 class: 'ssleuth-text-title-class'
               })); {
                 let chb = hb.appendChild(create('hbox', {
@@ -316,7 +316,7 @@ function SSleuthPanel(win) {
             }
             vb.appendChild(create('description', {
               id: 'ssleuth-text-cert-domain-mismatch',
-              value: getText('certificate.dommismatch'),
+              value: utils.getText('certificate.dommismatch'),
               class: 'ssleuth-text-body-class'
             })); {
               let hb = vb.appendChild(create('hbox', {
@@ -324,7 +324,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-ev',
-                value: getText('extendedvalidation.text'),
+                value: utils.getText('extendedvalidation.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -346,7 +346,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-sigalg-text',
-                value: getText('signature.text'),
+                value: utils.getText('signature.text'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -355,7 +355,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-pub-key-text',
-                value: getText('certificate.key'),
+                value: utils.getText('certificate.key'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -377,7 +377,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-cn-label',
-                value: getText('certificate.commonname'),
+                value: utils.getText('certificate.commonname'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -390,7 +390,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-issuedto',
-                value: getText('certificate.issuedto'),
+                value: utils.getText('certificate.issuedto'),
                 class: 'ssleuth-text-body-class'
               })); {
                 let vb = hb.appendChild(create('vbox', {
@@ -412,7 +412,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-issuedby',
-                value: getText('certificate.issuedby'),
+                value: utils.getText('certificate.issuedby'),
                 class: 'ssleuth-text-body-class'
               })); {
                 let vb = hb.appendChild(create('vbox', {
@@ -435,7 +435,7 @@ function SSleuthPanel(win) {
               }));
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-validity-text',
-                value: getText('certificate.validity'),
+                value: utils.getText('certificate.validity'),
                 class: 'ssleuth-text-body-class'
               }));
               hb.appendChild(create('description', {
@@ -449,7 +449,7 @@ function SSleuthPanel(win) {
               })); 
               hb.appendChild(create('description', {
                 id: 'ssleuth-text-cert-fingerprint-label', 
-                value: getText('certificate.fingerprint'),
+                value: utils.getText('certificate.fingerprint'),
                 class: 'ssleuth-text-body-class'
               })); {
                 let vb = hb.appendChild(create('vbox', {
@@ -490,13 +490,13 @@ function SSleuthPanel(win) {
             id: 'ssleuth-text-http-1',
             class: 'ssleuth-text-title-class'
           }));
-          h1.textContent = getText('http.unencrypted');
+          h1.textContent = utils.getText('http.unencrypted');
           let h2 = vb.appendChild(create('description', {
             id: 'ssleuth-text-http-2',
             class: 'ssleuth-text-title-class'
           }));
 
-          h2.textContent = getText('http.connectattempt');
+          h2.textContent = utils.getText('http.connectattempt');
           vb.appendChild(create('label', {
             id: 'ssleuth-panel-https-link',
             class: 'text-link',
@@ -507,7 +507,7 @@ function SSleuthPanel(win) {
             id: 'ssleuth-text-http-note',
             class: 'ssleuth-text-body-class'
           }));
-          d1.textContent = getText('http.link.disclaimer');
+          d1.textContent = utils.getText('http.link.disclaimer');
         }
       }
 
@@ -528,7 +528,7 @@ function SSleuthPanel(win) {
           id: 'ssleuth-paneltab-domains-disabled-text',
           hidden: true,
       }));
-      desc.textContent = getText('observer.disabled');
+      desc.textContent = utils.getText('observer.disabled');
 
       let rb = domainsVb.appendChild(create('richlistbox', {
         id: 'ssleuth-paneltab-domains-list',
@@ -550,7 +550,7 @@ function SSleuthPanel(win) {
         flex: '1'
       });
       let desc = csVb.appendChild(create('description', {}));
-      desc.textContent = getText('tab.ciphersuites.note');
+      desc.textContent = utils.getText('tab.ciphersuites.note');
       let grid = csVb.appendChild(create('grid', {})); {
         let cols = grid.appendChild(create('columns', {}));
         cols.appendChild(create('column', {}));
@@ -620,7 +620,7 @@ function SSleuthPanel(win) {
             class: 'ssleuth-paneltab-tab'
           })); {
             chb.appendChild(create('description', {
-              value: getText('tab.primary')
+              value: utils.getText('tab.primary')
             }));
           }
 
@@ -638,7 +638,7 @@ function SSleuthPanel(win) {
             class: 'ssleuth-paneltab-tab'
           })); {
             chb.appendChild(create('description', {
-              value: getText('tab.domains')
+              value: utils.getText('tab.domains')
             }));
           }
           chb.addEventListener('click', function () {
@@ -653,7 +653,7 @@ function SSleuthPanel(win) {
             class: 'ssleuth-paneltab-tab'
           })); {
             chb.appendChild(create('description', {
-              value: getText('tab.ciphersuites')
+              value: utils.getText('tab.ciphersuites')
             }));
           }
           chb.addEventListener('click', function () {
@@ -674,11 +674,11 @@ function SSleuthPanel(win) {
             })); 
             var clipboard = phb.appendChild(create('image', {
               id : 'ssleuth-img-panel-clipboard',
-              tooltiptext : getText('panel.tooltip.clipboard'), 
+              tooltiptext : utils.getText('panel.tooltip.clipboard'), 
             })); 
             phb.appendChild(create('image', {
               id : 'ssleuth-img-panel-pref-icon',
-              tooltiptext : getText('panel.tooltip.preferences'), 
+              tooltiptext : utils.getText('panel.tooltip.preferences'), 
             })); 
           }
         }
