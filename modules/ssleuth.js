@@ -363,7 +363,7 @@ function setTLSVersion(request, win) {
       
     }
 
-    if (index != '') {
+    if (index != '' && index != 'ff_obs') {
       var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
       SSleuthHttpObserver.updateLocEntry(tab, {
         tlsVersion: index,

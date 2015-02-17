@@ -440,9 +440,11 @@ function setButtonRank(connectionRank, proto, win) {
     var ssleuthUbRank = doc.getElementById('ssleuth-ub-rank');
 
     ssleuthUbRank.setAttribute('rank', buttonRank);
-    if (proto == 'http') {
-      ssleuthUbRank.textContent = 'http';
-    } else if (connectionRank != -1) {
+    // TODO : Decide on a text for warning in case of http
+    //if (proto == 'http') {
+    //  ssleuthUbRank.textContent = 'http';
+    //} else if (connectionRank != -1) {
+    if (connectionRank != -1) {
       ssleuthUbRank.textContent = _fmt(Number(connectionRank).toFixed(1));
     } else {
       ssleuthUbRank.textContent = '';
@@ -621,7 +623,9 @@ function showTLSVersion(win) {
   var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
   var tlsIndex = 'ff_cache';
 
-  if ( SSleuthHttpObserver.responseCache[tab].tlsVersion ) 
+  if (!SSleuthUI.prefs.PREFS['domains.observe']) 
+    tlsIndex = 'ff_obs'; 
+  else if ( SSleuthHttpObserver.responseCache[tab].tlsVersion ) 
     tlsIndex = SSleuthHttpObserver.responseCache[tab].tlsVersion;
 
   if (tlsIndex == '') 
