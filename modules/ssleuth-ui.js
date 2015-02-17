@@ -52,6 +52,7 @@ var SSleuthUI = {
     initDomainsPanel(win.document);
     initCiphersPanel(win.document);
     initPanelPreferences(win.document);
+    utils.initLocale(); 
   },
 
   uninit: function (win) {

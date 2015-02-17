@@ -1,7 +1,6 @@
 /*jslint plusplus: true*/
 // "use strict"; 
 
-// var EXPORTED_SYMBOLS = ["cloneArray", "cropText", "getText", "getPlatform"];
 var EXPORTED_SYMBOLS = ["utils"]
 Components.utils.import("resource://gre/modules/Services.jsm");
 
@@ -41,6 +40,10 @@ var utils = {
            sep + 
            str.substr(str.length - suffix);
   }, 
+
+  initLocale : function() {
+    Services.strings.flushBundles();
+  },
 
   getText : function(name) {
     try {
