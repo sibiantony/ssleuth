@@ -7,7 +7,7 @@
 		<homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
 		<id>ssleuth@github</id>
 		<name>SSleuth</name>
-		<version>0.3.4</version>
+		<version>0.4.1</version>
 		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
 		<optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
 		<optionsType>3</optionsType>
@@ -19,7 +19,7 @@
 			<r:Description>
 				<id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
 				<minVersion>25.0</minVersion>
-				<maxVersion>36.0a1</maxVersion>
+				<maxVersion>38.0a1</maxVersion>
 			</r:Description>
 		</targetApplication>
 
