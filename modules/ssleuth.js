@@ -341,7 +341,8 @@ function setTLSVersion(request, win) {
     var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2']; 
 
     // TODO : At the moment, depends on observer module. Change.
-    if (Services.vc.compare(Services.appinfo.platformVersion, "36.0") > 0) {
+    //
+    if (Services.vc.compare(Services.appinfo.platformVersion, "36.0") > -1) {
       var secUI = win.gBrowser.securityUI;
       if (secUI) {
         var sslStatus = secUI.SSLStatus;
