@@ -61,5 +61,5 @@ It is however possible to change the keyboard shortcut via configuration.
 * The preference type is a string and you can change the modifieres and key. Please follow
 mozilla guidelines for [modifiers](https://developer.mozilla.org/en-US/docs/XUL/Attribute/modifiers) and [keys](https://developer.mozilla.org/en-US/docs/XUL/Attribute/key) to set the shortcut. SSleuth uses 'keys' rather than 'keycodes'. 
 
-## UI
+## License
 SSleuth is released under GPLv3. You should find the license text in the About page of add-on preferences.
