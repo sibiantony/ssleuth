@@ -652,7 +652,8 @@ function showCrossDomainRating(tab, win) {
     tab = win.gBrowser.selectedBrowser._ssleuthTabId;
   var respCache = SSleuthHttpObserver.responseCache[tab]; 
 
-  if ( respCache.domainsRating &&
+  if ( respCache && 
+        respCache.domainsRating &&
         respCache.domainsRating != -1 ) 
     domainsRating = respCache.domainsRating;
 
@@ -660,7 +661,8 @@ function showCrossDomainRating(tab, win) {
     ' domains : ' + _fmt(domainsRating); 
 
   var ratingClass = getRatingClass(domainsRating);
-  if ( respCache.mixedContent ) 
+  if ( respCache && 
+        respCache.mixedContent ) 
     ratingClass = 'low'; 
   doc.getElementById('ssleuth-img-domains-rating').setAttribute
       ('rank', ratingClass); 
