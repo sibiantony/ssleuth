@@ -42,14 +42,13 @@ var SSleuth = {
   extensionUninstall: function () {},
 
   initWindow: function (window) {
-    // dump("\nSSleuth init Window \n"); 
     try {
       window.gBrowser.addProgressListener(ProgressListener);
       SSleuthHttpObserver.initWindow(window);
       SSleuthUI.init(window);
     } catch (e) {
       dump("\nError ssleuth init : " + e.message + "\n");
-      this.uninit();
+      SSleuth.uninitWindow(window);
     }
   },
 

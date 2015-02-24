@@ -174,6 +174,10 @@ function _ssleuthBtnImg(win) {
 }
 
 function _ssleuthPanel(win) {
+  // TODO : Fix null returns. Some sort of delayed insertion
+  // from firefox results in null here. Problem seen with lots of add-ons
+  // and the button is to appear at the end. Button/panel elements
+  // are created and not null during insertion.
   return win.document.getElementById("ssleuth-panel");
 }
 
