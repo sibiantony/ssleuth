@@ -560,6 +560,18 @@ function SSleuthPanel(win) {
           id: 'ssleuth-paneltab-ciphers-rows'
         }));
       }
+      csVb.appendChild(create('separator', { class : 'groove-thin',
+          orient : 'horizontal'})); 
+      let hb = csVb.appendChild(create('hbox', {}));  {
+        hb.appendChild(create('button', {
+          label: utils.getText('menu.resetall'),
+          id : 'ssleuth-paneltab-ciphers-btn-reset',
+        })); 
+        hb.appendChild(create('button', {
+          label : utils.getText('menu.customlist'),
+          id : 'ssleuth-paneltab-ciphers-btn-custom',
+        })); 
+      }
 
       return csVb;
     }

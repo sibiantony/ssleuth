@@ -807,23 +807,28 @@ function menuEvent(event) {
   }
 }
 
+function resetAllLists() {
+  const prefs = SSleuthPreferences.prefService;
+
+  var csList = prefs.getChildList("security.ssl3.", {});
+  for (var i = 0; i < csList.length; i++) {
+    prefs.clearUserPref(csList[i]);
+  }
+
+  var csTglList = utils.cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
+  for (i = 0; i < csTglList.length; i++) {
+    csTglList[i].state = "default";
+  }
+  prefs.setCharPref("extensions.ssleuth.suites.toggle",
+    JSON.stringify(csTglList));
+
+}
+
 function menuCommand(event) {
   var doc = _window().document;
   switch (event.target.id) {
   case 'ssleuth-menu-cs-reset-all':
-    const prefs = SSleuthPreferences.prefService;
-
-    var csList = prefs.getChildList("security.ssl3.", {});
-    for (var i = 0; i < csList.length; i++) {
-      prefs.clearUserPref(csList[i]);
-    }
-
-    var csTglList = utils.cloneArray(SSleuthUI.prefs.PREFS["suites.toggle"]);
-    for (i = 0; i < csTglList.length; i++) {
-      csTglList[i].state = "default";
-    }
-    prefs.setCharPref("extensions.ssleuth.suites.toggle",
-      JSON.stringify(csTglList));
+    resetAllLists();
     break;
   case 'ssleuth-menu-open-preferences':
     SSleuthPreferences.openTab(0);
@@ -889,6 +894,13 @@ function initDomainsPanel(doc) {
 
 function initCiphersPanel(doc) {
   loadCiphersTab();
+  var btn = doc.getElementById('ssleuth-paneltab-ciphers-btn-reset');
+  btn.addEventListener('click', resetAllLists, false);
+  btn = doc.getElementById('ssleuth-paneltab-ciphers-btn-custom');
+  btn.addEventListener('click', function(e) {
+    SSleuthPreferences.openTab(2);
+    togglePanel(_ssleuthPanel(_window()));
+  }, false); 
 }
 
 function initPanelPreferences(doc) {
