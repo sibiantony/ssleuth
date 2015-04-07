@@ -65,6 +65,7 @@
 }    
 #ssleuth-ub-rank[rank="high"]{
     color: #3f629e; 
+	/* color: #3e96c2; */
 }    
 #ssleuth-ub-rank[rank="vhigh"]{
     color: #4f941c; 
@@ -79,24 +80,47 @@
      */
 }
 #ssleuth-box-urlbar[rank="default"] {
-    background: -moz-linear-gradient(120deg,  #d8dbdc, rgba(255,255,255,0)); 
+    background-image: -moz-linear-gradient(120deg,  #d8dbdc, rgba(255,255,255,0)); 
 }
 #ssleuth-box-urlbar[rank="low"] {
-    background: -moz-linear-gradient(120deg,  #cbb1b1, rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(120deg,  #cbb1b1, rgba(255,255,255,0));
 }
 #ssleuth-box-urlbar[rank="medium"] {
-    background: -moz-linear-gradient(120deg,  #f8eac8, rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(120deg,  #f8eac8, rgba(255,255,255,0));
 }
 #ssleuth-box-urlbar[rank="high"] {
-    background: -moz-linear-gradient(120deg,  #ced7e6, rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(120deg,  #ced7e6, rgba(255,255,255,0));
 }
 #ssleuth-box-urlbar[rank="vhigh"] {
-    background: -moz-linear-gradient(120deg,  #d1e3c4, rgba(255,255,255,0));
+    background-image: -moz-linear-gradient(120deg,  #d1e3c4, rgba(255,255,255,0));
 }
 
 #ssleuth-box-urlbar[rank="blank"], 
 #ssleuth-box-urlbar:hover {
     background: transparent;
+}
+
+#ssleuth-ub-separator {
+     width: 1px;
+     height : 15px;
+     margin : 0 0px 0 5px; /* top right bottom left */
+}
+
+#ssleuth-ub-separator[rank='default'] {
+     background: -moz-linear-gradient(top, transparent 0%, #d8dbdc 15%, #d8dbdc 85%, transparent 100%); 
+}
+#ssleuth-ub-separator[rank='low'] {
+     background: -moz-linear-gradient(top, transparent 0%, #cbb1b1 15%, #cbb1b1 85%, transparent 100%); 
+}
+#ssleuth-ub-separator[rank='medium'] {
+     background: -moz-linear-gradient(top, transparent 0%, #f8eac8 15%, #f8eac8 85%, transparent 100%); 
+}
+#ssleuth-ub-separator[rank='high'] {
+     background: -moz-linear-gradient(top, transparent 0%, #ced7e6 15%, #ced7e6 85%, transparent 100%); 
+}
+#ssleuth-ub-separator[rank='vhigh'] {
+     background: -moz-linear-gradient(top, transparent 0%, #d1e3c4 15%, #d1e3c4 85%, transparent 100%); 
+
 }
 
 #urlbar[_ssleuthrank="default"] {

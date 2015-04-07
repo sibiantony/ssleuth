@@ -319,6 +319,11 @@ function createButton(win) {
         'id': 'ssleuth-ub-rank',
         'class': 'ssleuth-text-body-class'
       }));
+      button.appendChild(create(doc, 'box', {
+        'id': 'ssleuth-ub-separator',
+        'class': 'ssleuth-text-body-class',
+        'hidden': true
+      }));
     }
 
   } catch (ex) {
@@ -434,7 +439,8 @@ function fillPanel(data, win) {
     //TODO : Fix tab param
     showCrossDomainRating(-1, win); 
 }
- 
+
+
 function setButtonRank(connectionRank, proto, win) {
   var doc = win.document;
   var buttonRank = getRatingClass(connectionRank);
@@ -442,20 +448,29 @@ function setButtonRank(connectionRank, proto, win) {
   _ssleuthBtnImg(win).setAttribute('rank', buttonRank);
 
   if (SSleuthUI.ssleuthBtnLocation == SSleuthUI.ssleuthLoc.URLBAR) {
-    var ssleuthUbRank = doc.getElementById('ssleuth-ub-rank');
+    var ubRank = doc.getElementById('ssleuth-ub-rank');
+    var ubSeparator = doc.getElementById('ssleuth-ub-separator');
 
-    ssleuthUbRank.setAttribute('rank', buttonRank);
+    ubRank.setAttribute('rank', buttonRank);
     // TODO : Decide on a text for warning in case of http
     //if (proto == 'http') {
-    //  ssleuthUbRank.textContent = 'http';
+    //  ubRank.textContent = 'http';
     //} else if (connectionRank != -1) {
     if (connectionRank != -1) {
-      ssleuthUbRank.textContent = _fmt(Number(connectionRank).toFixed(1));
+      ubRank.textContent = _fmt(Number(connectionRank).toFixed(1));
     } else {
-      ssleuthUbRank.textContent = '';
+      ubRank.textContent = '';
     }
-    _ssleuthButton(win).setAttribute('rank', buttonRank);
-    // TODO : (SSleuthUI.prefs.PREFS['ui.urlbar.colorize'] ? 'blank' : buttonRank)); 
+
+    ubSeparator.hidden = true;
+    if (SSleuthUI.prefs.PREFS['ui.notifier.colorize']) {
+      _ssleuthButton(win).setAttribute('rank', buttonRank);
+    } else {
+      ubSeparator.hidden = false; 
+      ubSeparator.setAttribute('rank', buttonRank);
+      _ssleuthButton(win).setAttribute('rank', 'blank');
+
+    }
   }
 
   // URL bar background gradient
@@ -1135,6 +1150,9 @@ function preferencesChanged(branch, name) {
     loadCiphersTab();
     break;
   case "ui.urlbar.colorize":
+    SSleuthUI.prefs.PREFS[name] = branch.getBoolPref(name);
+    break;
+  case "ui.notifier.colorize":
     SSleuthUI.prefs.PREFS[name] = branch.getBoolPref(name);
     break;
   }

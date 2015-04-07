@@ -126,6 +126,8 @@
 						<caption label="&ssleuth.pref.ui.urlbar;"/>
             <checkbox id="ssleuth-pref-show-urlbar-gradient"
                 label="&ssleuth.pref.ui.urlbar.colorize;" />
+            <checkbox id="ssleuth-pref-show-notifier-gradient"
+                label="&ssleuth.pref.ui.notifier.colorize;" />
  					</groupbox>
 					<groupbox>
 						<caption label="&ssleuth.pref.panel.domainstab; (Beta)"/>

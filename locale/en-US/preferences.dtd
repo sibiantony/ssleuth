@@ -92,3 +92,4 @@
 <!ENTITY ssleuth.pref.ui.button.edit "Edit" >
 <!ENTITY ssleuth.pref.ui.button.remove "Remove" >
 
+<!ENTITY ssleuth.pref.ui.notifier.colorize "Notifier colorize : Enables color gradient for notification icon area." >

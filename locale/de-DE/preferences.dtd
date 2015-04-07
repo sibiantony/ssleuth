@@ -95,3 +95,4 @@
 <!-- New locale strings : 12/02/2015 -->
 <!ENTITY ssleuth.pref.ciphersuites.wiki "Project wiki - Cipher suites enabling and disabling." >
 
+<!ENTITY ssleuth.pref.ui.notifier.colorize "Notifier colorize : Enables color gradient for notification icon area." >
