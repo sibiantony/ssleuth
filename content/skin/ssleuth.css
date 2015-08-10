@@ -503,19 +503,19 @@
 }
 .ssleuth-paneltab-domains-item[rank="low"] {
     background: #cbb1b1;
-	color: -moz-FieldText;
+	color: #000;
 }
 .ssleuth-paneltab-domains-item[rank="medium"] {
     background: #f8eac8;
-	color: -moz-FieldText;
+	color: #000;
 }
 .ssleuth-paneltab-domains-item[rank="high"] {
     background: #ced7e6;
-	color: -moz-FieldText;
+	color: #000;
 }
 .ssleuth-paneltab-domains-item[rank="vhigh"] {
     background: #d1e3c4;
-	color: -moz-FieldText;
+	color: #000;
 }
 
 }
