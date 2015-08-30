@@ -970,7 +970,17 @@ function loadDomainsTab() {
       let vb = ri.appendChild(create(doc, 'vbox', {})); {
         // Domain name + requests hbox
         let hb = vb.appendChild(create(doc, 'hbox', {})); {
-          let str = domain.substring(domain.indexOf(':') + 1);
+          let cxRating = '0.0';
+          if (domain.indexOf('https:') != -1) {
+            cxRating = _fmt(stats['cxRating']);
+          }
+          let str = _fmt(Number(cxRating).toFixed(1));
+          hb.appendChild(create(doc, 'description', {
+            value: str,
+          }));
+
+          str = domain.substring(domain.indexOf(':') + 1);
+
           hb.appendChild(create(doc, 'description', {
             value: utils.cropText(str),
             style: 'font-size: 115%; font-weight: bold;'
@@ -1007,7 +1017,7 @@ function loadDomainsTab() {
         // Cipher suite hbox
         hb = vb.appendChild(create(doc, 'hbox', {})); {
           if (domain.indexOf('https:') != -1) {
-            str = _fmt(stats['cxRating']) + '   ' + stats['cipherName'];
+            str = stats['cipherName'];
             hb.appendChild(create(doc, 'description', {
               value: str
             }));
