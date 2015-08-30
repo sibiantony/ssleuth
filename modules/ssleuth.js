@@ -514,7 +514,9 @@ function getSignatureAlg(cert) {
 
     const cs = ssleuthCipherSuites;
     for (var i = 0; i < cs.HMAC.length; i++) {
-      if ((sigText.indexOf(cs.HMAC[i].ui) != -1)) {
+      if ((sigText.indexOf(cs.HMAC[i].ui) != -1)
+          || ((cs.HMAC[i].sigui) && 
+             (sigText.indexOf(cs.HMAC[i].sigui) != -1))) {
         signature.hmac += cs.HMAC[i].ui;
         signature.rating += cs.HMAC[i].rank;
         break;

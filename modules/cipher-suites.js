@@ -65,10 +65,13 @@ const ssleuthCipherSuites = {
   ],
 
   // Again, ui fields are used in identifying TLS hash. Don't modify.
+  // Update : Firefox broke the convention of naming signature alg.
+  // in the cert fields. 'SHA256' mostly, while 'SHA-256' for some certs!
+  // Bringing sigui for compat
   HMAC : [
-    { name: "SHA512",   rank: 10,  ui: "SHA-512",  notes: ""},
-    { name: "SHA384",   rank: 10,  ui: "SHA-384",  notes: ""},
-    { name: "SHA256",   rank: 10,  ui: "SHA-256",  notes: ""},
+    { name: "SHA512",   rank: 10,  ui: "SHA-512",  sigui: "SHA512", notes: ""},
+    { name: "SHA384",   rank: 10,  ui: "SHA-384",  sigui: "SHA384", notes: ""},
+    { name: "SHA256",   rank: 10,  ui: "SHA-256",  sigui: "SHA256", notes: ""},
     { name: "SHA224",   rank:  8,  ui: "SHA-224",  notes: ""}, 
     { name: "SHA",      rank:  4,  ui: "SHA-1",    notes: "note.reportedlyweak"},
     { name: "MD5",      rank:  2,  ui: "MD5",      notes: "note.broken"},
