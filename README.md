@@ -1,7 +1,7 @@
 SSleuth
 =======
 
-SSleuth is a firefox addon that ranks an established SSL/TLS connection to estimate 
+SSleuth is a Firefox addon that ranks an established SSL/TLS connection to estimate
 the connection strength. It also gives a brief summary of the important SSL/TLS connection 
 parameters.
 
@@ -38,7 +38,7 @@ Beginning with version 0.2.3 SSleuth supports enabling and disabling cipher suit
 Users can create a list of cipher suites to toggle, and use the notifier right click
 menu to toggle them. More details on [enabling/disabling cipher suites](https://github.com/sibiantony/ssleuth/wiki/Cipher-suites-enabling-and-disabling) in the wiki.
 
-## UI
+## Graphical User Interface
 
 There is a URL bar notification box (next to Firefox's own notification
 area). A 'sleuth' cap and the rank notifies the user of the estimated strength.
@@ -62,4 +62,6 @@ It is however possible to change the keyboard shortcut via configuration.
 mozilla guidelines for [modifiers](https://developer.mozilla.org/en-US/docs/XUL/Attribute/modifiers) and [keys](https://developer.mozilla.org/en-US/docs/XUL/Attribute/key) to set the shortcut. SSleuth uses 'keys' rather than 'keycodes'. 
 
 ## License
-SSleuth is released under GPLv3. You should find the license text in the About page of add-on preferences.
+
+SSleuth is released under [GPLv3.0](https://www.gnu.org/licenses/gpl-3.0.html).
+You should find the license text in the About page of add-on preferences.
