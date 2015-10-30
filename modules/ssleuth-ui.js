@@ -972,7 +972,7 @@ function loadDomainsTab() {
         let hb = vb.appendChild(create(doc, 'hbox', {})); {
           let cxRating = '0.0';
           if (domain.indexOf('https:') != -1) {
-            cxRating = _fmt(stats['cxRating']);
+            cxRating = stats['cxRating'];
           }
           let str = _fmt(Number(cxRating).toFixed(1));
           hb.appendChild(create(doc, 'description', {
