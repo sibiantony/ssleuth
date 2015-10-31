@@ -16,7 +16,7 @@ var ssleuthPanelInfo = {
   bulkCipher: true,
   HMAC: true,
   certValidity: true,
-  validityTime: true,
+  validityTime: false,
   certFingerprint: false
 };
 
