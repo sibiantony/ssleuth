@@ -28,17 +28,18 @@ const ssleuthCipherSuites = {
 
   // No known weaknesses for the algorithms here. Except for the key length.
   // RSA secure minimum keyLength>=2048
-  // ECDSA comparable keyLength>=263 [RFC 4492]
+  // ECC comparable keyLength>=263 [RFC 4492]
+  // TODO : ECC list curve type/params
   authentication : [
-    // Do not modify ui values. Used in extracting key length from certificate.
+    // Do not modify cert values. Used in extracting key length from certificate.
     { name: "_RSA_",    rank: 10,   minSecureKeyLength: 2048, 
-      ui: "RSA",     notes: "" },
+      ui: "RSA",     cert: "RSA",   notes: "" },
     { name: "_ECDSA_",  rank: 10,   minSecureKeyLength: 256, 
-      ui: "ECDSA",   notes: "" },
+      ui: "ECDSA",   cert: "ECC",   notes: "" },
     { name: "_DSS_",    rank: 10,   minSecureKeyLength: 2048, 
-      ui: "DSA",     notes: "" }, 
+      ui: "DSA",     cert: "DSA",   notes: "" }, 
     { name: "",         rank: 0,    minSecureKeyLength: 0, 
-      ui: "Unknown", notes: "" }, 
+      ui: "Unknown", cert: "",      notes: "" }, 
   ],
 
   bulkCipher : [

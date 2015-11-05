@@ -233,7 +233,7 @@ function updateResponseCache(channel) {
           hostEntry.csRating = obs.utilCb.getCipherSuiteRating(
             hostEntry.cipherName);
           hostEntry.pfs = obs.utilCb.checkPFS(hostEntry.cipherName);
-          hostEntry.pubKeyAlg = obs.utilCb.getAuthenticationAlg(
+          hostEntry.pubKeyAlg = obs.utilCb.getCertificateAlg(
             hostEntry.cipherName);
           hostEntry.signature = obs.utilCb.getSignatureAlg(sslStatus.serverCert);
           hostEntry.pubKeySize = obs.utilCb.getKeySize(sslStatus.serverCert,

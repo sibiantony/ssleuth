@@ -18,7 +18,6 @@ var SSleuth = {
 
   extensionStartup: function (firstRun, reinstall) {
     SSleuthPreferences.init();
-    // TODO : Need to re-think about the callbacks.
     this.prefs = SSleuthPreferences.readInitPreferences();
     SSleuthHttpObserver.init(observerCallbacks,
       this.prefs.PREFS['domains.observe']);
@@ -264,8 +263,8 @@ function protocolHttps(progress, request, state, win) {
     }
   }
 
-  // Certificate pubkey algorithim, key size
-  cert.pubKeyAlg = cipherSuite.authentication.ui;
+  // Certificate public key algorithim, key size
+  cert.pubKeyAlg = cipherSuite.authentication.cert;
   cert.pubKeySize = getKeySize(cert.serverCert, cert.pubKeyAlg);
   cert.pubKeyMinSecure =
     (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
@@ -452,7 +451,7 @@ function getCipherSuiteRating(cipherName) {
            + hmac * csW.hmac) / csW.total);
 }
 
-function getKeySize(cert, auth) {
+function getKeySize(cert, alg) {
   var keySize = '';
   try {
     var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
@@ -465,13 +464,13 @@ function getKeySize(cert, auth) {
     // which could get localized.
     // So simply extract the first occuring digit from the string
     // corresponding to Subject's Public key. Hope this holds on. 
-    switch (auth) {
+    switch (alg) {
     case "RSA":
       keySize = certASN1.getDisplayData(12)
         .split('\n')[0]
         .match(/\d+/g)[0];
       break;
-    case "ECDSA":
+    case "ECC":
       keySize = certASN1.getDisplayData(14)
         .split('\n')[0]
         .match(/\d+/g)[0];
@@ -539,11 +538,11 @@ function getSignatureAlg(cert) {
 
 // TODO : optimize, combine the rating, cipher suite string matching 
 //
-function getAuthenticationAlg(cipherName) {
+function getCertificateAlg(cipherName) {
   const csA = ssleuthCipherSuites.authentication;
   for (var i = 0; i < csA.length; i++) {
     if ((cipherName.indexOf(csA[i].name) != -1)) {
-      return csA[i].ui;
+      return csA[i].cert;
     }
   }
   return '';
@@ -611,7 +610,7 @@ var observerCallbacks = {
   domainsUpdated: domainsUpdated,
   isCertValid: isCertValid,
   getCipherSuiteRating: getCipherSuiteRating,
-  getAuthenticationAlg: getAuthenticationAlg,
+  getCertificateAlg: getCertificateAlg,
   getKeySize: getKeySize,
   checkPFS: checkPFS,
   getConnectionRating: getConnectionRating,
