@@ -1,39 +1,39 @@
-<!ENTITY ssleuth.pref.title.label "SSleuth préférences" >
+<!ENTITY ssleuth.pref.title.label "Préférences de Ssleuth" >
 <!ENTITY ssleuth.pref.tab.ssleuthui "Général" >
 <!ENTITY ssleuth.pref.tab.ranking "Classement de connexion" >
 <!ENTITY ssleuth.pref.tab.about "À propos" >
 
 <!ENTITY ssleuth.pref.ui.notifier.label "Emplacement du Notifier" >
-<!ENTITY ssleuth.pref.ui.notifier.urlbar "Bar d'URL" >
-<!ENTITY ssleuth.pref.ui.notifier.toolbar "Bouton dans la barre d'outil" >
+<!ENTITY ssleuth.pref.ui.notifier.urlbar "Barre d'adresse" >
+<!ENTITY ssleuth.pref.ui.notifier.toolbar "Bouton dans la barre d'outils" >
 
 <!ENTITY ssleuth.pref.ui.fontsize "Taille de police dans le panneau">
-<!ENTITY ssleuth.pref.ui.fontsize.default "Petite: ">
-<!ENTITY ssleuth.pref.ui.fontsize.medium "Moyenne: ">
-<!ENTITY ssleuth.pref.ui.fontsize.large "Grande: ">
+<!ENTITY ssleuth.pref.ui.fontsize.default "Petite : ">
+<!ENTITY ssleuth.pref.ui.fontsize.medium "Moyenne : ">
+<!ENTITY ssleuth.pref.ui.fontsize.large "Grande : ">
 
 <!ENTITY ssleuth.pref.ui.fontsize.body "Corps">
-<!ENTITY ssleuth.pref.ui.fontsize.header "En tête">
+<!ENTITY ssleuth.pref.ui.fontsize.header "En-tête">
 
 <!-- New locale strings : 19/12/2014 -->
 <!ENTITY ssleuth.pref.tab.ciphersuites "Suites de chiffrement" >
 
 <!ENTITY ssleuth.pref.panel.panelinfo "Panneau d'information" >
-<!ENTITY ssleuth.pref.panel.ciphersuite "Suite de chiffrement : " >
-<!ENTITY ssleuth.pref.panel.certificate "Certificat : " >
+<!ENTITY ssleuth.pref.panel.ciphersuite "Suite de chiffrement : " >
+<!ENTITY ssleuth.pref.panel.certificate "Certificat : " >
 <!ENTITY ssleuth.pref.panel.keyexchange "Afficher l'algorithme d'échange de clé" >
 <!ENTITY ssleuth.pref.panel.authentication "Afficher l'algorithme d'authentification" >
-<!ENTITY ssleuth.pref.panel.bulkcipher "Afficher chiffrement brute" >
+<!ENTITY ssleuth.pref.panel.bulkcipher "Afficher le chiffrement brut" >
 <!ENTITY ssleuth.pref.panel.hmac "Afficher HMAC" >
-<!ENTITY ssleuth.pref.panel.validity "Afficher validité" >
-<!ENTITY ssleuth.pref.panel.validitytime "Afficher du temps GMT/UTC dans validité" >
-<!ENTITY ssleuth.pref.panel.fingerprint "Afficher zmpreinte SHA-1 " >
+<!ENTITY ssleuth.pref.panel.validity "Afficher la validité" >
+<!ENTITY ssleuth.pref.panel.validitytime "Afficher le temps GMT/UTC dans la validité" >
+<!ENTITY ssleuth.pref.panel.fingerprint "Afficher l'empreinte SHA-1 " >
 
 <!ENTITY ssleuth.pref.ui.urlbar "Bar d'URL" >
-<!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorier: Ajoute un dégradé de couleur dans la barre d'adresse, conformément à la note" >
+<!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorier : ajoute un dégradé de couleur dans la barre d'adresse, conformément à la note" >
 
 <!ENTITY ssleuth.pref.panel.domainstab "Onglet Domaines" >
-<!ENTITY ssleuth.pref.panel.domains.observer "Observateur de domaines : Activer la surveillance des demandes par domaine" >
+<!ENTITY ssleuth.pref.panel.domains.observer "Observateur de domaines : activer la surveillance des demandes par domaine" >
 
 <!-- Configure rating -->
 
@@ -50,38 +50,38 @@
 <!ENTITY ssleuth.pref.rating.ciphersuite "Note des suites de chiffrement" >
 <!ENTITY ssleuth.pref.rating.ciphersuite.desc "Configurez le calcul des notes des suites de chiffrement." >
 <!ENTITY ssleuth.pref.rating.keyexchange "Échange de clé" >
-<!ENTITY ssleuth.pref.rating.bulkcipher "Chiffrement en brute" >
+<!ENTITY ssleuth.pref.rating.bulkcipher "Chiffrement en brut" >
 <!ENTITY ssleuth.pref.rating.hmac "HMAC" >
 
 <!-- Cipher suites toggle -->
 
 <!ENTITY ssleuth.pref.ciphersuites.title "Gérer la liste des suites de chiffrement" >
-<!ENTITY ssleuth.pref.ciphersuites.desc1 "La liste des suites de chiffrement peut être activée ou désactivée. La liste configurée va être affichée dans le menu clique droit de notifier." >
+<!ENTITY ssleuth.pref.ciphersuites.desc1 "La liste des suites de chiffrement peut être activée ou désactivée. La liste configurée va être affichée dans le menu clic droit du Notifier." >
 <!ENTITY ssleuth.pref.ciphersuites.desc2 "Ajouter une nouvelle entrée dans la boîte de gauche, et choisissez la liste des suites de chiffrement dans la boîte de droite." >
 <!ENTITY ssleuth.pref.ciphersuites.name "Nom" >
 <!ENTITY ssleuth.pref.ciphersuites.state "État" >
 
-<!ENTITY ssleuth.pref.ciphersuites.note.title "Veuillez noter:" >
-<!ENTITY ssleuth.pref.ciphersuites.note.1 "Par défaut = Les suites de chiffrement dans la liste sont remis à leur valeur par défaut une fois." >
-<!ENTITY ssleuth.pref.ciphersuites.note.2 "Activer = Les suites de chiffrement dans la liste sont activés pour utilisation." >
-<!ENTITY ssleuth.pref.ciphersuites.note.3 "Désactiver = Les suites de chiffrement dans la liste sont désactivés pour utilisation." >
+<!ENTITY ssleuth.pref.ciphersuites.note.title "Veuillez noter :" >
+<!ENTITY ssleuth.pref.ciphersuites.note.1 "Par défaut = Les suites de chiffrement dans la liste sont remises à leur valeur par défaut une fois." >
+<!ENTITY ssleuth.pref.ciphersuites.note.2 "Activer = Les suites de chiffrement dans la liste sont activées pour utilisation." >
+<!ENTITY ssleuth.pref.ciphersuites.note.3 "Désactiver = Les suites de chiffrement dans la liste sont désactivées pour utilisation." >
 <!ENTITY ssleuth.pref.ciphersuites.note.4 "Éviter de créer plusieurs listes qui ont des suites de chiffrement en commun." >
-<!ENTITY ssleuth.pref.ciphersuites.note.5 "Les listes sont activés / désactivés selon l'ordre dans lequel elles apparaissent dans cette liste. La dernière entrée est prioritaire sur toutes les précédentes." >
+<!ENTITY ssleuth.pref.ciphersuites.note.5 "Les listes sont activées / désactivées selon l'ordre dans lequel elles apparaissent dans cette liste. La dernière entrée est prioritaire sur toutes les précédentes." >
 <!ENTITY ssleuth.pref.ciphersuites.note.6 "Les noms en double pour les noms de liste ne sont pas autorisés." >
 
 <!ENTITY ssleuth.pref.ciphersuites.note.restore "Restaurer la liste par défaut de l'extension. Notez que cela supprimera toutes les listes créé par l'utilisateurs ." >
 
 <!ENTITY ssleuth.pref.ciphersuites.reset.title "Réinitialiser les paramètres" >
-<!ENTITY ssleuth.pref.ciphersuites.reset.desc "Réinitialiser les états de tous les suites de chiffrement à leurs valeurs par défaut de Firefox" >
+<!ENTITY ssleuth.pref.ciphersuites.reset.desc "Réinitialiser les états de toutes les suites de chiffrement à leurs valeurs par défaut de Firefox" >
 <!ENTITY ssleuth.pref.ciphersuites.wiki "Wiki du projet - Les suites de chiffrement activation et la désactivation." >
 
 <!ENTITY ssleuth.pref.ui.button.restore "Restaurer les listes" >
 <!ENTITY ssleuth.pref.ui.button.resetall "Réinitialiser tout" >
 
 <!-- About -->
-<!ENTITY ssleuth.pref.about.author "Auteur : " >
+<!ENTITY ssleuth.pref.about.author "Auteur : " >
 <!ENTITY ssleuth.pref.about.thanks "Merci à ">
-<!ENTITY ssleuth.pref.about.translations "Traductions : " >
+<!ENTITY ssleuth.pref.about.translations "Traductions : " >
 <!ENTITY ssleuth.pref.about.license "Licence" >
 
 <!-- Buttons -->
@@ -92,4 +92,4 @@
 <!ENTITY ssleuth.pref.ui.button.edit "Modifier" >
 <!ENTITY ssleuth.pref.ui.button.remove "Supprimer" >
 
-<!ENTITY ssleuth.pref.ui.notifier.colorize "Colorier le Notifier : Active le gradient de couleur pour l'icône de notification." >
+<!ENTITY ssleuth.pref.ui.notifier.colorize "Colorier le Notifier : Active le gradient de couleur pour l'icône de notification." >
