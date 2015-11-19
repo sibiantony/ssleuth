@@ -151,12 +151,13 @@ var SSleuthHttpObserver = {
 };
 
 function tabClosed(e) {
-  var browser = _window().gBrowser.getBrowserForTab(e.target);
-  if (browser._ssleuthTabId) {
-    SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
-    freeTabId(browser._ssleuthTabId);
-    delete(browser['_ssleuthTabId']);
-  }
+//  var browser = _window().gBrowser.getBrowserForTab(e.target);
+//  if (browser._ssleuthTabId) {
+//    SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
+//    freeTabId(browser._ssleuthTabId);
+//    delete(browser['_ssleuthTabId']);
+//  }
+// TODO e10s
 }
 
 // These are to make sure that freed up indexes
@@ -191,29 +192,28 @@ function updateResponseCache(channel) {
     // dump("url : " + url + " content : " + channel.contentType
        // + " host ID : " + hostId + "\n"); 
 
-    var browser = getTabForReq(channel);
+    // var browser = getTabForReq(channel);
 
-    if (!browser) {
+    // if (!browser) {
       // dump("Critical: No browser! \n");
-      return;
-    }
+      // return;
+    //}
 
     // 3. Did the tab location url change ?
     //
 
-    if (!("_ssleuthTabId" in browser)) {
-      // dump("No tab id present \n"); 
+    // if (!("_ssleuthTabId" in browser)) {
+    var tab = channel.loadInfo.outerWindowID.toString();
+    if (!SSleuthHttpObserver.responseCache[tab]) {
       // Use a string index - helps with deletion without problems.
-      var tabId = browser._ssleuthTabId = getTabId().toString();
-
-      SSleuthHttpObserver.newLoc(url, tabId);
+      // var tabId = browser._ssleuthTabId = getTabId().toString();
+      SSleuthHttpObserver.newLoc(url, tab);
 
     } else {
       // dump("Found tab id " + browser._ssleuthTabId + " URI : "  
       //    + browser.contentWindow.location.toString() + "\n");
     }
 
-    var tab = browser._ssleuthTabId;
     var hostEntry = obs.responseCache[tab].reqs[hostId];
 
     if (!hostEntry) {

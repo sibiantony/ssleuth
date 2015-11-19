@@ -65,40 +65,43 @@ var ProgressListener = {
 
   onLocationChange: function (progress, request, uri) {
     // Get the chrome window from DOM window
-    var win = getWinFromProgress(progress); 
-    if (!win) return;
+    var winId = getWinIdFromRequest(request);
+
+    // var win = getWinFromProgress(progress); 
+    // if (!win) return;
 
     // dump("[onLocationChange] : " + uri.spec + "\n");
     try {
-      var protocol = win.content.location.protocol; 
-      if (protocol === 'https:' || protocol === 'http:') {
+      var protocol = uri.scheme; 
+      if (protocol === 'https' || protocol === 'http') {
+
         // Only relevant for domains observer.
         if (request && SSleuth.prefs.PREFS['domains.observe']) {
-          // var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
-          var domWin = progress.DOMWindow;
-          var tab = win.gBrowser.getBrowserForDocument(domWin.top.document)._ssleuthTabId; 
+          // var domWin = progress.DOMWindow;
+          // var tab = win.gBrowser.getBrowserForDocument(domWin.top.document)._ssleuthTabId; 
 
           // Re-init. New location, new cache.
           // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
           // TODO : Do we need newLoc and updateLoc here ? Identify which is new
           //          locationChange and which is for update.
-          SSleuthHttpObserver.newLoc(uri.asciiSpec, tab);
+          SSleuthHttpObserver.newLoc(uri.asciiSpec, winId);
 
           SSleuthHttpObserver.updateLoc(request);
           
           // At times location change event comes after securityChange
           // So the TLS version has to be set again. 
-          setTLSVersion(request, win); 
+          setTLSVersion(request, winId); 
         }
         // dump("response cache : " 
         //         + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
         
-        if (win.gBrowser.selectedBrowser._ssleuthTabId) {
+        // TODO : set cross-domain rating in domains.observe above 
+        // if (win.gBrowser.selectedBrowser._ssleuthTabId) {
           // onStateChange events will only be received for the current tab.
           // So we won't catch the STOP event to compute ratings
           // This is a workaround, and inefficient. 
-          setCrossDomainRating(win.gBrowser.selectedBrowser._ssleuthTabId);
-        }
+        //  setCrossDomainRating(win.gBrowser.selectedBrowser._ssleuthTabId);
+        // }
 
       }
 
@@ -109,7 +112,7 @@ var ProgressListener = {
     this.urlChanged = !(uri.spec === this.prevURL);
     this.prevURL = uri.spec;
 
-    SSleuthUI.onLocationChange(win, this.urlChanged);
+    SSleuthUI.onLocationChange(_window(), this.urlChanged); //TODO e10s
   },
 
   onProgressChange: function () {
@@ -125,29 +128,26 @@ var ProgressListener = {
       // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
       // TODO : Check status for error codes.
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
-        // var tab = SSleuthHttpObserver.getTab(request)._ssleuthTabId;
-        var win = getWinFromProgress(progress); 
+        var winId = getWinIdFromRequest(request); 
 
-        var domWin = progress.DOMWindow;
-        var tab = win.gBrowser.getBrowserForDocument(domWin.top.document)._ssleuthTabId; 
-
-        setCrossDomainRating(tab); 
-        SSleuthUI.onStateStop(tab, win); 
+        setCrossDomainRating(winId); 
+        SSleuthUI.onStateStop(winId, _window()); // TODO : e10s
       }
     }
   },
 
   onSecurityChange: function (progress, request, state) {
-    var win = getWinFromProgress(progress);
+    var win = _window(); // TODO e10s, getWinFromProgress(progress);
     var loc = win.content.location;
+    var winId = getWinIdFromRequest(request); 
 
     try {
       if (loc.protocol === "https:") {
-        protocolHttps(progress, request, state, win);
+        protocolHttps(progress, request, state, win, winId);
       } else if (loc.protocol === "http:") {
-        protocolHttp(loc, win);
+        protocolHttp(loc, win, winId);
       } else {
-        protocolUnknown(win);
+        protocolUnknown(win, winId);
       }
     } catch (e) {
       dump("Error onSecurityChange : " + e.message + "\n");
@@ -156,19 +156,19 @@ var ProgressListener = {
 
 };
 
-function protocolUnknown(win) {
-  setDomainStates('Insecure', false, win);
+function protocolUnknown(win, winId) {
+  setDomainStates('Insecure', false, winId);
   SSleuthUI.protocolChange('unknown', '', win);
 }
 
-function protocolHttp(loc, win) {
+function protocolHttp(loc, win, winId) {
   var httpsURL = loc.toString().replace('http://', 'https://');
 
-  setDomainStates('Insecure', false, win);
+  setDomainStates('Insecure', false, winId);
   SSleuthUI.protocolChange('http', httpsURL, win);
 }
 
-function protocolHttps(progress, request, state, win) {
+function protocolHttps(progress, request, state, win, winId) {
   var secUI = win.gBrowser.securityUI;
   if (!secUI) return;
 
@@ -212,8 +212,8 @@ function protocolHttps(progress, request, state, win) {
     extendedValidation = true;
   }
 
-  setDomainStates(securityState, extendedValidation, win);
-  setTLSVersion(request, win); 
+  setDomainStates(securityState, extendedValidation, winId);
+  setTLSVersion(request, getWinIdFromRequest(request)); 
 
   var cipherSuite = {
     name: cipherName,
@@ -318,11 +318,10 @@ function getConnectionRating(csRating, pfs,
   return Number(rating).toFixed(1);
 }
 
-function setDomainStates(ffStatus, evCert, win) {
+function setDomainStates(ffStatus, evCert, winId) {
   try {
     if (SSleuth.prefs.PREFS['domains.observe']) {
-      var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
-      SSleuthHttpObserver.updateLocEntry(tab, {
+      SSleuthHttpObserver.updateLocEntry(winId, {
         ffStatus: ffStatus,
         evCert: evCert
       });
@@ -333,14 +332,14 @@ function setDomainStates(ffStatus, evCert, win) {
 
 }
 
-function setTLSVersion(request, win) {
+function setTLSVersion(request, winId) {
   try {
     var index = ''; 
     var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2']; 
 
     // TODO : At the moment, depends on observer module. Change.
     if (Services.vc.compare(Services.appinfo.platformVersion, "36.0") > -1) {
-      var secUI = win.gBrowser.securityUI;
+      var secUI = _window().gBrowser.securityUI;
       if (secUI) {
         var sslStatus = secUI.SSLStatus;
         if (sslStatus) 
@@ -362,8 +361,7 @@ function setTLSVersion(request, win) {
     }
 
     if (index != '' && index != 'ff_obs') {
-      var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
-      SSleuthHttpObserver.updateLocEntry(tab, {
+      SSleuthHttpObserver.updateLocEntry(winId, {
         tlsVersion: index,
       });
     }
@@ -665,6 +663,16 @@ function getWinFromProgress(progress) {
       .rootTreeItem
       .QueryInterface(Ci.nsIInterfaceRequestor)
       .getInterface(Ci.nsIDOMWindow);
+}
+
+function getWinIdFromRequest(req) {
+  if (!(req instanceof Ci.nsIChannel)) 
+    return null; 
+  var channel = req.QueryInterface(Ci.nsIChannel); 
+  dump("winId : " + channel.loadInfo.outerWindowID + "\n"); 
+  
+  return channel.loadInfo.outerWindowID.toString(); 
+
 }
 
 function _window() {

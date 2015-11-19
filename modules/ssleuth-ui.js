@@ -71,6 +71,9 @@ var SSleuthUI = {
     // The document elements are not available until a 
     // successful init. So we need to add the child panel
     // for the first time 
+
+    // TODO : e10s
+    win = _window();
     if (!win) return;
 
     // If the user is navigating with the domains tab
@@ -640,7 +643,7 @@ function showCertDetails(cert, domMismatch, ev, win) {
 
 function showTLSVersion(win) {
   var doc = win.document; 
-  var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+  var tab = getTabId(win); //win.gBrowser.selectedBrowser._ssleuthTabId;
   var tlsIndex = 'ff_cache';
 
   if (!SSleuthUI.prefs.PREFS['domains.observe']) 
@@ -668,7 +671,7 @@ function showCrossDomainRating(tab, win) {
   
   var domainsRating = '...';
   if (tab == -1) 
-    tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+    tab = getTabId(win); // win.gBrowser.selectedBrowser._ssleuthTabId;
   var respCache = SSleuthHttpObserver.responseCache[tab]; 
 
   if ( respCache && 
@@ -931,6 +934,11 @@ function initPanelPreferences(doc) {
     }, false); 
 
 }
+function getTabId(win) {
+  return win.gBrowser.selectedBrowser.contentWindow
+                  .QueryInterface(Ci.nsIInterfaceRequestor)
+                  .getInterface(Ci.nsIDOMWindowUtils).outerWindowID.toString();
+}
 
 function loadDomainsTab() {
 
@@ -947,7 +955,9 @@ function loadDomainsTab() {
     doc.getElementById('ssleuth-paneltab-domains-disabled-text').
     hidden = true;
 
-    var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+    // var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
+    var tab = getTabId(win);
+
     var respCache = SSleuthHttpObserver.responseCache[tab];
 
     if (!respCache) return;
