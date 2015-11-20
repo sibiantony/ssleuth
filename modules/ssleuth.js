@@ -84,6 +84,8 @@ var ProgressListener = {
           // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
           // TODO : Do we need newLoc and updateLoc here ? Identify which is new
           //          locationChange and which is for update.
+          
+          // TODO : e10s Check
           SSleuthHttpObserver.newLoc(uri.asciiSpec, winId);
 
           SSleuthHttpObserver.updateLoc(request);
@@ -94,14 +96,18 @@ var ProgressListener = {
         }
         // dump("response cache : " 
         //         + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
+        dump("== Response cache ==\n"); 
+        // for (var key in SSleuthHttpObserver.responseCache) {
+          // dump("Key : " + key + "\nCache : " +
+           // JSON.stringify(SSleuthHttpObserver.responseCache[key], null, 2) + "\n"); 
+        // }
         
-        // TODO : set cross-domain rating in domains.observe above 
-        // if (win.gBrowser.selectedBrowser._ssleuthTabId) {
+        if (SSleuthHttpObserver.responseCache[winId]) {
           // onStateChange events will only be received for the current tab.
           // So we won't catch the STOP event to compute ratings
           // This is a workaround, and inefficient. 
-        //  setCrossDomainRating(win.gBrowser.selectedBrowser._ssleuthTabId);
-        // }
+          setCrossDomainRating(winId); 
+        }
 
       }
 
@@ -129,7 +135,6 @@ var ProgressListener = {
       // TODO : Check status for error codes.
       if (request && SSleuth.prefs.PREFS['domains.observe']) {
         var winId = getWinIdFromRequest(request); 
-
         setCrossDomainRating(winId); 
         SSleuthUI.onStateStop(winId, _window()); // TODO : e10s
       }
@@ -669,9 +674,9 @@ function getWinIdFromRequest(req) {
   if (!(req instanceof Ci.nsIChannel)) 
     return null; 
   var channel = req.QueryInterface(Ci.nsIChannel); 
-  dump("winId : " + channel.loadInfo.outerWindowID + "\n"); 
+  dump("winId : " + channel.loadInfo.parentOuterWindowID + "\n"); 
   
-  return channel.loadInfo.outerWindowID.toString(); 
+  return channel.loadInfo.parentOuterWindowID.toString(); 
 
 }
 

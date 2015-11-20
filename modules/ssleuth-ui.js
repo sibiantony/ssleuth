@@ -935,9 +935,11 @@ function initPanelPreferences(doc) {
 
 }
 function getTabId(win) {
-  return win.gBrowser.selectedBrowser.contentWindow
+  var tabId =  win.gBrowser.selectedBrowser.contentWindow
                   .QueryInterface(Ci.nsIInterfaceRequestor)
                   .getInterface(Ci.nsIDOMWindowUtils).outerWindowID.toString();
+  dump("getTabId : " + tabId + "\n"); 
+  return tabId; 
 }
 
 function loadDomainsTab() {

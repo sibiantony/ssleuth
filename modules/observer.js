@@ -192,19 +192,11 @@ function updateResponseCache(channel) {
     // dump("url : " + url + " content : " + channel.contentType
        // + " host ID : " + hostId + "\n"); 
 
-    // var browser = getTabForReq(channel);
-
-    // if (!browser) {
-      // dump("Critical: No browser! \n");
-      // return;
-    //}
-
     // 3. Did the tab location url change ?
     //
 
-    // if (!("_ssleuthTabId" in browser)) {
-    var tab = channel.loadInfo.outerWindowID.toString();
-    if (!SSleuthHttpObserver.responseCache[tab]) {
+    var tab = channel.loadInfo.parentOuterWindowID.toString();
+    if (!obs.responseCache[tab]) {
       // Use a string index - helps with deletion without problems.
       // var tabId = browser._ssleuthTabId = getTabId().toString();
       SSleuthHttpObserver.newLoc(url, tab);
@@ -217,6 +209,9 @@ function updateResponseCache(channel) {
     var hostEntry = obs.responseCache[tab].reqs[hostId];
 
     if (!hostEntry) {
+      // dump("tab : " + tab + ", hostId : " + hostId + " \n"); 
+      // dump("Tab responseCache : " + JSON.stringify(obs.responseCache[tab]) + "\n"); 
+
       hostEntry = obs.responseCache[tab].reqs[hostId] = {
         count: 0,
         ctype: {},
@@ -227,6 +222,10 @@ function updateResponseCache(channel) {
           .QueryInterface(Ci.nsISSLStatusProvider)
           .SSLStatus.QueryInterface(Ci.nsISSLStatus);
         if (sslStatus) {
+          if ((sslStatus.serverCert instanceof Ci.nsIX509Cert)) {
+            dump("ServerCert " + sslStatus.serverCert.commonName + "\n"); 
+          }
+
           hostEntry.cipherName = sslStatus.cipherName;
           hostEntry.certValid = obs.utilCb.isCertValid(sslStatus.serverCert);
           hostEntry.domMatch = !sslStatus.isDomainMismatch;
@@ -241,6 +240,8 @@ function updateResponseCache(channel) {
           // The evCert and ff status are not available per channel. 
           // Wait for it to be filled in after the main channel request.
           hostEntry.cxRating = -1;
+
+          // dump("hostEntry : " + JSON.stringify(hostEntry) + "\n"); 
         }
       }
     }
