@@ -64,35 +64,38 @@ var ProgressListener = {
   urlChanged: false,
 
   onLocationChange: function (progress, request, uri) {
-    // Get the chrome window from DOM window
-    var winId = getWinIdFromRequest(request);
+    dump("[onLocationChange] : " + uri.spec + "\n");
 
-    if (!winId) return; 
+    // Get the chrome window from DOM window
     // var win = getWinFromProgress(progress); 
     // if (!win) return;
 
-    dump("[onLocationChange] : " + uri.spec + "\n");
     try {
-      var protocol = uri.scheme; 
-      if (protocol === 'https' || protocol === 'http') {
+      var winId = getWinIdFromRequest(request);
 
-        if (SSleuthHttpObserver.responseCache[winId]) {
-          // onStateChange events will only be received for the current tab.
-          // So we won't catch the STOP event to compute ratings
-          // This is a workaround, and inefficient. 
-          setCrossDomainRating(winId); 
+      // TODO e10s. The winId won't be available for cached locationChanges.
+      if (winId)  {
+        var protocol = uri.scheme; 
+        if (protocol === 'https' || protocol === 'http') {
+
+          if (SSleuthHttpObserver.responseCache[winId]) {
+            // onStateChange events will only be received for the current tab.
+            // So we won't catch the STOP event to compute ratings
+            // This is a workaround, and inefficient. 
+            setCrossDomainRating(winId); 
+          }
         }
-      }
+      } 
+
+      this.urlChanged = !(uri.spec === this.prevURL);
+      this.prevURL = uri.spec;
+
+      SSleuthUI.onLocationChange(_window(), this.urlChanged); //TODO e10s
 
     } catch (e) {
       dump("Error onLocationChange " + e.message + "\n");
     }
-
-    this.urlChanged = !(uri.spec === this.prevURL);
-    this.prevURL = uri.spec;
-
-    SSleuthUI.onLocationChange(_window(), this.urlChanged); //TODO e10s
-  },
+ },
 
   onProgressChange: function () {
     return;
@@ -124,12 +127,14 @@ var ProgressListener = {
             
             // At times location change event comes after securityChange
             // So the TLS version has to be set again. 
-            setTLSVersion(request, winId); 
+            // setTLSVersion(request, winId); 
           }
         }
       }
 
       if (flag & Ci.nsIWebProgressListener.STATE_STOP) {
+        dump("onStateChange STOP event \n"); 
+
         // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
         // TODO : Check status for error codes.
         if (request && SSleuth.prefs.PREFS['domains.observe']) {

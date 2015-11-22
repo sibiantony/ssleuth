@@ -199,10 +199,6 @@ function updateResponseCache(channel) {
           .QueryInterface(Ci.nsISSLStatusProvider)
           .SSLStatus.QueryInterface(Ci.nsISSLStatus);
         if (sslStatus) {
-          if ((sslStatus.serverCert instanceof Ci.nsIX509Cert)) {
-            dump("ServerCert " + sslStatus.serverCert.commonName + "\n"); 
-          }
-
           hostEntry.cipherName = sslStatus.cipherName;
           hostEntry.certValid = obs.utilCb.isCertValid(sslStatus.serverCert);
           hostEntry.domMatch = !sslStatus.isDomainMismatch;

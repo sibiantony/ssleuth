@@ -78,10 +78,8 @@ var SSleuthUI = {
     // If the user is navigating with the domains tab
     // reload the data.
     // resetDomains(win.doc);
-    dump("1"); 
     if (win.document.getElementById('ssleuth-paneltab-domains')
      .getAttribute('_selected') === 'true') {
-    dump("2"); 
       loadDomainsTab();
     }
 
@@ -89,8 +87,6 @@ var SSleuthUI = {
     //  make it appear smooth. 
     var ssleuthPanel = _ssleuthPanel(win);
     if (ssleuthPanel.state == "open") {
-
-    dump("4"); 
       showPanel(ssleuthPanel, true);
     }
 
