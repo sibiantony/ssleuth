@@ -10,8 +10,6 @@ Components.utils.import("resource://gre/modules/Services.jsm");
 
 var SSleuthHttpObserver = {
   responseCache: [],
-  maxTabId: 0,
-  minTabId: 0,
   prefs: null,
   utilCb: null,
   enabled: false,
@@ -78,7 +76,6 @@ var SSleuthHttpObserver = {
     }
 
     // this.responseCache = []; 
-    this.maxTabId = this.minTabId = 0;
     this.enabled = false;
   },
 
@@ -87,13 +84,13 @@ var SSleuthHttpObserver = {
 
     window.gBrowser.tabContainer
       .removeEventListener('TabClose', tabClosed);
-    for (var browser of window.gBrowser.browsers) {
-      if (browser._ssleuthTabId) {
-        SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
-        freeTabId(browser._ssleuthTabId);
-        delete(browser['_ssleuthTabId']);
-      }
-    }
+      // TODO e10s. The below won't be necessary - respCache is cleaned up. Test.
+//    for (var browser of window.gBrowser.browsers) {
+//
+//      var tabId = browser.contentWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+//                  .getInterface(Ci.nsIDOMWindowUtils).outerWindowID.toString();
+//      SSleuthHttpObserver.deleteLoc(tabId);
+//    }
 
   },
 
@@ -151,36 +148,16 @@ var SSleuthHttpObserver = {
 };
 
 function tabClosed(e) {
-//  var browser = _window().gBrowser.getBrowserForTab(e.target);
-//  if (browser._ssleuthTabId) {
-//    SSleuthHttpObserver.deleteLoc(browser._ssleuthTabId);
-//    freeTabId(browser._ssleuthTabId);
-//    delete(browser['_ssleuthTabId']);
-//  }
-// TODO e10s
-}
-
-// These are to make sure that freed up indexes
-//  are re-used. At the end, there will always be
-//  null spots equal to max. opened tabs.
-function freeTabId(id) {
-  if (id < SSleuthHttpObserver.minTabId)
-    SSleuthHttpObserver.minTabId = id;
-}
-
-function getTabId() {
-  const obs = SSleuthHttpObserver;
-  var id = obs.minTabId;
-
-  while ((obs.responseCache[id] != null) && (obs.minTabId < obs.maxTabId)) {
-    // This spot is occupied. Find the next free one.
-    id = ++obs.minTabId;
+  try {
+    var browser = _window().gBrowser.getBrowserForTab(e.target);
+    var tabId = browser.contentWindow.QueryInterface(Ci.nsIInterfaceRequestor)
+                  .getInterface(Ci.nsIDOMWindowUtils).outerWindowID.toString();
+      
+    SSleuthHttpObserver.deleteLoc(tabId);
+  } catch (e) {
+    dump("Error tabClosed : " + e.message + "\n"); 
   }
-
-  if (obs.minTabId == obs.maxTabId)
-    obs.minTabId = ++obs.maxTabId;
-
-  return id;
+  
 }
 
 function updateResponseCache(channel) {
@@ -189,8 +166,8 @@ function updateResponseCache(channel) {
     var url = channel.URI.asciiSpec;
     var hostId = channel.URI.scheme + ":" + channel.URI.hostPort;
 
-    // dump("url : " + url + " content : " + channel.contentType
-       // + " host ID : " + hostId + "\n"); 
+    dump("url : " + url + " content : " + channel.contentType
+       + " host ID : " + hostId + "\n"); 
 
     // 3. Did the tab location url change ?
     //
@@ -209,7 +186,7 @@ function updateResponseCache(channel) {
     var hostEntry = obs.responseCache[tab].reqs[hostId];
 
     if (!hostEntry) {
-      // dump("tab : " + tab + ", hostId : " + hostId + " \n"); 
+      dump("tab : " + tab + ", hostId : " + hostId + " \n"); 
       // dump("Tab responseCache : " + JSON.stringify(obs.responseCache[tab]) + "\n"); 
 
       hostEntry = obs.responseCache[tab].reqs[hostId] = {

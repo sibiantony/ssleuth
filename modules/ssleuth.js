@@ -67,48 +67,21 @@ var ProgressListener = {
     // Get the chrome window from DOM window
     var winId = getWinIdFromRequest(request);
 
+    if (!winId) return; 
     // var win = getWinFromProgress(progress); 
     // if (!win) return;
 
-    // dump("[onLocationChange] : " + uri.spec + "\n");
+    dump("[onLocationChange] : " + uri.spec + "\n");
     try {
       var protocol = uri.scheme; 
       if (protocol === 'https' || protocol === 'http') {
 
-        // Only relevant for domains observer.
-        if (request && SSleuth.prefs.PREFS['domains.observe']) {
-          // var domWin = progress.DOMWindow;
-          // var tab = win.gBrowser.getBrowserForDocument(domWin.top.document)._ssleuthTabId; 
-
-          // Re-init. New location, new cache.
-          // TODO : Optimize how tab id obtained ? move to newResponeEntry() ?
-          // TODO : Do we need newLoc and updateLoc here ? Identify which is new
-          //          locationChange and which is for update.
-          
-          // TODO : e10s Check
-          SSleuthHttpObserver.newLoc(uri.asciiSpec, winId);
-
-          SSleuthHttpObserver.updateLoc(request);
-          
-          // At times location change event comes after securityChange
-          // So the TLS version has to be set again. 
-          setTLSVersion(request, winId); 
-        }
-        // dump("response cache : " 
-        //         + JSON.stringify(SSleuthHttpObserver.responseCache, null, 2) + "\n");
-        dump("== Response cache ==\n"); 
-        // for (var key in SSleuthHttpObserver.responseCache) {
-          // dump("Key : " + key + "\nCache : " +
-           // JSON.stringify(SSleuthHttpObserver.responseCache[key], null, 2) + "\n"); 
-        // }
-        
         if (SSleuthHttpObserver.responseCache[winId]) {
           // onStateChange events will only be received for the current tab.
           // So we won't catch the STOP event to compute ratings
           // This is a workaround, and inefficient. 
           setCrossDomainRating(winId); 
         }
-
       }
 
     } catch (e) {
@@ -130,18 +103,48 @@ var ProgressListener = {
   },
 
   onStateChange: function (progress, request, flag, status) {
-    if (flag & Ci.nsIWebProgressListener.STATE_STOP) {
-      // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
-      // TODO : Check status for error codes.
-      if (request && SSleuth.prefs.PREFS['domains.observe']) {
-        var winId = getWinIdFromRequest(request); 
-        setCrossDomainRating(winId); 
-        SSleuthUI.onStateStop(winId, _window()); // TODO : e10s
+    try {
+      if (flag & Ci.nsIWebProgressListener.STATE_START & 
+            (request instanceof Ci.nsIChannel)) {
+        var channel = request.QueryInterface(Ci.nsIChannel); 
+        var scheme = channel.URI.scheme; 
+
+        if (scheme === 'https' || scheme === 'http') {
+
+          // Only relevant for domains observer.
+          if (request && SSleuth.prefs.PREFS['domains.observe']) {
+            var winId = getWinIdFromRequest(request);
+
+            // Re-init. New location, new cache.
+            // TODO : e10s Check
+            // This does re-init cache when the current tab loads another or reload.
+            SSleuthHttpObserver.newLoc(channel.URI.asciiSpec, winId);
+
+            // SSleuthHttpObserver.updateLoc(request);
+            
+            // At times location change event comes after securityChange
+            // So the TLS version has to be set again. 
+            setTLSVersion(request, winId); 
+          }
+        }
       }
+
+      if (flag & Ci.nsIWebProgressListener.STATE_STOP) {
+        // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
+        // TODO : Check status for error codes.
+        if (request && SSleuth.prefs.PREFS['domains.observe']) {
+          var winId = getWinIdFromRequest(request); 
+          setCrossDomainRating(winId); 
+          SSleuthUI.onStateStop(winId, _window()); // TODO : e10s
+        }
+      }
+    } catch(e) {
+      dump("Error onStateChange : " + e.message + "\n"); 
     }
   },
 
   onSecurityChange: function (progress, request, state) {
+    dump("[onSecurityChange] : \n");
     var win = _window(); // TODO e10s, getWinFromProgress(progress);
     var loc = win.content.location;
     var winId = getWinIdFromRequest(request); 
