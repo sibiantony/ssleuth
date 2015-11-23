@@ -73,6 +73,13 @@ var ProgressListener = {
     try {
       var winId = getWinIdFromRequest(request);
 
+      // TODO e10s
+      if (!winId) {
+        winId =  _window().gBrowser.selectedBrowser.contentWindow
+                  .QueryInterface(Ci.nsIInterfaceRequestor)
+                  .getInterface(Ci.nsIDOMWindowUtils).outerWindowID.toString();
+      }
+
       // TODO e10s. The winId won't be available for cached locationChanges.
       if (winId)  {
         var protocol = uri.scheme; 
