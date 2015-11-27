@@ -630,9 +630,10 @@ function showCertDetails(cert, domMismatch, ev, win) {
   doc.getElementById('ssleuth-cert-sigalg-rating')
     .textContent = _fmt(rating) + "/" + _fmt(rp.signature);
 
-  doc.getElementById("ssleuth-text-cert-fingerprint")
-    .textContent = svCert.sha1Fingerprint.substring(0, 30) + ' ' +
-                    svCert.sha1Fingerprint.substring(30);
+  doc.getElementById("ssleuth-text-cert-fingerprint-1")
+    .textContent = svCert.sha1Fingerprint.substring(0, 30);
+  doc.getElementById("ssleuth-text-cert-fingerprint-2")
+    .textContent = svCert.sha1Fingerprint.substring(30);
 
   doc.getElementById("ssleuth-text-cert-validity-box").hidden 
       = !(panelInfo.certValidity);
@@ -1236,7 +1237,8 @@ function copyToClipboard() {
               elem('ssleuth-text-cert-validity-text').value + ' ' +
               elem('ssleuth-text-cert-validity').textContent + '\n\t' +
               elem('ssleuth-text-cert-fingerprint-label').value + ' ' +
-              elem('ssleuth-text-cert-fingerprint').textContent ; 
+              elem('ssleuth-text-cert-fingerprint-1').textContent + 
+                elem('ssleuth-text-cert-fingerprint-2').textContent; 
       break;
 
     default:

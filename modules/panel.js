@@ -457,7 +457,11 @@ function SSleuthPanel(win) {
                   flex: '1'
                 })); 
                 vb.appendChild(create('description', {
-                  id: 'ssleuth-text-cert-fingerprint',
+                  id: 'ssleuth-text-cert-fingerprint-1',
+                  class: 'ssleuth-text-body-class'
+                }));
+                vb.appendChild(create('description', {
+                  id: 'ssleuth-text-cert-fingerprint-2',
                   class: 'ssleuth-text-body-class'
                 }));
               }
