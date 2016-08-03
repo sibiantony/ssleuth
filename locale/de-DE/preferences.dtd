@@ -27,7 +27,7 @@
 <!ENTITY ssleuth.pref.panel.hmac "HMAC anzeigen" >
 <!ENTITY ssleuth.pref.panel.validity "Gültigkeits-Status anzeigen" >
 <!ENTITY ssleuth.pref.panel.validitytime "GMT/UTC-Zeitstempel der Gültigkeitsdauer anzeigen" >
-<!ENTITY ssleuth.pref.panel.fingerprint "SHA-1 Fingerabdruck anzeigen" >
+<!ENTITY ssleuth.pref.panel.fingerprint "SHA-2 Fingerabdruck anzeigen" >
 
 <!ENTITY ssleuth.pref.ui.urlbar "Adressleiste" >
 <!ENTITY ssleuth.pref.ui.urlbar.colorize "Einfärben : Färbt die Adressleiste abhängig vom Rating ein" >

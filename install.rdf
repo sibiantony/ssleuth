@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<r:RDF xmlns="http://www.mozilla.org/2004/em-rdf#"
-			 xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-	<r:Description about="urn:mozilla:install-manifest">
-		<creator>Sibi Antony</creator>
-		<description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
-		<homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
-		<id>ssleuth@github</id>
-		<name>SSleuth</name>
-		<version>0.4.5</version>
-		<iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
-		<optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
-		<optionsType>3</optionsType>
+    <r:RDF xmlns="http://www.mozilla.org/2004/em-rdf#" xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <r:Description about="urn:mozilla:install-manifest">
+            <creator>Sibi Antony</creator>
+            <description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
+            <homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
+            <id>ssleuth@github</id>
+            <name>SSleuth</name>
+            <version>0.5.1</version>
+            <iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
+            <optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
+            <optionsType>3</optionsType>
 
-		<bootstrap>true</bootstrap>
-		<type>2</type>
+            <bootstrap>true</bootstrap>
+            <type>2</type>
+            <multiprocessCompatible>true</multiprocessCompatible>
 
-		<targetApplication>
-			<r:Description>
-				<id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
-				<minVersion>25.0</minVersion>
-				<maxVersion>43.0a1</maxVersion>
-			</r:Description>
-		</targetApplication>
+            <targetApplication>
+                <r:Description>
+                    <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
+                    <minVersion>42.0</minVersion>
+                    <maxVersion>51.0a1</maxVersion>
+                </r:Description>
+            </targetApplication>
 
-	<localized>
-		<r:Description>
-			<locale>de-DE</locale>
-				<name>SSleuth</name>
-				<description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
-		</r:Description>
-	</localized>
+            <localized>
+                <r:Description>
+                    <locale>de-DE</locale>
+                    <name>SSleuth</name>
+                    <description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
+                </r:Description>
+            </localized>
 
-	</r:Description>
-</r:RDF>
+        </r:Description>
+    </r:RDF>

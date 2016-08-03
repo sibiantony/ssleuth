@@ -1,734 +1,655 @@
-"use strict";
+'use strict';
 
-var EXPORTED_SYMBOLS = ["SSleuth"];
+var EXPORTED_SYMBOLS = ['ssleuth'];
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://ssleuth/cipher-suites.js");
-Cu.import("resource://ssleuth/observer.js");
-Cu.import("resource://ssleuth/ssleuth-ui.js");
-Cu.import("resource://ssleuth/preferences.js");
+Cu.import('resource://gre/modules/XPCOMUtils.jsm');
+Cu.import('resource://gre/modules/Services.jsm');
 
-var SSleuth = {
-  prefs: null,
+Cu.import('resource://ssleuth/utils.js');
+Cu.import('resource://ssleuth/cipher-suites.js');
+Cu.import('resource://ssleuth/observer.js');
+Cu.import('resource://ssleuth/ssleuth-ui.js');
+Cu.import('resource://ssleuth/preferences.js');
+Cu.import('resource://ssleuth/windows.js');
 
-  extensionStartup: function (firstRun, reinstall) {
-    SSleuthPreferences.init();
-    this.prefs = SSleuthPreferences.readInitPreferences();
-    SSleuthHttpObserver.init(observerCallbacks,
-      this.prefs.PREFS['domains.observe']);
+var ssleuth = (function () {
+    var initPrefs = null;
 
-    prefListener.register(false);
+    var startup = function (firstRun, reinstall) {
+        try {
+            initPrefs = preferences.init(prefListener);
 
-    SSleuthUI.startup(this.prefs);
-    forEachOpenWindow(SSleuth.initWindow);
-    Services.wm.addListener(WindowListener);
-  },
+            observer.init(observerCallbacks,
+                initPrefs['domains.observe']);
 
-  extensionShutdown: function () {
-    forEachOpenWindow(SSleuth.uninitWindow);
-    Services.wm.removeListener(WindowListener);
-    SSleuthUI.shutdown(); 
-    SSleuthPreferences.uninit();
-    SSleuthHttpObserver.uninit();
-    prefListener.unregister();
-  },
-
-  extensionUninstall: function () {},
-
-  initWindow: function (window) {
-    try {
-      window.gBrowser.addProgressListener(ProgressListener);
-      SSleuthHttpObserver.initWindow(window);
-      SSleuthUI.init(window);
-    } catch (e) {
-      dump("\nError ssleuth init : " + e.message + "\n");
-      SSleuth.uninitWindow(window);
-    }
-  },
-
-  uninitWindow: function (window) {
-    SSleuthHttpObserver.uninitWindow(window);
-    SSleuthUI.uninit(window);
-    // Add window remove listener.
-    window.gBrowser.removeProgressListener(ProgressListener);
-  }
-};
-
-var ProgressListener = {
-  prevURL: null,
-  urlChanged: false,
-
-  onLocationChange: function (progress, request, uri) {
-    dump("[onLocationChange] : " + uri.spec + "\n");
-
-    // Get the chrome window from DOM window
-    // var win = getWinFromProgress(progress); 
-    // if (!win) return;
-
-    try {
-      var winId = getWinIdFromRequest(request);
-
-      // TODO e10s
-      if (!winId) {
-        winId =  _window().gBrowser.selectedBrowser.contentWindow
-                  .QueryInterface(Ci.nsIInterfaceRequestor)
-                  .getInterface(Ci.nsIDOMWindowUtils).outerWindowID.toString();
-      }
-
-      // TODO e10s. The winId won't be available for cached locationChanges.
-      if (winId)  {
-        var protocol = uri.scheme; 
-        if (protocol === 'https' || protocol === 'http') {
-
-          if (SSleuthHttpObserver.responseCache[winId]) {
-            // onStateChange events will only be received for the current tab.
-            // So we won't catch the STOP event to compute ratings
-            // This is a workaround, and inefficient. 
-            setCrossDomainRating(winId); 
-          }
+            ui.startup(initPrefs);
+            windows.init(initWindow, uninitWindow);
+        } catch (e) {
+            log.error('Error preferences ssleuth init : ' + e.message);
         }
-      } 
+    };
 
-      this.urlChanged = !(uri.spec === this.prevURL);
-      this.prevURL = uri.spec;
+    var shutdown = function () {
 
-      SSleuthUI.onLocationChange(_window(), this.urlChanged); //TODO e10s
+        windows.uninit();
+        ui.shutdown();
+        preferences.uninit();
+        observer.uninit();
+        log.unload();
+    };
 
-    } catch (e) {
-      dump("Error onLocationChange " + e.message + "\n");
-    }
- },
+    var uninstall = function () {
+        Services.prefs.getBranch('extensions.ssleuth').deleteBranch('');
+    };
 
-  onProgressChange: function () {
-    return;
-  },
+    var initWindow = function (win) {
+        try {
+            progressListener(win).init();
+            listener(win).init();
 
-  onStatusChange: function (progress, req, status, msg) {
-    return;
-  },
+            ui.init(win);
 
-  onStateChange: function (progress, request, flag, status) {
-    try {
-      if (flag & Ci.nsIWebProgressListener.STATE_START & 
-            (request instanceof Ci.nsIChannel)) {
-        var channel = request.QueryInterface(Ci.nsIChannel); 
-        var scheme = channel.URI.scheme; 
-
-        if (scheme === 'https' || scheme === 'http') {
-
-          // Only relevant for domains observer.
-          if (request && SSleuth.prefs.PREFS['domains.observe']) {
-            var winId = getWinIdFromRequest(request);
-
-            // Re-init. New location, new cache.
-            // TODO : e10s Check
-            // This does re-init cache when the current tab loads another or reload.
-            SSleuthHttpObserver.newLoc(channel.URI.asciiSpec, winId);
-
-            // SSleuthHttpObserver.updateLoc(request);
-            
-            // At times location change event comes after securityChange
-            // So the TLS version has to be set again. 
-            // setTLSVersion(request, winId); 
-          }
+        } catch (e) {
+            log.error('Error ssleuth init : ' + e.message);
+            uninitWindow(win);
         }
-      }
+    };
 
-      if (flag & Ci.nsIWebProgressListener.STATE_STOP) {
-        dump("onStateChange STOP event \n"); 
+    var uninitWindow = function (win) {
+        ui.uninit(win);
 
-        // TODO : Check STATE_IS_REQUEST, STATE_IS_NETWORK
-        // TODO : Check status for error codes.
-        if (request && SSleuth.prefs.PREFS['domains.observe']) {
-          var winId = getWinIdFromRequest(request); 
-          setCrossDomainRating(winId); 
-          SSleuthUI.onStateStop(winId, _window()); // TODO : e10s
+        // Listener and progresslisteners are unloaded along with window unloaders
+    };
+
+    return {
+        startup: startup,
+        shutdown: shutdown,
+        uninstall: uninstall,
+        get prefs() {
+            return initPrefs;
         }
-      }
-    } catch(e) {
-      dump("Error onStateChange : " + e.message + "\n"); 
-    }
-  },
+    };
 
-  onSecurityChange: function (progress, request, state) {
-    dump("[onSecurityChange] : \n");
-    var win = _window(); // TODO e10s, getWinFromProgress(progress);
-    var loc = win.content.location;
-    var winId = getWinIdFromRequest(request); 
+}());
 
-    try {
-      if (loc.protocol === "https:") {
-        protocolHttps(progress, request, state, win, winId);
-      } else if (loc.protocol === "http:") {
-        protocolHttp(loc, win, winId);
-      } else {
-        protocolUnknown(win, winId);
-      }
-    } catch (e) {
-      dump("Error onSecurityChange : " + e.message + "\n");
-    }
-  }
+var progressListener = function (win) {
+
+    var prevURL, urlChanged,
+        msgListener = listener(win);
+
+    var webProgressListener = {
+        QueryInterface: XPCOMUtils.generateQI(['nsIWebProgressListener',
+                                           'nsISupportsWeakReference']),
+
+        onStateChange: function (progress, request, flag, status) {
+
+            msgListener.getFrameMessage(function (msg) {
+                if (!request) return;
+
+                var winId = msg.id,
+                    uri = msg.uri,
+                    scheme = msg.scheme;
+
+                // TODO check for request may not be necessary.
+                // used before for passing on to updateResponseCache.
+                if ((flag & Ci.nsIWebProgressListener.STATE_START) &
+                    (request instanceof Ci.nsIChannel)) {
+                    // TODO : Can cause reload of cache if there is a statechange
+                    // due to blocked contents
+
+                    if (ssleuth.prefs['domains.observe']) {
+                        // Re-init. New location, new cache.
+                        // This does re-init cache when the current tab loads another or reload.
+                        log.debug('New location, new cache. winId : ' + winId);
+                        observer.newLoc(uri, winId);
+                    }
+                }
+
+                if ((flag & Ci.nsIWebProgressListener.STATE_STOP) &&
+                    (ssleuth.prefs['domains.observe'])) {
+
+                    setCrossDomainRating(winId);
+                    ui.onStateStop(win, winId); // TODO : optimize
+                }
+
+            });
+        },
+
+        onLocationChange: function (progress, request, uri, flag) {
+            msgListener.getFrameMessage(function (msg) {
+
+                var winId = msg.id,
+                    scheme = msg.scheme;
+                if (!winId) return;
+
+                if ((scheme === 'https' || scheme === 'http') &&
+                    (observer.responseCache[winId])) {
+                    // onStateChange events will only be received for the current tab.
+                    // So we won't catch the STOP event to compute ratings
+                    // This is a workaround, and inefficient. 
+                    setCrossDomainRating(winId);
+                }
+
+                urlChanged = !(uri.spec === prevURL);
+                prevURL = uri.spec;
+
+                ui.onLocationChange(win, winId, urlChanged);
+
+            });
+        },
+
+        onSecurityChange: function (progress, request, state) {
+
+            msgListener.getFrameMessage(function (msg) {
+                if (state === 0) return;
+
+                var scheme = msg.scheme,
+                    uri = msg.uri,
+                    winId = msg.id;
+
+                try {
+                    if (scheme === 'https') {
+                        protocolHttps(progress, state, win, winId);
+                    } else if (scheme === 'http') {
+                        protocolHttp(uri, win, winId);
+                    } else {
+                        protocolUnknown(win, winId);
+                    }
+                } catch (e) {
+                    log.error('Error onSecurityChange : ' + e.message);
+                }
+            });
+        },
+    };
+
+    var init = function () {
+
+        win.gBrowser.addProgressListener(webProgressListener);
+        prevURL = null;
+        urlChanged = false;
+
+        windows.onUnload(win, function () {
+            win.gBrowser.removeProgressListener(webProgressListener);
+        });
+    };
+
+    return {
+        init: init
+    };
 
 };
 
 function protocolUnknown(win, winId) {
-  setDomainStates('Insecure', false, winId);
-  SSleuthUI.protocolChange('unknown', '', win);
+    setDomainStates('Insecure', false, winId);
+    ui.protocolChange('unknown', '', win, winId);
 }
 
 function protocolHttp(loc, win, winId) {
-  var httpsURL = loc.toString().replace('http://', 'https://');
+    var httpsURL = loc.toString().replace('http://', 'https://');
 
-  setDomainStates('Insecure', false, winId);
-  SSleuthUI.protocolChange('http', httpsURL, win);
+    setDomainStates('Insecure', false, winId);
+    ui.protocolChange('http', httpsURL, win, winId);
 }
 
-function protocolHttps(progress, request, state, win, winId) {
-  var secUI = win.gBrowser.securityUI;
-  if (!secUI) return;
+function protocolHttps(progress, state, win, winId) {
+    var secUI = win.gBrowser.securityUI;
+    if (!secUI) return;
 
-  var sslStatus = secUI.SSLStatus;
-  if (!sslStatus) {
-    secUI.QueryInterface(Ci.nsISSLStatusProvider);
-    if (secUI.SSLStatus) {
-      sslStatus = secUI.SSLStatus;
-    } else {
-      // 1. A rather annoying behaviour : Firefox do not seem to populate
-      //  SSLStatus if a tab switches to a page with the same URL.
-      //
-      // 2. A page load event can fire even if there is 
-      //  no connectivity and user attempts to reload a page. 
-      //  Hide the panel to prevent stale values from getting 
-      //  displayed 
+    var sslStatus = secUI.SSLStatus;
+    if (!sslStatus) {
+        secUI.QueryInterface(Ci.nsISSLStatusProvider);
+        if (secUI.SSLStatus) {
+            sslStatus = secUI.SSLStatus;
+        } else {
+            // 1. Firefox do not seem to populate
+            //  SSLStatus if a tab switches to a page with the same URL.
+            //
+            // 2. A page load event can fire even if there is 
+            //  no connectivity and user attempts to reload a page. 
+            //  Hide the panel to prevent stale values from getting 
+            //  displayed 
 
-      // TODO : Recheck urlChanged context for the new redesign
-      if (ProgressListener.urlChanged) {
-        SSleuthUI.protocolChange('unknown', '', win);
-      }
-      return;
+            // TODO : Recheck urlChanged context for the redesign
+            if (progressListener(win).urlChanged) {
+                ui.protocolChange('unknown', '', win, winId);
+            }
+            return;
+        }
     }
-  }
 
-  const cs = ssleuthCipherSuites;
-  var securityState = '';
-  var cipherName = sslStatus.cipherName;
-  var extendedValidation = false;
+    const cs = ssleuthCipherSuites;
+    var securityState = '';
+    var cipherName = sslStatus.cipherName;
+    var extendedValidation = false;
 
-  // Security Info - Firefox states
-  if ((state & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
-    securityState = 'Secure';
-  } else if ((state & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
-    securityState = 'Insecure';
-  } else if ((state & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
-    securityState = 'Broken';
-  }
-
-  if (state & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
-    extendedValidation = true;
-  }
-
-  setDomainStates(securityState, extendedValidation, winId);
-  setTLSVersion(request, getWinIdFromRequest(request)); 
-
-  var cipherSuite = {
-    name: cipherName,
-    rank: cs.cipherSuiteStrength.LOW,
-    pfs: 0,
-    cipherKeyLen: sslStatus.secretKeyLength,
-    keyExchange: null,
-    authentication: null,
-    bulkCipher: null,
-    HMAC: null
-  };
-
-  var cert = {
-    serverCert: sslStatus.serverCert,
-    pubKeySize: 0,
-    pubKeyAlg: '',
-    pubKeyMinSecure: false,
-    isValid: false,
-    signatureAlg: null
-  };
-
-  function getCsParam(param) {
-    for (var i = 0; i < param.length; i++) {
-      if ((cipherName.indexOf(param[i].name) != -1)) {
-        return param[i];
-      }
+    // Security Info - Firefox states
+    if ((state & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
+        securityState = 'Secure';
+    } else if ((state & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
+        securityState = 'Insecure';
+    } else if ((state & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
+        securityState = 'Broken';
     }
-    return null;
-  }
 
-  cipherSuite.keyExchange = getCsParam(cs.keyExchange);
-  cipherSuite.authentication = getCsParam(cs.authentication);
-  cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
-  cipherSuite.HMAC = getCsParam(cs.HMAC);
-  cipherSuite.pfs = cipherSuite.keyExchange.pfs;
-
-  if (cipherSuite.bulkCipher.name === "") {
-    // Something's missing in our list.
-    // Get the security strength from Firefox's own flags.
-    // Set cipher rank
-    if (state & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) {
-      cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX;
-    } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_MED) {
-      cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1;
-    } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_LOW) {
-      cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1;
+    if (state & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
+        extendedValidation = true;
     }
-  }
 
-  // Certificate public key algorithim, key size
-  cert.pubKeyAlg = cipherSuite.authentication.cert;
-  cert.pubKeySize = getKeySize(cert.serverCert, cert.pubKeyAlg);
-  cert.pubKeyMinSecure =
-    (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
-  cert.signatureAlg = getSignatureAlg(cert.serverCert);
-  // Weak keys are rated down.
-  !cert.pubKeyMinSecure && (cert.signatureAlg.rating = 0);
+    setDomainStates(securityState, extendedValidation, winId);
+    setTLSVersion(win, winId);
 
-  // cipherSuite.notes = cipherSuite.keyExchange.notes +
-  //  cipherSuite.bulkCipher.notes +
-  //  cipherSuite.HMAC.notes;
+    var cipherSuite = {
+        name: cipherName,
+        rank: cs.cipherSuiteStrength.LOW,
+        pfs: 0,
+        cipherKeyLen: sslStatus.secretKeyLength,
+        keyExchange: null,
+        authentication: null,
+        bulkCipher: null,
+        HMAC: null
+    };
 
-  const csWeighting = SSleuth.prefs.PREFS['rating.ciphersuite.params'];
-  // Calculate ciphersuite rank  - All the cipher suite params ratings
-  // are out of 10, so this will get normalized to 10.
-  cipherSuite.rank = (cipherSuite.keyExchange.rank * csWeighting.keyExchange +
-    cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
-    cipherSuite.HMAC.rank * csWeighting.hmac) / csWeighting.total;
+    var cert = {
+        serverCert: sslStatus.serverCert,
+        pubKeySize: 0,
+        pubKeyAlg: '',
+        pubKeyMinSecure: false,
+        isValid: false,
+        signatureAlg: null
+    };
 
-  cert.isValid = isCertValid(cert.serverCert);
+    function getCsParam(param) {
+        for (var i = 0; i < param.length; i++) {
+            if ((cipherName.indexOf(param[i].name) != -1)) {
+                return param[i];
+            }
+        }
+        return null;
+    }
 
-  var connectionRating = getConnectionRating(cipherSuite.rank,
-    cipherSuite.pfs,
-    securityState, (!sslStatus.isDomainMismatch && cert.isValid),
-    extendedValidation,
-    cert.signatureAlg.rating);
+    cipherSuite.keyExchange = getCsParam(cs.keyExchange);
+    cipherSuite.authentication = getCsParam(cs.authentication);
+    cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
+    cipherSuite.HMAC = getCsParam(cs.HMAC);
+    cipherSuite.pfs = cipherSuite.keyExchange.pfs;
 
-  // Invoke the UI to do its job
-  SSleuthUI.protocolChange('https', 
-      {rating: connectionRating, 
-       cipherSuite : cipherSuite, 
-       state : securityState, 
-       cert : cert, 
-       domMismatch : sslStatus.isDomainMismatch,
-       ev : extendedValidation }, 
-      win);
+    if (cipherSuite.bulkCipher.name === '') {
+        // Something's missing in our list.
+        // Get the security strength from Firefox's own flags.
+        // Set cipher rank
+        if (state & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) {
+            cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX;
+        } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_MED) {
+            cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1;
+        } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_LOW) {
+            cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1;
+        }
+    }
+
+    // Certificate public key algorithim, key size
+    cert.pubKeyAlg = cipherSuite.authentication.cert;
+    cert.pubKeySize = getKeySize(cert.serverCert, cert.pubKeyAlg);
+    cert.pubKeyMinSecure =
+        (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
+    cert.signatureAlg = getSignatureAlg(cert.serverCert);
+    // Weak keys are rated down.
+    !cert.pubKeyMinSecure && (cert.signatureAlg.rating = 0);
+
+    const csWeighting = ssleuth.prefs['rating.ciphersuite.params'];
+    // Calculate ciphersuite rank  - All the cipher suite params ratings
+    // are out of 10, so this will get normalized to 10.
+    cipherSuite.rank = (cipherSuite.keyExchange.rank * csWeighting.keyExchange +
+        cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
+        cipherSuite.HMAC.rank * csWeighting.hmac) / csWeighting.total;
+
+    cert.isValid = isCertValid(cert.serverCert);
+
+    var connectionRating = getConnectionRating(cipherSuite.rank,
+        cipherSuite.pfs,
+        securityState, (!sslStatus.isDomainMismatch && cert.isValid),
+        extendedValidation,
+        cert.signatureAlg.rating);
+
+    // Invoke the UI to do its job
+    ui.protocolChange('https', {
+            rating: connectionRating,
+            cipherSuite: cipherSuite,
+            state: securityState,
+            cert: cert,
+            domMismatch: sslStatus.isDomainMismatch,
+            ev: extendedValidation
+        },
+        win, winId);
 }
 
-function getConnectionRating(csRating, pfs,
-  ffStatus,
-  certStatus,
-  evCert,
-  signature) {
-  const rp = SSleuth.prefs.PREFS["rating.params"];
-  // Connection rating. Normalize the params to 10
-  let rating = (csRating * rp.cipherSuite 
-                + pfs * 10 * rp.pfs 
-                + Number(ffStatus == 'Secure') * 10 * rp.ffStatus 
-                + Number(certStatus) * 10 * rp.certStatus 
-                + Number(evCert) * 10 * rp.evCert 
-                + signature * rp.signature) / rp.total;
-  return Number(rating).toFixed(1);
+function getConnectionRating(csRating, pfs, ffStatus, certStatus, evCert, signature) {
+    const rp = ssleuth.prefs['rating.params'];
+    // Connection rating. Normalize the params to 10
+    var rating = (csRating * rp.cipherSuite + pfs * 10 * rp.pfs +
+        Number(ffStatus == 'Secure') * 10 * rp.ffStatus +
+        Number(certStatus) * 10 * rp.certStatus + Number(evCert) * 10 * rp.evCert + signature * rp.signature) / rp.total;
+
+    return Number(rating).toFixed(1);
 }
 
 function setDomainStates(ffStatus, evCert, winId) {
-  try {
-    if (SSleuth.prefs.PREFS['domains.observe']) {
-      SSleuthHttpObserver.updateLocEntry(winId, {
-        ffStatus: ffStatus,
-        evCert: evCert
-      });
+    if (ssleuth.prefs['domains.observe']) {
+        observer.updateLocEntry(winId, {
+            ffStatus: ffStatus,
+            evCert: evCert
+        });
     }
-  } catch (e) {
-    dump('Error setDomainStates : ' + e.message + '\n');
-  }
-
 }
 
-function setTLSVersion(request, winId) {
-  try {
-    var index = ''; 
-    var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2']; 
+function setTLSVersion(win, winId) {
+    try {
+        var index = '';
+        var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2'];
 
-    // TODO : At the moment, depends on observer module. Change.
-    if (Services.vc.compare(Services.appinfo.platformVersion, "36.0") > -1) {
-      var secUI = _window().gBrowser.securityUI;
-      if (secUI) {
-        var sslStatus = secUI.SSLStatus;
-        if (sslStatus) 
-          index = versionStrings [sslStatus.protocolVersion & 0xFF]; 
-      }
-    } else if (Services.vc.compare(Services.appinfo.platformVersion, "29.0") < 0) {
-      index = 'ff_29plus'; 
-    } else if (!SSleuth.prefs.PREFS['domains.observe']) {
-      index = 'ff_obs';
-    } else if (request instanceof Ci.nsIChannel) {
-      var channel = request.QueryInterface(Ci.nsIChannel); 
-      var sec = channel.securityInfo; 
-      // 29.0 < FF version < 36.0
-      if (sec instanceof Ci.nsISSLSocketControl) {
-       var sslSocketCtrl = sec.QueryInterface(Ci.nsISSLSocketControl); 
-       index = versionStrings [sslSocketCtrl.SSLVersionUsed & 0xFF]; 
-      } 
-      
+        // TODO : At the moment, depends on observer module. Change.
+        if (Services.vc.compare(Services.appinfo.platformVersion, '36.0') > -1) {
+            var secUI = win.gBrowser.securityUI;
+            if (secUI) {
+                var sslStatus = secUI.SSLStatus;
+                if (sslStatus)
+                    index = versionStrings[sslStatus.protocolVersion & 0xFF];
+            }
+        } else if (Services.vc.compare(Services.appinfo.platformVersion, '29.0') < 0) {
+            index = 'ff_29plus';
+        } else if (!ssleuth.prefs['domains.observe']) {
+            index = 'ff_obs';
+        }
+
+        if (index !== '' && index !== 'ff_obs') {
+            observer.updateLocEntry(winId, {
+                tlsVersion: index,
+            });
+        }
+
+    } catch (e) {
+        log.error('Error setTLSVersion : ' + e.message);
     }
-
-    if (index != '' && index != 'ff_obs') {
-      SSleuthHttpObserver.updateLocEntry(winId, {
-        tlsVersion: index,
-      });
-    }
-
-  } catch (e) {
-    dump('Error setTLSVersion : ' + e.message + '\n');
-  }
 }
 
 function setCrossDomainRating(tab) {
-  try {
-    var respCache = SSleuthHttpObserver.responseCache[tab];
+    try {
+        var respCache = observer.responseCache[tab];
 
-    if (!respCache) return; 
-    let reqs = respCache['reqs'];
+        if (!respCache) return;
+        let reqs = respCache['reqs'];
 
-    var cxRating = 0,
-        count = 0,
-        mixed = false; 
+        var cxRating = 0,
+            count = 0,
+            mixed = false;
 
-    for (var [domain, stats] in Iterator(reqs)) {
-      count += stats['count']; 
-      if (domain.indexOf('https:') != -1) { 
-        cxRating += stats['count'] * stats['cxRating'];
-      } else if (domain.indexOf('http:') != -1) {
-        mixed = true;
-      }
+        for (var [domain, stats] in Iterator(reqs)) {
+            count += stats['count'];
+            if (domain.indexOf('https:') != -1) {
+                cxRating += stats['count'] * stats['cxRating'];
+            } else if (domain.indexOf('http:') != -1) {
+                mixed = true;
+            }
+        }
+
+        if (count == 0) return;
+
+        var rating = Number(cxRating / count).toFixed(1);
+        observer.updateLocEntry(tab, {
+            domainsRating: rating,
+            mixedContent: mixed,
+        });
+
+    } catch (e) {
+        log.error('Error setCrossDomainRating : ' + e.message);
     }
-
-    if (count == 0) return; 
-
-    var rating = Number(cxRating/count).toFixed(1);
-    SSleuthHttpObserver.updateLocEntry(tab, {
-       domainsRating: rating,
-       mixedContent: mixed,
-    });
-
-  } catch (e) {
-    dump('Error setCrossDomainRating : ' + e.message + '\n'); 
-  }
 
 }
 
 function domainsUpdated() {
-  SSleuthUI.domainsUpdated();
+    ui.domainsUpdated();
 }
 
 function isCertValid(cert) {
-  var usecs = new Date().getTime();
-  return ((usecs > cert.validity.notBefore / 1000 &&
-    usecs < cert.validity.notAfter / 1000) ? true : false);
+    var usecs = new Date().getTime();
+    return ((usecs > cert.validity.notBefore / 1000 &&
+        usecs < cert.validity.notAfter / 1000) ? true : false);
 }
 
 function checkPFS(cipherName) {
-  const csP = ssleuthCipherSuites.keyExchange;
-  for (var i = 0; i < csP.length; i++) {
-    if ((cipherName.indexOf(csP[i].name) != -1)) {
-      return Boolean(csP[i].pfs);
+    const csP = ssleuthCipherSuites.keyExchange;
+    for (var i = 0; i < csP.length; i++) {
+        if ((cipherName.indexOf(csP[i].name) != -1)) {
+            return Boolean(csP[i].pfs);
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 function getCipherSuiteRating(cipherName) {
-  const cs = ssleuthCipherSuites;
-  const csW = SSleuth.prefs.PREFS["rating.ciphersuite.params"];
+    const cs = ssleuthCipherSuites;
+    const csW = ssleuth.prefs['rating.ciphersuite.params'];
 
-  function getRating(csParam) {
-    for (var i = 0; i < csParam.length; i++) {
-      if ((cipherName.indexOf(csParam[i].name) != -1)) {
-        return csParam[i].rank;
-      }
+    function getRating(csParam) {
+        for (var i = 0; i < csParam.length; i++) {
+            if ((cipherName.indexOf(csParam[i].name) != -1)) {
+                return csParam[i].rank;
+            }
+        }
+        return null;
     }
-    return null;
-  }
-  var keyExchange = getRating(cs.keyExchange);
-  var bulkCipher = getRating(cs.bulkCipher);
-  var hmac = getRating(cs.HMAC);
+    var keyExchange = getRating(cs.keyExchange);
+    var bulkCipher = getRating(cs.bulkCipher);
+    var hmac = getRating(cs.HMAC);
 
-  if ((keyExchange && bulkCipher && hmac) == null)
-    return null;
+    if ((keyExchange && bulkCipher && hmac) == null)
+        return null;
 
-  return ((keyExchange * csW.keyExchange 
-           + bulkCipher * csW.bulkCipher 
-           + hmac * csW.hmac) / csW.total);
+    return ((keyExchange * csW.keyExchange + bulkCipher * csW.bulkCipher + hmac * csW.hmac) / csW.total);
 }
 
 function getKeySize(cert, alg) {
-  var keySize = '';
-  try {
-    var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
-      .createInstance(Components.interfaces.nsIASN1Tree);
-    certASN1.loadASN1Structure(cert.ASN1Structure);
+    var keySize = '';
+    try {
+        var certASN1 = Cc['@mozilla.org/security/nsASN1Tree;1']
+            .createInstance(Ci.nsIASN1Tree);
+        certASN1.loadASN1Structure(cert.ASN1Structure);
 
-    // The public key size is not available directly as an attribute in any 
-    // interfaces. So we're on our own parsing the cert structure strings. 
-    // Here I didn't want to mess around with strings in the structure
-    // which could get localized.
-    // So simply extract the first occuring digit from the string
-    // corresponding to Subject's Public key. Hope this holds on. 
-    switch (alg) {
-    case "RSA":
-      keySize = certASN1.getDisplayData(12)
-        .split('\n')[0]
-        .match(/\d+/g)[0];
-      break;
-    case "ECC":
-      keySize = certASN1.getDisplayData(14)
-        .split('\n')[0]
-        .match(/\d+/g)[0];
-      break;
-      // TODO : DSS
+        // The public key size is not available directly as an attribute in any 
+        // interfaces. So we're on our own parsing the cert structure strings. 
+        // Here I didn't want to mess around with strings in the structure
+        // which could get localized.
+        // So simply extract the first occuring digit from the string
+        // corresponding to Subject's Public key. Hope this holds on. 
+        switch (alg) {
+        case 'RSA':
+            keySize = certASN1.getDisplayData(12)
+                .split('\n')[0]
+                .match(/\d+/g)[0];
+            break;
+        case 'ECC':
+            keySize = certASN1.getDisplayData(14)
+                .split('\n')[0]
+                .match(/\d+/g)[0];
+            break;
+            // TODO : DSS
+        }
+    } catch (e) {
+        log.error('Error getKeySize() : ' + e.message);
     }
-  } catch (e) {
-    dump("Error getKeySize() : " + e.message + "\n");
-  }
-  return keySize;
+    return keySize;
 }
 
 function getSignatureAlg(cert) {
-  try {
-    var certASN1 = Cc["@mozilla.org/security/nsASN1Tree;1"]
-      .createInstance(Components.interfaces.nsIASN1Tree);
-    certASN1.loadASN1Structure(cert.ASN1Structure);
-    var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, '');
-    var signature = {
-      hmac: "",
-      enc: "",
-      rating: 0
-    };
+    try {
+        var certASN1 = Cc['@mozilla.org/security/nsASN1Tree;1']
+            .createInstance(Ci.nsIASN1Tree);
+        certASN1.loadASN1Structure(cert.ASN1Structure);
+        var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, '');
+        var signature = {
+            hmac: '',
+            enc: '',
+            rating: 0
+        };
 
-    // Some certs only have OIDs in them.
-    // 1 2 840 10045 = ANSI X9.62 ECDSA signatures
-    if (sigText.indexOf('1 2 840 10045') != -1) {
-      if (sigText.indexOf('1 2 840 10045 4 1') != -1) {
-        sigText = 'ECDSA with SHA-1';
-      } else if (sigText.indexOf('1 2 840 10045 4 3 1') != -1) {
-        sigText = 'ECDSA with SHA-224';
-      } else if (sigText.indexOf('1 2 840 10045 4 3 2') != -1) {
-        sigText = 'ECDSA with SHA-256';
-      } else if (sigText.indexOf('1 2 840 10045 4 3 3') != -1) {
-        sigText = 'ECDSA with SHA-384';
-      } else if (sigText.indexOf('1 2 840 10045 4 3 4') != -1) {
-        sigText = 'ECDSA with SHA-512';
-      }
-    }
+        // Some certs only have OIDs in them.
+        // 1 2 840 10045 = ANSI X9.62 ECDSA signatures
+        if (sigText.indexOf('1 2 840 10045') != -1) {
+            if (sigText.indexOf('1 2 840 10045 4 1') != -1) {
+                sigText = 'ECDSA with SHA-1';
+            } else if (sigText.indexOf('1 2 840 10045 4 3 1') != -1) {
+                sigText = 'ECDSA with SHA-224';
+            } else if (sigText.indexOf('1 2 840 10045 4 3 2') != -1) {
+                sigText = 'ECDSA with SHA-256';
+            } else if (sigText.indexOf('1 2 840 10045 4 3 3') != -1) {
+                sigText = 'ECDSA with SHA-384';
+            } else if (sigText.indexOf('1 2 840 10045 4 3 4') != -1) {
+                sigText = 'ECDSA with SHA-512';
+            }
+        }
 
-    const cs = ssleuthCipherSuites;
-    for (var i = 0; i < cs.HMAC.length; i++) {
-      if ((sigText.indexOf(cs.HMAC[i].ui) != -1)
-          || ((cs.HMAC[i].sigui) && 
-             (sigText.indexOf(cs.HMAC[i].sigui) != -1))) {
-        signature.hmac += cs.HMAC[i].ui;
-        signature.rating += cs.HMAC[i].rank;
-        break;
-      }
-    }
-    for (var i = 0; i < cs.authentication.length; i++) {
-      if ((sigText.indexOf(cs.authentication[i].ui) != -1)) {
-        signature.enc += cs.authentication[i].ui;
-        signature.rating += cs.authentication[i].rank;
-        signature.rating /= 2;
-        break;
-      }
-    }
-    return signature;
+        const cs = ssleuthCipherSuites;
+        for (var i = 0; i < cs.HMAC.length; i++) {
+            if ((sigText.indexOf(cs.HMAC[i].ui) != -1) || ((cs.HMAC[i].sigui) &&
+                    (sigText.indexOf(cs.HMAC[i].sigui) != -1))) {
+                signature.hmac += cs.HMAC[i].ui;
+                signature.rating += cs.HMAC[i].rank;
+                break;
+            }
+        }
+        for (var i = 0; i < cs.authentication.length; i++) {
+            if ((sigText.indexOf(cs.authentication[i].ui) != -1)) {
+                signature.enc += cs.authentication[i].ui;
+                signature.rating += cs.authentication[i].rank;
+                signature.rating /= 2;
+                break;
+            }
+        }
+        return signature;
 
-  } catch (e) {
-    dump("Error getSignatureAlg() : " + e.message + "\n");
-  }
+    } catch (e) {
+        log.error('Error getSignatureAlg() : ' + e.message);
+    }
 }
 
 // TODO : optimize, combine the rating, cipher suite string matching 
 //
 function getCertificateAlg(cipherName) {
-  const csA = ssleuthCipherSuites.authentication;
-  for (var i = 0; i < csA.length; i++) {
-    if ((cipherName.indexOf(csA[i].name) != -1)) {
-      return csA[i].cert;
+    const csA = ssleuthCipherSuites.authentication;
+    for (var i = 0; i < csA.length; i++) {
+        if ((cipherName.indexOf(csA[i].name) != -1)) {
+            return csA[i].cert;
+        }
     }
-  }
-  return '';
+    return '';
 }
 
 function toggleCipherSuites(prefsOld) {
-  const prefs = SSleuthPreferences.prefService;
-  const br = "security.ssl3.";
-  const SUITES_TOGGLE = "suites.toggle";
-  const PREF_SUITES_TOGGLE = "extensions.ssleuth." + SUITES_TOGGLE;
+    const prefs = preferences.prefService;
+    const br = 'security.ssl3.';
+    const SUITES_TOGGLE = 'suites.toggle';
+    const PREF_SUITES_TOGGLE = 'extensions.ssleuth.' + SUITES_TOGGLE;
 
-  for (var t = 0; t < SSleuth.prefs.PREFS[SUITES_TOGGLE].length; t++) {
+    for (var t = 0; t < ssleuth.prefs[SUITES_TOGGLE].length; t++) {
 
-    var cs = SSleuth.prefs.PREFS[SUITES_TOGGLE][t];
-    switch (cs.state) {
-    case "default":
-      // Check if the element was present before.
-      // Reset only if the old state was 'enable' or 'disable'.
-      var j;
-      for (j = 0; j < prefsOld.length; j++) {
-        if (prefsOld[j].name === cs.name)
-          break;
-      }
-      if (j == prefsOld.length) // not found
-        continue;
-      if (prefsOld[j].state === "default")
-        continue;
-      // Reset once
-      for (var i = 0; i < cs.list.length; i++) {
-        prefs.clearUserPref(br + cs.list[i]);
-      }
-      SSleuth.prefs.PREFS[SUITES_TOGGLE][t] = cs;
-      prefs.setCharPref(PREF_SUITES_TOGGLE,
-        JSON.stringify(SSleuth.prefs.PREFS[SUITES_TOGGLE]));
-      break;
+        var cs = ssleuth.prefs[SUITES_TOGGLE][t];
+        switch (cs.state) {
+        case 'default':
+            // Check if the element was present before.
+            // Reset only if the old state was 'enable' or 'disable'.
+            var j;
+            for (j = 0; j < prefsOld.length; j++) {
+                if (prefsOld[j].name === cs.name)
+                    break;
+            }
+            if (j == prefsOld.length) // not found
+                continue;
+            if (prefsOld[j].state === 'default')
+                continue;
+            // Reset once
+            for (var i = 0; i < cs.list.length; i++) {
+                prefs.clearUserPref(br + cs.list[i]);
+            }
+            ssleuth.prefs[SUITES_TOGGLE][t] = cs;
+            prefs.setCharPref(PREF_SUITES_TOGGLE,
+                JSON.stringify(ssleuth.prefs[SUITES_TOGGLE]));
+            break;
 
-      // Only toggle these if they actually exist! Do not mess up
-      // user profile with non-existing cipher suites. Do a 
-      // check with getPrefType() before setting the prefs.
-    case "enable":
-      for (var i = 0; i < cs.list.length; i++) {
-        if (prefs.getPrefType(br + cs.list[i]) === prefs.PREF_BOOL) {
-          prefs.setBoolPref(br + cs.list[i], true);
+            // Only toggle these if they actually exist! Do not mess up
+            // user profile with non-existing cipher suites. Do a 
+            // check with getPrefType() before setting the prefs.
+        case 'enable':
+            for (var i = 0; i < cs.list.length; i++) {
+                if (prefs.getPrefType(br + cs.list[i]) === prefs.PREF_BOOL) {
+                    prefs.setBoolPref(br + cs.list[i], true);
+                }
+            }
+            break;
+        case 'disable':
+            for (var i = 0; i < cs.list.length; i++) {
+                if (prefs.getPrefType(br + cs.list[i]) === prefs.PREF_BOOL) {
+                    prefs.setBoolPref(br + cs.list[i], false);
+                }
+            }
+            break;
         }
-      }
-      break;
-    case "disable":
-      for (var i = 0; i < cs.list.length; i++) {
-        if (prefs.getPrefType(br + cs.list[i]) === prefs.PREF_BOOL) {
-          prefs.setBoolPref(br + cs.list[i], false);
-        }
-      }
-      break;
     }
-  }
-  // Reload, if this tab is on https
-  var browser = _window().gBrowser.selectedBrowser;
-  if (browser.currentURI.scheme === "https") {
-    browser.reloadWithFlags(
-      Components.interfaces.nsIWebNavigation.LOAD_FLAGS_BYPASS_CACHE);
-  }
+
+    // Reload, if this tab is on https
+    var browser = windows.recentWindow.gBrowser.selectedBrowser;
+    if (browser.currentURI.scheme === 'https') {
+        browser.reloadWithFlags(
+            Ci.nsIWebNavigation.LOAD_FLAGS_BYPASS_CACHE);
+    }
 }
 
 var observerCallbacks = {
-  domainsUpdated: domainsUpdated,
-  isCertValid: isCertValid,
-  getCipherSuiteRating: getCipherSuiteRating,
-  getCertificateAlg: getCertificateAlg,
-  getKeySize: getKeySize,
-  checkPFS: checkPFS,
-  getConnectionRating: getConnectionRating,
-  getSignatureAlg: getSignatureAlg
+    domainsUpdated: domainsUpdated,
+    isCertValid: isCertValid,
+    getCipherSuiteRating: getCipherSuiteRating,
+    getCertificateAlg: getCertificateAlg,
+    getKeySize: getKeySize,
+    checkPFS: checkPFS,
+    getConnectionRating: getConnectionRating,
+    getSignatureAlg: getSignatureAlg
 };
 
 function toggleHttpObserver(enable) {
-  if (enable) {
-    SSleuthHttpObserver.init(observerCallbacks,
-      enable);
-    forEachOpenWindow(SSleuthHttpObserver.initWindow);
-  } else {
-    forEachOpenWindow(SSleuthHttpObserver.uninitWindow);
-    SSleuthHttpObserver.uninit();
-  }
+    if (enable) {
+        observer.init(observerCallbacks,
+            enable);
+    } else {
+        observer.uninit();
+    }
 }
 
-var prefListener = new ssleuthPrefListener(
-  SSleuthPreferences.prefBranch,
-  function (branch, name) {
+var prefListener = function (branch, name) {
     switch (name) {
-    case "rating.params":
-      SSleuth.prefs.PREFS[name] =
-        JSON.parse(branch.getCharPref(name));
-      break;
-    case "rating.ciphersuite.params":
-      SSleuth.prefs.PREFS[name] =
-        JSON.parse(branch.getCharPref(name));
-      break;
-    case "suites.toggle":
-      // TODO : No need for a cloned array here ?
-      var prefsOld = SSleuth.prefs.PREFS[name];
-      SSleuth.prefs.PREFS[name] =
-        JSON.parse(branch.getCharPref(name));
-      toggleCipherSuites(prefsOld);
-      break;
-    case "domains.observe":
-      SSleuth.prefs.PREFS[name] =
-        JSON.parse(branch.getBoolPref(name));
-      toggleHttpObserver(SSleuth.prefs.PREFS[name]);
-      break;
+    case 'rating.params':
+        ssleuth.prefs[name] =
+            JSON.parse(branch.getCharPref(name));
+        break;
+    case 'rating.ciphersuite.params':
+        ssleuth.prefs[name] =
+            JSON.parse(branch.getCharPref(name));
+        break;
+    case 'suites.toggle':
+        // TODO : No need for a cloned array here ?
+        var prefsOld = ssleuth.prefs[name];
+        ssleuth.prefs[name] =
+            JSON.parse(branch.getCharPref(name));
+        toggleCipherSuites(prefsOld);
+        break;
+    case 'domains.observe':
+        ssleuth.prefs[name] =
+            JSON.parse(branch.getBoolPref(name));
+        toggleHttpObserver(ssleuth.prefs[name]);
+        break;
     }
 
-    SSleuthUI.prefListener(branch, name);
-  }
-);
+    ui.prefListener(branch, name);
 
-function getWinFromProgress(progress) {
-  return progress.DOMWindow.QueryInterface(Ci.nsIInterfaceRequestor)
-      .getInterface(Ci.nsIWebNavigation)
-      .QueryInterface(Ci.nsIDocShellTreeItem)
-      .rootTreeItem
-      .QueryInterface(Ci.nsIInterfaceRequestor)
-      .getInterface(Ci.nsIDOMWindow);
-}
-
-function getWinIdFromRequest(req) {
-  if (!(req instanceof Ci.nsIChannel)) 
-    return null; 
-  var channel = req.QueryInterface(Ci.nsIChannel); 
-  dump("winId : " + channel.loadInfo.parentOuterWindowID + "\n"); 
-  
-  return channel.loadInfo.parentOuterWindowID.toString(); 
-
-}
-
-function _window() {
-  return Services.wm.getMostRecentWindow("navigator:browser");
-}
-
-// Apply a function to all open browser windows 
-function forEachOpenWindow(todo) {
-  var windows = Services.wm.getEnumerator("navigator:browser");
-  while (windows.hasMoreElements())
-    todo(windows.getNext()
-      .QueryInterface(Components.interfaces.nsIDOMWindow));
-}
-
-var WindowListener = {
-  onOpenWindow: function (xulWindow) {
-    var window = xulWindow
-      .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-      .getInterface(Components.interfaces.nsIDOMWindow);
-
-    function onWindowLoad() {
-      window.removeEventListener("load", onWindowLoad);
-      if (window.document.documentElement
-        .getAttribute("windowtype") == "navigator:browser")
-        SSleuth.initWindow(window);
-    }
-    window.addEventListener("load", onWindowLoad);
-  },
-  onCloseWindow: function (xulWindow) {
-    var window = xulWindow
-      .QueryInterface(Components.interfaces.nsIInterfaceRequestor)
-      .getInterface(Components.interfaces.nsIDOMWindow);
-    if (window.document.documentElement
-      .getAttribute("windowtype") == "navigator:browser")
-      SSleuth.uninitWindow(window);
-
-  },
-  onWindowTitleChange: function (xulWindow, newTitle) {}
 };
