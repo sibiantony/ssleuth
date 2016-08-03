@@ -7,11 +7,11 @@ var EXPORTED_SYMBOLS = ["ssleuthCipherSuites", "ssleuthConnectionRating",
 const ssleuthCipherSuites = {
   keyExchange : [
     { name: "_ECDHE_",  rank: 10, pfs: 1,
-      ui: "Elliptic curve Diffie-Hellman",  notes: "" },
+      ui: "Elliptic curve Diffie-Hellman ephemeral",  notes: "" },
     { name: "_ECDH_",   rank: 9,  pfs: 0, 
       ui: "Elliptic curve Diffie-Hellman",  notes: "" },
     { name: "_DHE_",    rank: 9,  pfs: 1, 
-      ui: "Diffie-Hellman",     notes: "" },
+      ui: "Diffie-Hellman ephemeral",     notes: "" },
     { name: "_DH_",     rank: 9,  pfs: 0, 
       ui: "Diffie-Hellman",     notes: "" },
     { name: "TLS_RSA_WITH",  rank: 6,  pfs: 0, 
