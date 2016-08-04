@@ -27,7 +27,7 @@
 <!ENTITY ssleuth.pref.panel.hmac "Show HMAC" >
 <!ENTITY ssleuth.pref.panel.validity "Show validity" >
 <!ENTITY ssleuth.pref.panel.validitytime "Show GMT/UTC time in validity" >
-<!ENTITY ssleuth.pref.panel.fingerprint "Show SHA-1 fingerprint" >
+<!ENTITY ssleuth.pref.panel.fingerprint "Show SHA-2 fingerprint" >
 
 <!ENTITY ssleuth.pref.ui.urlbar "URL bar" >
 <!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorize : Adds a color gradient in the address bar as per the rating" >
