@@ -409,8 +409,8 @@ function setCrossDomainRating(tab) {
 
 }
 
-function domainsUpdated() {
-    ui.domainsUpdated();
+function domainsUpdated(tab) {
+    ui.domainsUpdated(tab);
 }
 
 function isCertValid(cert) {

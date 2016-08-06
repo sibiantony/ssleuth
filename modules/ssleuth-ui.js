@@ -70,7 +70,7 @@ var ui = {
         // resetDomains(win.doc);
         if (win.document.getElementById('ssleuth-paneltab-domains')
             .getAttribute('_selected') === 'true') {
-            loadDomainsTab(win);
+            loadDomainsTab(win, winId);
         }
 
         // If the user navigates the tabs with the panel open, 
@@ -137,12 +137,12 @@ var ui = {
         preferencesChanged(branch, name);
     },
 
-    domainsUpdated: function () {
+    domainsUpdated: function (tab) {
         // Reload the tab, only if user is navigating with domains
         var win = windows.recentWindow;
         if (win.document.getElementById('ssleuth-paneltab-domains')
             .getAttribute('_selected') === 'true') {
-            loadDomainsTab(win);
+            loadDomainsTab(win, tab);
         }
     }
 
@@ -351,7 +351,7 @@ function panelVisible(win) {
     //    panel is visible. Or loadTabs -> loadCiphersTab() ?
     loadCiphersTab(win);
     // Re-enabling to fix window-switch-domains-inconsistent bug
-    loadDomainsTab(win);
+    loadDomainsTab(win, null);
 }
 
 function togglePanel(panel, win) {
@@ -707,7 +707,7 @@ function initDomainsPanel(win) {
         domainsTab = doc.getElementById('ssleuth-paneltab-domains');
 
     domainsTab.addEventListener('click', function () {
-        loadDomainsTab(win);
+        loadDomainsTab(win, null);
     }, false);
 }
 
@@ -739,27 +739,28 @@ function initPanelPreferences(win) {
 
 }
 
-function loadDomainsTab(win) {
+function loadDomainsTab(win, winId) {
 
     listener(win).getFrameMessage(function (msg) {
         try {
             const doc = win.document;
-            resetDomains(doc);
 
             if (!ui.prefs['domains.observe']) {
-                doc.getElementById('ssleuth-paneltab-domains-disabled-text').
-                hidden = false;
+                doc.getElementById('ssleuth-paneltab-domains-disabled-text').hidden = false;
                 return;
             }
-            doc.getElementById('ssleuth-paneltab-domains-disabled-text').
-            hidden = true;
+            doc.getElementById('ssleuth-paneltab-domains-disabled-text').hidden = true;
 
             // var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
             var tab = msg.id;
+            // If this was a callback from observer, only reload if the tab matches.
+            if ((winId !== null) && (winId !== tab))
+                return;
 
             var respCache = observer.responseCache[tab];
 
             if (!respCache) return;
+            resetDomains(doc);
 
             let reqs = respCache['reqs'];
             let rb = doc.getElementById('ssleuth-paneltab-domains-list');

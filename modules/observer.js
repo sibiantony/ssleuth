@@ -179,7 +179,7 @@ function updateResponseCache(channel) {
             setHostCxRating(tab, hostId);
             // TODO : do update notif for every response ?
             //        Need to see perf impact
-            obs.utilCb.domainsUpdated();
+            obs.utilCb.domainsUpdated(tab);
         }
 
         hostEntry.count++;
@@ -225,5 +225,5 @@ function updateHostEntries(tab) {
         }
     }
 
-    observer.utilCb.domainsUpdated();
+    observer.utilCb.domainsUpdated(tab);
 }
