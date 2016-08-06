@@ -18,14 +18,10 @@ var observer = {
     responseCache: [],
     prefs: null,
     utilCb: null,
-    enabled: false,
 
-    init: function (cb, enable) {
+    init: function (cb) {
         try {
             this.utilCb = cb;
-            this.enabled = enable;
-
-            if (!enable) return;
 
             // TODO : Observer for cached content ?
             Services.obs.addObserver(observer, 'http-on-examine-response', false);
@@ -45,7 +41,6 @@ var observer = {
             (topic !== 'http-on-examine-merged-response'))
             return;
         if (!(subject instanceof Ci.nsIHttpChannel)) return;
-        if (!observer.enabled) return;
 
         try {
             var channel = subject.QueryInterface(Ci.nsIHttpChannel);
@@ -57,7 +52,6 @@ var observer = {
     },
 
     uninit: function () {
-        if (!observer.enabled) return;
 
         try {
             Services.obs.removeObserver(observer,
@@ -71,7 +65,6 @@ var observer = {
         }
 
         this.responseCache = [];
-        this.enabled = false;
     },
 
     response: function (subject, topic, data) {
@@ -80,8 +73,6 @@ var observer = {
             (topic !== 'http-on-examine-merged-response'))
             return;
         if (!(subject instanceof Ci.nsIHttpChannel)) return;
-        if (!observer.enabled) return;
-
 
         try {
             var channel = subject.QueryInterface(Ci.nsIHttpChannel);
@@ -136,7 +127,6 @@ function updateResponseCache(channel) {
 
         if (!obs.responseCache[tab]) {
             // Use a string index - helps with deletion without problems.
-            // var tabId = browser._ssleuthTabId = getTabId().toString();
             observer.newLoc(url, tab);
         }
 

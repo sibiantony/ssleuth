@@ -32,9 +32,6 @@
 <!ENTITY ssleuth.pref.ui.urlbar "Bar d'URL" >
 <!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorier : ajoute un dégradé de couleur dans la barre d'adresse, conformément à la note" >
 
-<!ENTITY ssleuth.pref.panel.domainstab "Onglet Domaines" >
-<!ENTITY ssleuth.pref.panel.domains.observer "Observateur de domaines : activer la surveillance des demandes par domaine" >
-
 <!-- Configure rating -->
 
 <!ENTITY ssleuth.pref.rating.overall "Note globale" >

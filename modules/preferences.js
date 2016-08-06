@@ -29,8 +29,7 @@ var preferences = (function () {
             certValidity: true,
             validityTime: false,
             certFingerprint: false
-        },
-        'domains.observe': true
+        }
     };
 
     var PREF_BRANCH = 'extensions.ssleuth.',

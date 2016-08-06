@@ -33,7 +33,6 @@
 <!ENTITY ssleuth.pref.ui.urlbar.colorize "Colorize : Adds a color gradient in the address bar as per the rating" >
 
 <!ENTITY ssleuth.pref.panel.domainstab "Domains tab" >
-<!ENTITY ssleuth.pref.panel.domains.observer "Domains observer : Enable monitoring requests per domain" >
 
 <!-- Configure rating -->
 

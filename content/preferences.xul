@@ -129,11 +129,6 @@
             <checkbox id="ssleuth-pref-show-notifier-gradient"
                 label="&ssleuth.pref.ui.notifier.colorize;" />
  					</groupbox>
-					<groupbox>
-						<caption label="&ssleuth.pref.panel.domainstab; (Beta)"/>
-             <checkbox id="ssleuth-pref-show-domains-observe"
-                label="&ssleuth.pref.panel.domains.observer;" />
-					</groupbox>
 
 					</vbox>
 				</scrollbox>

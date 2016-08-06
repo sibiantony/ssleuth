@@ -356,9 +356,5 @@ const ssleuthTlsVersions = {
     ff_29plus: {
         ui: '<Requires Firefox 29+ >',
         state: 'med'
-    },
-    ff_obs: {
-        ui: '<Enable observer. reload>',
-        state: 'okay'
-    },
+    }
 }

@@ -32,9 +32,6 @@
 <!ENTITY ssleuth.pref.ui.urlbar "Adressleiste" >
 <!ENTITY ssleuth.pref.ui.urlbar.colorize "Einfärben : Färbt die Adressleiste abhängig vom Rating ein" >
 
-<!ENTITY ssleuth.pref.panel.domainstab "Domains-Tab" >
-<!ENTITY ssleuth.pref.panel.domains.observer "Domain-Beobachter : Aktiviert die Überwachung von Anfragen per Domain" >
-
 <!-- Configure rating -->
 
 <!ENTITY ssleuth.pref.rating.overall "Endergebnis-Berechnung" >

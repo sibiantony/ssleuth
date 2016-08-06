@@ -38,8 +38,7 @@
         PREF_SUITES_TGL = 'extensions.ssleuth.suites.toggle',
         PREF_PANEL_INFO = 'extensions.ssleuth.panel.info',
         PREF_URL_COLORIZE = 'extensions.ssleuth.ui.urlbar.colorize',
-        PREF_NOTIFIER_COLORIZE = 'extensions.ssleuth.ui.notifier.colorize',
-        PREF_DOMAINS_OBS = 'extensions.ssleuth.domains.observe';
+        PREF_NOTIFIER_COLORIZE = 'extensions.ssleuth.ui.notifier.colorize';
 
     var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)),
         csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)),
@@ -86,7 +85,6 @@
 
             document.getElementById('ssleuth-pref-show-urlbar-gradient').checked = prefs.getBoolPref(PREF_URL_COLORIZE);
             document.getElementById('ssleuth-pref-show-notifier-gradient').checked = prefs.getBoolPref(PREF_NOTIFIER_COLORIZE);
-            document.getElementById('ssleuth-pref-show-domains-observe').checked = prefs.getBoolPref(PREF_DOMAINS_OBS);
         };
 
         var initRatings = function () {
@@ -201,7 +199,6 @@
                     'ssleuth-pref-show-panel-info-reset': panelInfoReset,
                     'ssleuth-pref-show-urlbar-gradient': urlbarColorize,
                     'ssleuth-pref-show-notifier-gradient': notifierColorize,
-                    'ssleuth-pref-show-domains-observe': domainsObserve,
                 })) {
                 document.getElementById(id)
                     .addEventListener('command', func, false);
@@ -228,11 +225,6 @@
             prefs.setBoolPref(PREF_NOTIFIER_COLORIZE,
                 document.getElementById('ssleuth-pref-show-notifier-gradient').checked);
         };
-        var domainsObserve = function () {
-            prefs.setBoolPref(PREF_DOMAINS_OBS,
-                document.getElementById('ssleuth-pref-show-domains-observe').checked);
-        };
-
 
         var panelInfoCheck = function () {
             panelInfo.HMAC =

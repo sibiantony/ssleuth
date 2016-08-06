@@ -384,8 +384,7 @@ function panelConnectionRank(rank, win) {
             break;
         }
     }
-    doc.getElementById('ssleuth-text-cipher-rank-numeric')
-        .textContent = (_fmt(rank) + '/10');
+    doc.getElementById('ssleuth-text-cipher-rank-numeric').textContent = (_fmt(rank) + '/10');
 }
 
 function fillPanel(data, win, winId) {
@@ -601,9 +600,7 @@ function showTLSVersion(win, tab) {
     var doc = win.document;
     var tlsIndex = 'ff_cache';
 
-    if (!ui.prefs['domains.observe'])
-        tlsIndex = 'ff_obs';
-    else if (observer.responseCache[tab].tlsVersion)
+    if (observer.responseCache[tab].tlsVersion)
         tlsIndex = observer.responseCache[tab].tlsVersion;
 
     if (tlsIndex == '')
@@ -618,10 +615,6 @@ function showTLSVersion(win, tab) {
 
 function showCrossDomainRating(win, tab) {
     var doc = win.document;
-    if (!ui.prefs['domains.observe']) {
-        doc.getElementById('ssleuth-domains-rating-box').hidden = true;
-        return;
-    }
     doc.getElementById('ssleuth-domains-rating-box').hidden = false;
 
     var domainsRating = '...';
@@ -745,13 +738,6 @@ function loadDomainsTab(win, winId) {
         try {
             const doc = win.document;
 
-            if (!ui.prefs['domains.observe']) {
-                doc.getElementById('ssleuth-paneltab-domains-disabled-text').hidden = false;
-                return;
-            }
-            doc.getElementById('ssleuth-paneltab-domains-disabled-text').hidden = true;
-
-            // var tab = win.gBrowser.selectedBrowser._ssleuthTabId;
             var tab = msg.id;
             // If this was a callback from observer, only reload if the tab matches.
             if ((winId !== null) && (winId !== tab))
@@ -963,9 +949,6 @@ function preferencesChanged(branch, name) {
             JSON.parse(branch.getCharPref(name));
         break;
     case 'rating.params':
-        // Prefs set from main
-        break;
-    case 'domains.observe':
         // Prefs set from main
         break;
     case 'suites.toggle':

@@ -606,12 +606,6 @@ var panelbox = function (win) {
                     flex: '1'
                 });
 
-                let desc = domainsVb.appendChild(elem('description', {
-                    id: 'ssleuth-paneltab-domains-disabled-text',
-                    hidden: true,
-                }));
-                desc.textContent = utils.getText('observer.disabled');
-
                 let rb = domainsVb.appendChild(elem('richlistbox', {
                     id: 'ssleuth-paneltab-domains-list',
                     // TODO : Fix. css in sheet is not working! 

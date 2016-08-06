@@ -23,8 +23,7 @@ var ssleuth = (function () {
         try {
             initPrefs = preferences.init(prefListener);
 
-            observer.init(observerCallbacks,
-                initPrefs['domains.observe']);
+            observer.init(observerCallbacks);
 
             ui.startup(initPrefs);
             windows.init(initWindow, uninitWindow);
@@ -101,16 +100,13 @@ var progressListener = function (win) {
                     // TODO : Can cause reload of cache if there is a statechange
                     // due to blocked contents
 
-                    if (ssleuth.prefs['domains.observe']) {
-                        // Re-init. New location, new cache.
-                        // This does re-init cache when the current tab loads another or reload.
-                        log.debug('New location, new cache. winId : ' + winId);
-                        observer.newLoc(uri, winId);
-                    }
+                    // Re-init. New location, new cache.
+                    // This does re-init cache when the current tab loads another or reload.
+                    log.debug('New location, new cache. winId : ' + winId);
+                    observer.newLoc(uri, winId);
                 }
 
-                if ((flag & Ci.nsIWebProgressListener.STATE_STOP) &&
-                    (ssleuth.prefs['domains.observe'])) {
+                if ((flag & Ci.nsIWebProgressListener.STATE_STOP)) {
 
                     setCrossDomainRating(winId);
                     ui.onStateStop(win, winId); // TODO : optimize
@@ -337,12 +333,10 @@ function getConnectionRating(csRating, pfs, ffStatus, certStatus, evCert, signat
 }
 
 function setDomainStates(ffStatus, evCert, winId) {
-    if (ssleuth.prefs['domains.observe']) {
-        observer.updateLocEntry(winId, {
-            ffStatus: ffStatus,
-            evCert: evCert
-        });
-    }
+    observer.updateLocEntry(winId, {
+        ffStatus: ffStatus,
+        evCert: evCert
+    });
 }
 
 function setTLSVersion(win, winId) {
@@ -360,11 +354,8 @@ function setTLSVersion(win, winId) {
             }
         } else if (Services.vc.compare(Services.appinfo.platformVersion, '29.0') < 0) {
             index = 'ff_29plus';
-        } else if (!ssleuth.prefs['domains.observe']) {
-            index = 'ff_obs';
         }
-
-        if (index !== '' && index !== 'ff_obs') {
+        if (index !== '') {
             observer.updateLocEntry(winId, {
                 tlsVersion: index,
             });
@@ -617,15 +608,6 @@ var observerCallbacks = {
     getSignatureAlg: getSignatureAlg
 };
 
-function toggleHttpObserver(enable) {
-    if (enable) {
-        observer.init(observerCallbacks,
-            enable);
-    } else {
-        observer.uninit();
-    }
-}
-
 var prefListener = function (branch, name) {
     switch (name) {
     case 'rating.params':
@@ -642,11 +624,6 @@ var prefListener = function (branch, name) {
         ssleuth.prefs[name] =
             JSON.parse(branch.getCharPref(name));
         toggleCipherSuites(prefsOld);
-        break;
-    case 'domains.observe':
-        ssleuth.prefs[name] =
-            JSON.parse(branch.getBoolPref(name));
-        toggleHttpObserver(ssleuth.prefs[name]);
         break;
     }
 
