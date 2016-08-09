@@ -33,7 +33,7 @@ var preferences = (function () {
     };
 
     var PREF_BRANCH = 'extensions.ssleuth.',
-        prefService = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch),
+        service = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch),
         _branch,
         _callback,
         prefsTab = null,
@@ -43,7 +43,7 @@ var preferences = (function () {
 
         setDefaultPreferences();
 
-        _branch = prefService.getBranch(PREF_BRANCH);
+        _branch = service.getBranch(PREF_BRANCH);
         _branch.QueryInterface(Ci.nsIPrefBranch2);
         _callback = callback;
 
@@ -84,16 +84,16 @@ var preferences = (function () {
         for (let [key, val] in Iterator(sp)) {
             switch (typeof val) {
             case 'boolean':
-                sp[key] = prefService.getBoolPref(PREF_BRANCH + key);
+                sp[key] = service.getBoolPref(PREF_BRANCH + key);
                 break;
             case 'number':
-                sp[key] = prefService.getIntPref(PREF_BRANCH + key);
+                sp[key] = service.getIntPref(PREF_BRANCH + key);
                 break;
             case 'string':
-                sp[key] = prefService.getCharPref(PREF_BRANCH + key);
+                sp[key] = service.getCharPref(PREF_BRANCH + key);
                 break;
             case 'object':
-                sp[key] = JSON.parse(prefService.getCharPref(PREF_BRANCH + key));
+                sp[key] = JSON.parse(service.getCharPref(PREF_BRANCH + key));
             }
         }
         return sp;
@@ -161,7 +161,7 @@ var preferences = (function () {
         uninit: uninit,
         openTab: openTab,
         PREF_BRANCH: PREF_BRANCH,
-        prefService: prefService
+        service: service
     };
 
 }());

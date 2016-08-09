@@ -75,7 +75,7 @@ var utils = (function () {
 var log = (function () {
     var logger = Log.repository.getLogger('[SSleuth] '),
         appender = new Log.ConsoleAppender(new Log.BasicFormatter());
-    logger.level = Log.Level.Error;
+    logger.level = Log.Level.Debug;
     logger.addAppender(appender);
 
     return {

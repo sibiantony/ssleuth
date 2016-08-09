@@ -67,7 +67,7 @@ var ui = {
         // So we need to add the child panel for the first time 
 
         // If the user is navigating with the domains tab reload the data.
-        // resetDomains(win.doc);
+        // resetDomains(win, winId);
         if (win.document.getElementById('ssleuth-paneltab-domains')
             .getAttribute('_selected') === 'true') {
             loadDomainsTab(win, winId);
@@ -666,13 +666,13 @@ function deleteKeyShortcut(doc) {
 }
 
 function readUIPreferences() {
-    const prefs = preferences.prefService;
+    const prefs = preferences.service;
     ui.ssleuthBtnLocation =
         prefs.getIntPref('extensions.ssleuth.notifier.location');
 }
 
 function resetAllLists() {
-    const prefs = preferences.prefService;
+    const prefs = preferences.service;
 
     var csList = prefs.getChildList('security.ssl3.', {});
     for (var i = 0; i < csList.length; i++) {
@@ -736,17 +736,17 @@ function loadDomainsTab(win, winId) {
 
     listener(win).getFrameMessage(function (msg) {
         try {
-            const doc = win.document;
+            var doc = win.document;
 
             var tab = msg.id;
             // If this was a callback from observer, only reload if the tab matches.
             if ((winId !== null) && (winId !== tab))
                 return;
 
-            var respCache = observer.responseCache[tab];
-
-            if (!respCache) return;
             resetDomains(doc);
+
+            var respCache = observer.responseCache[tab];
+            if (!respCache) return;
 
             let reqs = respCache['reqs'];
             let rb = doc.getElementById('ssleuth-paneltab-domains-list');
@@ -905,7 +905,7 @@ function loadCiphersTab(win) {
                         csTglList[i].state = event.target.value;
                     }
                 }
-                preferences.prefService
+                preferences.service
                     .setCharPref('extensions.ssleuth.suites.toggle',
                         JSON.stringify(csTglList));
             }, false);

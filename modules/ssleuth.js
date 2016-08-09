@@ -539,7 +539,7 @@ function getCertificateAlg(cipherName) {
 }
 
 function toggleCipherSuites(prefsOld) {
-    const prefs = preferences.prefService;
+    const prefs = preferences.service;
     const br = 'security.ssl3.';
     const SUITES_TOGGLE = 'suites.toggle';
     const PREF_SUITES_TOGGLE = 'extensions.ssleuth.' + SUITES_TOGGLE;
