@@ -95,14 +95,15 @@ var progressListener = function (win) {
 
                 // TODO check for request may not be necessary.
                 // used before for passing on to updateResponseCache.
-                if ((flag & Ci.nsIWebProgressListener.STATE_START) &
+                if ((flag & Ci.nsIWebProgressListener.STATE_START) &&
                     (request instanceof Ci.nsIChannel)) {
                     // TODO : Can cause reload of cache if there is a statechange
                     // due to blocked contents
 
                     // Re-init. New location, new cache.
                     // This does re-init cache when the current tab loads another or reload.
-                    log.debug('New location, new cache. winId : ' + winId);
+                    log.debug('New location, new cache. winId : ' + winId + ' flag : ' + flag.toString(16));
+
                     observer.newLoc(uri, winId);
                 }
 

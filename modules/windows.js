@@ -20,27 +20,17 @@ var listener = function (win) {
     var browserMM;
 
     var init = function () {
-        win.gBrowser.tabContainer.addEventListener('TabOpen', onTabOpen, false);
+        // This message won't be received if a window closes with many tabs in it.
+        win.messageManager.addMessageListener('ssleuth@github:tab-close', onTabClose, true);
 
         windows.onUnload(win, function () {
-            win.gBrowser.tabContainer.removeEventListener('TabOpen', onTabOpen);
-            if (browserMM)
-                browserMM.removeMessageListener('ssleuth@github:tab-close', onTabClose);
+            win.messageManager.removeMessageListener('ssleuth@github:tab-close', onTabClose);
         });
     };
 
     var onTabClose = function (msg) {
-        if (browserMM)
-            browserMM.removeMessageListener('ssleuth@github:tab-close', onTabClose);
         if (observer)
             observer.deleteLoc(msg.data.id);
-    };
-
-    var onTabOpen = function (evt) {
-        var browser = win.gBrowser.getBrowserForTab(evt.target);
-        browserMM = browser.messageManager;
-
-        browserMM.addMessageListener('ssleuth@github:tab-close', onTabClose, true);
     };
 
     var getFrameMessage = function (callback) {
@@ -110,8 +100,7 @@ var windows = (function () {
 
             function onWindowLoad() {
                 window.removeEventListener('load', onWindowLoad);
-                if (window.document.documentElement
-                    .getAttribute('windowtype') === type)
+                if (window.document.documentElement.getAttribute('windowtype') === type)
                     initCallback(window);
             }
             window.addEventListener('load', onWindowLoad);
@@ -121,8 +110,7 @@ var windows = (function () {
             var window = xulWindow.QueryInterface(Ci.nsIInterfaceRequestor)
                 .getInterface(Ci.nsIDOMWindow);
 
-            if (window.document.documentElement
-                .getAttribute('windowtype') === type)
+            if (window.document.documentElement.getAttribute('windowtype') === type)
                 uninitCallback(window);
         }
     };

@@ -125,14 +125,11 @@ var observer = (function () {
                         hostEntry.cipherName = sslStatus.cipherName;
                         hostEntry.certValid = utilCb.isCertValid(sslStatus.serverCert);
                         hostEntry.domMatch = !sslStatus.isDomainMismatch;
-                        hostEntry.csRating = utilCb.getCipherSuiteRating(
-                            hostEntry.cipherName);
+                        hostEntry.csRating = utilCb.getCipherSuiteRating(hostEntry.cipherName);
                         hostEntry.pfs = utilCb.checkPFS(hostEntry.cipherName);
-                        hostEntry.pubKeyAlg = utilCb.getCertificateAlg(
-                            hostEntry.cipherName);
+                        hostEntry.pubKeyAlg = utilCb.getCertificateAlg(hostEntry.cipherName);
                         hostEntry.signature = utilCb.getSignatureAlg(sslStatus.serverCert);
-                        hostEntry.pubKeySize = utilCb.getKeySize(sslStatus.serverCert,
-                            hostEntry.pubKeyAlg);
+                        hostEntry.pubKeySize = utilCb.getKeySize(sslStatus.serverCert, hostEntry.pubKeyAlg);
                         // The evCert and ff status are not available per channel.
                         // Wait for it to be filled in after the main channel request.
                         hostEntry.cxRating = -1;
@@ -195,12 +192,17 @@ var observer = (function () {
         utilCb.domainsUpdated(tab);
     };
 
+    var printCache = function () {
+        log.debug('Responsecache : ' + JSON.stringify(observer.responseCache, null, 2) + '\n\n');
+    };
+
     return {
         init: init,
         uninit: uninit,
         newLoc: newLoc,
         updateLocEntry: updateLocEntry,
         deleteLoc: deleteLoc,
+        printCache: printCache,
         get responseCache() {
             return responseCache;
         }
