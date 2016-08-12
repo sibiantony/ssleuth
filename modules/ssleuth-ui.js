@@ -14,26 +14,26 @@ Cu.import('resource://ssleuth/observer.js');
 Cu.import('resource://ssleuth/panel.js');
 Cu.import('resource://ssleuth/windows.js');
 
-var ui = {
-    ssleuthLoc: {
-        URLBAR: 0,
-        TOOLBAR: 1
-    },
-    ssleuthBtnLocation: null,
-    // Reference to SSleuth.prefs
-    prefs: null,
+var ui = (function () {
+    var buttonLocation = {
+            URLBAR: 0,
+            TOOLBAR: 1
+        },
+        currentLocation = null,
+        // Reference to SSleuth.prefs
+        prefs = null;
 
-    startup: function (prefs) {
-        this.prefs = prefs;
+    var startup = function (_prefs) {
+        prefs = _prefs;
         loadStyleSheet();
-    },
+    };
 
-    shutdown: function () {
+    var shutdown = function () {
         removeStyleSheet();
-    },
+    };
 
-    init: function (win) {
-        this.ssleuthBtnLocation = this.prefs['notifier.location'];
+    var init = function (win) {
+        currentLocation = prefs['notifier.location'];
         var ssleuthButton = createButton(win);
         installButton(ssleuthButton,
             true,
@@ -41,7 +41,7 @@ var ui = {
 
         createKeyShortcut(win);
 
-        panel(win).init(this.prefs);
+        panel(win).init(prefs);
 
         // TODO : Optimize this handlings. Only when HTTP obs enabled ?
         //        Do init in preferences handler ?
@@ -49,9 +49,9 @@ var ui = {
         initCiphersPanel(win);
         initPanelPreferences(win);
         utils.initLocale();
-    },
+    };
 
-    uninit: function (win) {
+    var uninit = function (win) {
         // Cleanup everything! 
         // Removing the button deletes the overlay elements as well 
         try {
@@ -60,9 +60,9 @@ var ui = {
         } catch (e) {
             log.error('Error SSleuth UI uninit : ' + e.message);
         }
-    },
+    };
 
-    onLocationChange: function (win, winId, urlChanged) {
+    var onLocationChange = function (win, winId, urlChanged) {
         // The document elements are not available until a successful init.
         // So we need to add the child panel for the first time 
 
@@ -80,9 +80,9 @@ var ui = {
             showPanel(ssleuthPanel, true, win);
         }
 
-    },
+    };
 
-    protocolChange: function (proto, data, win, winId) {
+    var protocolChange = function (proto, data, win, winId) {
         var doc = win.document;
         switch (proto) {
 
@@ -127,39 +127,58 @@ var ui = {
         doc.getElementById('ssleuth-panel-domains-vbox')
             .setAttribute('maxheight', doc.getElementById('ssleuth-panel-main-vbox').scrollHeight);
 
-    },
+    };
 
-    onStateStop: function (win, tab) {
+    var onStateStop = function (win, tab) {
         showCrossDomainRating(win, tab);
-    },
+    };
 
-    prefListener: function (branch, name) {
+    var prefListener = function (branch, name) {
         preferencesChanged(branch, name);
-    },
+    };
 
-    domainsUpdated: function (tab) {
+    var domainsUpdated = function (tab) {
         // Reload the tab, only if user is navigating with domains
         var win = windows.recentWindow;
         if (win.document.getElementById('ssleuth-paneltab-domains')
             .getAttribute('_selected') === 'true') {
             loadDomainsTab(win, tab);
         }
+    };
+
+    return {
+        init: init,
+        uninit: uninit,
+        buttonLocation: buttonLocation,
+        startup: startup,
+        shutdown: shutdown,
+        domainsUpdated: domainsUpdated,
+        prefListener: prefListener,
+        onStateStop: onStateStop,
+        protocolChange: protocolChange,
+        onLocationChange: onLocationChange,
+        get currentLocation() {
+            return currentLocation;
+        },
+        get prefs() {
+            return prefs;
+        },
     }
 
-};
+}());
 
 function _ssleuthButton(win) {
-    if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
+    if (ui.currentLocation == ui.buttonLocation.TOOLBAR) {
         return win.document.getElementById('ssleuth-tb-button');
-    } else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
+    } else if (ui.currentLocation == ui.buttonLocation.URLBAR) {
         return win.document.getElementById('ssleuth-box-urlbar');
     }
 }
 
 function _ssleuthBtnImg(win) {
-    if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
+    if (ui.currentLocation == ui.buttonLocation.TOOLBAR) {
         return win.document.getElementById('ssleuth-tb-button');
-    } else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
+    } else if (ui.currentLocation == ui.buttonLocation.URLBAR) {
         return win.document.getElementById('ssleuth-ub-img');
     }
 }
@@ -198,7 +217,7 @@ function removeStyleSheet() {
 
 function installButton(ssleuthButton, firstRun, document) {
     try {
-        if (ui.ssleuthBtnLocation === ui.ssleuthLoc.TOOLBAR) {
+        if (ui.currentLocation === ui.buttonLocation.TOOLBAR) {
             var toolbar = document.getElementById('nav-bar');
             var toolbarButton = ssleuthButton;
             var buttonId = 'ssleuth-tb-button';
@@ -230,12 +249,12 @@ function installButton(ssleuthButton, firstRun, document) {
                     toolbar.insertItem(buttonId);
                 }
             }
-        } else if (ui.ssleuthBtnLocation === ui.ssleuthLoc.URLBAR) {
+        } else if (ui.currentLocation === ui.buttonLocation.URLBAR) {
             var urlbar = document.getElementById('urlbar');
             urlbar.insertBefore(ssleuthButton,
                 document.getElementById('identity-box'));
         } else {
-            log.error('ssleuthBtnLocation undefined! ');
+            log.error('currentLocation undefined! ');
         }
     } catch (ex) {
         log.error('Failed install button : ' + ex.message);
@@ -248,7 +267,7 @@ function createButton(win) {
         var button;
         var panelPosition;
 
-        if (ui.ssleuthBtnLocation == ui.ssleuthLoc.TOOLBAR) {
+        if (ui.currentLocation == ui.buttonLocation.TOOLBAR) {
             button = create(doc, 'toolbarbutton', {
                 id: 'ssleuth-tb-button',
                 removable: 'true',
@@ -260,7 +279,7 @@ function createButton(win) {
             });
             panelPosition = 'bottomcenter topright';
 
-        } else if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
+        } else if (ui.currentLocation == ui.buttonLocation.URLBAR) {
             button = create(doc, 'box', {
                 id: 'ssleuth-box-urlbar',
                 role: 'button',
@@ -285,7 +304,7 @@ function createButton(win) {
 
         button.appendChild(panel(win).create(panelPosition));
 
-        if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
+        if (ui.currentLocation == ui.buttonLocation.URLBAR) {
             button.appendChild(create(doc, 'description', {
                 'id': 'ssleuth-ub-rank',
                 'class': 'ssleuth-text-body-class'
@@ -407,7 +426,7 @@ function setButtonRank(connectionRank, proto, win) {
 
     _ssleuthBtnImg(win).setAttribute('rank', buttonRank);
 
-    if (ui.ssleuthBtnLocation == ui.ssleuthLoc.URLBAR) {
+    if (ui.currentLocation == ui.buttonLocation.URLBAR) {
         var ubRank = doc.getElementById('ssleuth-ub-rank');
         var ubSeparator = doc.getElementById('ssleuth-ub-separator');
 
@@ -667,7 +686,7 @@ function deleteKeyShortcut(doc) {
 
 function readUIPreferences() {
     const prefs = preferences.service;
-    ui.ssleuthBtnLocation =
+    ui.currentLocation =
         prefs.getIntPref('extensions.ssleuth.notifier.location');
 }
 
