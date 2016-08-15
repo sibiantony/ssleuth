@@ -32,7 +32,7 @@ var preferences = (function () {
         }
     };
 
-    var PREF_BRANCH = 'extensions.ssleuth.',
+    var BRANCH = 'extensions.ssleuth.',
         service = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch),
         _branch,
         _callback,
@@ -43,7 +43,7 @@ var preferences = (function () {
 
         setDefaultPreferences();
 
-        _branch = service.getBranch(PREF_BRANCH);
+        _branch = service.getBranch(BRANCH);
         _branch.QueryInterface(Ci.nsIPrefBranch2);
         _callback = callback;
 
@@ -61,7 +61,7 @@ var preferences = (function () {
 
     var setDefaultPreferences = function () {
         let sp = defaultPreferences;
-        let branch = Services.prefs.getDefaultBranch(PREF_BRANCH);
+        let branch = Services.prefs.getDefaultBranch(BRANCH);
         for (let [key, val] in Iterator(sp)) {
             switch (typeof val) {
             case 'boolean':
@@ -84,16 +84,16 @@ var preferences = (function () {
         for (let [key, val] in Iterator(sp)) {
             switch (typeof val) {
             case 'boolean':
-                sp[key] = service.getBoolPref(PREF_BRANCH + key);
+                sp[key] = service.getBoolPref(BRANCH + key);
                 break;
             case 'number':
-                sp[key] = service.getIntPref(PREF_BRANCH + key);
+                sp[key] = service.getIntPref(BRANCH + key);
                 break;
             case 'string':
-                sp[key] = service.getCharPref(PREF_BRANCH + key);
+                sp[key] = service.getCharPref(BRANCH + key);
                 break;
             case 'object':
-                sp[key] = JSON.parse(service.getCharPref(PREF_BRANCH + key));
+                sp[key] = JSON.parse(service.getCharPref(BRANCH + key));
             }
         }
         return sp;
@@ -160,7 +160,7 @@ var preferences = (function () {
         init: init,
         uninit: uninit,
         openTab: openTab,
-        PREF_BRANCH: PREF_BRANCH,
+        BRANCH: BRANCH,
         service: service
     };
 

@@ -29,16 +29,17 @@
 
     const Cc = Components.classes,
         Ci = Components.interfaces,
-        prefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch);
+        prefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch),
+        BRANCH = 'extensions.ssleuth.';
 
-    const PREF_NOTIF_LOC = 'extensions.ssleuth.notifier.location',
-        PREF_PANEL_FONT = 'extensions.ssleuth.panel.fontsize',
-        PREF_CX_RATING = 'extensions.ssleuth.rating.params',
-        PREF_CS_RATING = 'extensions.ssleuth.rating.ciphersuite.params',
-        PREF_SUITES_TGL = 'extensions.ssleuth.suites.toggle',
-        PREF_PANEL_INFO = 'extensions.ssleuth.panel.info',
-        PREF_URL_COLORIZE = 'extensions.ssleuth.ui.urlbar.colorize',
-        PREF_NOTIFIER_COLORIZE = 'extensions.ssleuth.ui.notifier.colorize';
+    const PREF_NOTIF_LOC = BRANCH + 'notifier.location',
+        PREF_PANEL_FONT = BRANCH + 'panel.fontsize',
+        PREF_CX_RATING = BRANCH + 'rating.params',
+        PREF_CS_RATING = BRANCH + 'rating.ciphersuite.params',
+        PREF_SUITES_TGL = BRANCH + 'suites.toggle',
+        PREF_PANEL_INFO = BRANCH + 'panel.info',
+        PREF_URL_COLORIZE = BRANCH + 'ui.urlbar.colorize',
+        PREF_NOTIFIER_COLORIZE = BRANCH + 'ui.notifier.colorize';
 
     var cxRating = JSON.parse(prefs.getCharPref(PREF_CX_RATING)),
         csRating = JSON.parse(prefs.getCharPref(PREF_CS_RATING)),

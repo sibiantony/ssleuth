@@ -685,13 +685,15 @@ function deleteKeyShortcut(doc) {
 }
 
 function readUIPreferences() {
-    const prefs = preferences.service;
+    const prefs = preferences.service,
+        branch = preferences.BRANCH;
     ui.currentLocation =
-        prefs.getIntPref('extensions.ssleuth.notifier.location');
+        prefs.getIntPref(BRANCH + 'notifier.location');
 }
 
 function resetAllLists() {
-    const prefs = preferences.service;
+    const prefs = preferences.service,
+        branch = preferences.BRANCH;
 
     var csList = prefs.getChildList('security.ssl3.', {});
     for (var i = 0; i < csList.length; i++) {
@@ -702,7 +704,7 @@ function resetAllLists() {
     for (i = 0; i < csTglList.length; i++) {
         csTglList[i].state = 'default';
     }
-    prefs.setCharPref('extensions.ssleuth.suites.toggle',
+    prefs.setCharPref(BRANCH + 'suites.toggle',
         JSON.stringify(csTglList));
 
 }
@@ -925,7 +927,7 @@ function loadCiphersTab(win) {
                     }
                 }
                 preferences.service
-                    .setCharPref('extensions.ssleuth.suites.toggle',
+                    .setCharPref(preferences.BRANCH + 'suites.toggle',
                         JSON.stringify(csTglList));
             }, false);
         }
