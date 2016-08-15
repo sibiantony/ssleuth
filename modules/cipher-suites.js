@@ -1,11 +1,11 @@
-var EXPORTED_SYMBOLS = ['ssleuthCipherSuites', 'ssleuthConnectionRating',
-            'ffToggleDefault', 'ssleuthTlsVersions'];
+var EXPORTED_SYMBOLS = ['ciphersuites', 'connectionRating',
+            'ffToggleDefault', 'tlsVersions'];
 
 /* 
  * The cipher suites ratings are in its early stages now.
  * This is subject to change in future.
  */
-const ssleuthCipherSuites = {
+const ciphersuites = {
     keyExchange: [{
             name: '_ECDHE_',
             rank: 10,
@@ -67,8 +67,8 @@ const ssleuthCipherSuites = {
             pfs: 0,
             ui: 'Unknown',
             notes: ''
-        },
-  ],
+        }
+    ],
 
     // No known weaknesses for the algorithms here. Except for the key length.
     // RSA secure minimum keyLength>=2048
@@ -108,7 +108,7 @@ const ssleuthCipherSuites = {
             cert: '',
             notes: ''
         },
-  ],
+    ],
 
     bulkCipher: [
         {
@@ -201,7 +201,7 @@ const ssleuthCipherSuites = {
             ui: 'Unknown',
             notes: ''
         },
-  ],
+    ],
 
     // Again, ui fields are used in identifying TLS hash. Don't modify.
     // Update : Firefox broke the convention of naming signature alg.
@@ -253,9 +253,9 @@ const ssleuthCipherSuites = {
             ui: 'Unknown',
             notes: ''
         },
-  ],
+    ],
 
-    cipherSuiteStrength: {
+    strength: {
         MAX: 10,
         HIGH: 7,
         MEDIUM: 5,
@@ -270,7 +270,7 @@ const ssleuthCipherSuites = {
     }
 };
 
-const ssleuthConnectionRating = {
+const connectionRating = {
     cipherSuite: 4,
     pfs: 2,
     ffStatus: 1,
@@ -307,7 +307,6 @@ const ffToggleDefault = [
             'ecdhe_rsa_rc4_128_sha',
             'rsa_rc4_128_md5',
             'rsa_rc4_128_sha'
-
         ],
         state: 'default'
     },
@@ -331,7 +330,7 @@ const ffToggleDefault = [
     }
 ];
 
-const ssleuthTlsVersions = {
+const tlsVersions = {
     sslv3: {
         ui: 'SSLv3.0',
         state: 'bad'

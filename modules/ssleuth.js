@@ -150,11 +150,11 @@ var progressListener = function (win) {
 
                 try {
                     if (scheme === 'https') {
-                        protocolHttps(progress, state, win, winId);
+                        protocol.onHttps(state, urlChanged, win, winId);
                     } else if (scheme === 'http') {
-                        protocolHttp(uri, win, winId);
+                        protocol.onHttp(uri, win, winId);
                     } else {
-                        protocolUnknown(win, winId);
+                        protocol.onUnknown(win, winId);
                     }
                 } catch (e) {
                     log.error('Error onSecurityChange : ' + e.message);
@@ -180,148 +180,154 @@ var progressListener = function (win) {
 
 };
 
-function protocolUnknown(win, winId) {
-    setDomainStates('Insecure', false, winId);
-    ui.protocolChange('unknown', '', win, winId);
-}
+var protocol = (function () {
 
-function protocolHttp(loc, win, winId) {
-    var httpsURL = loc.toString().replace('http://', 'https://');
-
-    setDomainStates('Insecure', false, winId);
-    ui.protocolChange('http', httpsURL, win, winId);
-}
-
-function protocolHttps(progress, state, win, winId) {
-    var secUI = win.gBrowser.securityUI;
-    if (!secUI) return;
-
-    var sslStatus = secUI.SSLStatus;
-    if (!sslStatus) {
-        secUI.QueryInterface(Ci.nsISSLStatusProvider);
-        if (secUI.SSLStatus) {
-            sslStatus = secUI.SSLStatus;
-        } else {
-            // 1. Firefox do not seem to populate
-            //  SSLStatus if a tab switches to a page with the same URL.
-            //
-            // 2. A page load event can fire even if there is 
-            //  no connectivity and user attempts to reload a page. 
-            //  Hide the panel to prevent stale values from getting 
-            //  displayed 
-
-            // TODO : Recheck urlChanged context for the redesign
-            if (progressListener(win).urlChanged) {
-                ui.protocolChange('unknown', '', win, winId);
-            }
-            return;
-        }
-    }
-
-    const cs = ssleuthCipherSuites;
-    var securityState = '';
-    var cipherName = sslStatus.cipherName;
-    var extendedValidation = false;
-
-    // Security Info - Firefox states
-    if ((state & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
-        securityState = 'Secure';
-    } else if ((state & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
-        securityState = 'Insecure';
-    } else if ((state & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
-        securityState = 'Broken';
-    }
-
-    if (state & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
-        extendedValidation = true;
-    }
-
-    setDomainStates(securityState, extendedValidation, winId);
-    setTLSVersion(win, winId);
-
-    var cipherSuite = {
-        name: cipherName,
-        rank: cs.cipherSuiteStrength.LOW,
-        pfs: 0,
-        cipherKeyLen: sslStatus.secretKeyLength,
-        keyExchange: null,
-        authentication: null,
-        bulkCipher: null,
-        HMAC: null
+    var onUnknown = function (win, winId) {
+        setDomainStates('Insecure', false, winId);
+        ui.protocolChange('unknown', '', win, winId);
     };
 
-    var cert = {
-        serverCert: sslStatus.serverCert,
-        pubKeySize: 0,
-        pubKeyAlg: '',
-        pubKeyMinSecure: false,
-        isValid: false,
-        signatureAlg: null
+    var onHttp = function (loc, win, winId) {
+        var httpsURL = loc.toString().replace('http://', 'https://');
+
+        setDomainStates('Insecure', false, winId);
+        ui.protocolChange('http', httpsURL, win, winId);
     };
 
-    function getCsParam(param) {
-        for (var i = 0; i < param.length; i++) {
-            if ((cipherName.indexOf(param[i].name) != -1)) {
-                return param[i];
+    var onHttps = function (state, urlChanged, win, winId) {
+        var secUI = win.gBrowser.securityUI;
+        if (!secUI) return;
+
+        var sslStatus = secUI.SSLStatus;
+        if (!sslStatus) {
+            secUI.QueryInterface(Ci.nsISSLStatusProvider);
+            if (secUI.SSLStatus) {
+                sslStatus = secUI.SSLStatus;
+            } else {
+                // 1. Firefox do not seem to populate SSLStatus if a tab switches to a page with the same URL.
+                //
+                // 2. A page load event can fire even if there is no connectivity and user attempts to reload a page.
+                //  Hide the panel to prevent stale values from getting displayed
+                if (urlChanged) {
+                    ui.protocolChange('unknown', '', win, winId);
+                }
+                return;
             }
         }
-        return null;
-    }
 
-    cipherSuite.keyExchange = getCsParam(cs.keyExchange);
-    cipherSuite.authentication = getCsParam(cs.authentication);
-    cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
-    cipherSuite.HMAC = getCsParam(cs.HMAC);
-    cipherSuite.pfs = cipherSuite.keyExchange.pfs;
+        const cs = ciphersuites;
+        var securityState = '',
+            cipherName = sslStatus.cipherName,
+            extendedValidation = false;
 
-    if (cipherSuite.bulkCipher.name === '') {
-        // Something's missing in our list.
-        // Get the security strength from Firefox's own flags.
-        // Set cipher rank
-        if (state & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) {
-            cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MAX;
-        } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_MED) {
-            cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.HIGH - 1;
-        } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_LOW) {
-            cipherSuite.bulkCipher.rank = cs.cipherSuiteStrength.MED - 1;
+        // Security Info - Firefox states
+        if ((state & Ci.nsIWebProgressListener.STATE_IS_SECURE)) {
+            securityState = 'Secure';
+        } else if ((state & Ci.nsIWebProgressListener.STATE_IS_INSECURE)) {
+            securityState = 'Insecure';
+        } else if ((state & Ci.nsIWebProgressListener.STATE_IS_BROKEN)) {
+            securityState = 'Broken';
         }
-    }
 
-    // Certificate public key algorithim, key size
-    cert.pubKeyAlg = cipherSuite.authentication.cert;
-    cert.pubKeySize = getKeySize(cert.serverCert, cert.pubKeyAlg);
-    cert.pubKeyMinSecure =
-        (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
-    cert.signatureAlg = getSignatureAlg(cert.serverCert);
-    // Weak keys are rated down.
-    !cert.pubKeyMinSecure && (cert.signatureAlg.rating = 0);
+        if (state & Ci.nsIWebProgressListener.STATE_IDENTITY_EV_TOPLEVEL) {
+            extendedValidation = true;
+        }
 
-    const csWeighting = ssleuth.prefs['rating.ciphersuite.params'];
-    // Calculate ciphersuite rank  - All the cipher suite params ratings
-    // are out of 10, so this will get normalized to 10.
-    cipherSuite.rank = (cipherSuite.keyExchange.rank * csWeighting.keyExchange +
-        cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
-        cipherSuite.HMAC.rank * csWeighting.hmac) / csWeighting.total;
+        setDomainStates(securityState, extendedValidation, winId);
+        setTLSVersion(win, winId);
 
-    cert.isValid = isCertValid(cert.serverCert);
+        var cipherSuite = {
+            name: cipherName,
+            rank: cs.strength.LOW,
+            pfs: 0,
+            cipherKeyLen: sslStatus.secretKeyLength,
+            keyExchange: null,
+            authentication: null,
+            bulkCipher: null,
+            HMAC: null
+        };
 
-    var connectionRating = getConnectionRating(cipherSuite.rank,
-        cipherSuite.pfs,
-        securityState, (!sslStatus.isDomainMismatch && cert.isValid),
-        extendedValidation,
-        cert.signatureAlg.rating);
+        var cert = {
+            serverCert: sslStatus.serverCert,
+            pubKeySize: 0,
+            pubKeyAlg: '',
+            pubKeyMinSecure: false,
+            isValid: false,
+            signatureAlg: null
+        };
 
-    // Invoke the UI to do its job
-    ui.protocolChange('https', {
-            rating: connectionRating,
-            cipherSuite: cipherSuite,
-            state: securityState,
-            cert: cert,
-            domMismatch: sslStatus.isDomainMismatch,
-            ev: extendedValidation
-        },
-        win, winId);
-}
+        function getCsParam(param) {
+            for (var i = 0; i < param.length; i++) {
+                if ((cipherName.indexOf(param[i].name) != -1)) {
+                    return param[i];
+                }
+            }
+            return null;
+        }
+
+        cipherSuite.keyExchange = getCsParam(cs.keyExchange);
+        cipherSuite.authentication = getCsParam(cs.authentication);
+        cipherSuite.bulkCipher = getCsParam(cs.bulkCipher);
+        cipherSuite.HMAC = getCsParam(cs.HMAC);
+        cipherSuite.pfs = cipherSuite.keyExchange.pfs;
+
+        if (cipherSuite.bulkCipher.name === '') {
+            // Something's missing in our list.
+            // Get the security strength from Firefox's own flags.
+            // Set cipher rank
+            if (state & Ci.nsIWebProgressListener.STATE_SECURE_HIGH) {
+                cipherSuite.bulkCipher.rank = cs.strength.MAX;
+            } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_MED) {
+                cipherSuite.bulkCipher.rank = cs.strength.HIGH - 1;
+            } else if (state & Ci.nsIWebProgressListener.STATE_SECURE_LOW) {
+                cipherSuite.bulkCipher.rank = cs.strength.MED - 1;
+            }
+        }
+
+        // Certificate public key algorithim, key size
+        cert.pubKeyAlg = cipherSuite.authentication.cert;
+        cert.pubKeySize = getKeySize(cert.serverCert, cert.pubKeyAlg);
+        cert.pubKeyMinSecure =
+            (cert.pubKeySize >= cipherSuite.authentication.minSecureKeyLength);
+        cert.signatureAlg = getSignatureAlg(cert.serverCert);
+        // Weak keys are rated down.
+        !cert.pubKeyMinSecure && (cert.signatureAlg.rating = 0);
+
+        const csWeighting = ssleuth.prefs['rating.ciphersuite.params'];
+        // Calculate ciphersuite rank  - All the cipher suite params ratings
+        // are out of 10, so this will get normalized to 10.
+        cipherSuite.rank = (cipherSuite.keyExchange.rank * csWeighting.keyExchange +
+            cipherSuite.bulkCipher.rank * csWeighting.bulkCipher +
+            cipherSuite.HMAC.rank * csWeighting.hmac) / csWeighting.total;
+
+        cert.isValid = isCertValid(cert.serverCert);
+
+        var rating = getConnectionRating(cipherSuite.rank,
+            cipherSuite.pfs,
+            securityState, (!sslStatus.isDomainMismatch && cert.isValid),
+            extendedValidation,
+            cert.signatureAlg.rating);
+
+        // Invoke the UI to do its job
+        ui.protocolChange('https', {
+                rating: rating,
+                cipherSuite: cipherSuite,
+                state: securityState,
+                cert: cert,
+                domMismatch: sslStatus.isDomainMismatch,
+                ev: extendedValidation
+            },
+            win, winId);
+    };
+
+    return {
+        onHttp: onHttp,
+        onHttps: onHttps,
+        onUnknown: onUnknown
+    };
+
+}());
+
 
 function getConnectionRating(csRating, pfs, ffStatus, certStatus, evCert, signature) {
     const rp = ssleuth.prefs['rating.params'];
@@ -412,7 +418,7 @@ function isCertValid(cert) {
 }
 
 function checkPFS(cipherName) {
-    const csP = ssleuthCipherSuites.keyExchange;
+    const csP = ciphersuites.keyExchange;
     for (var i = 0; i < csP.length; i++) {
         if ((cipherName.indexOf(csP[i].name) != -1)) {
             return Boolean(csP[i].pfs);
@@ -422,8 +428,8 @@ function checkPFS(cipherName) {
 }
 
 function getCipherSuiteRating(cipherName) {
-    const cs = ssleuthCipherSuites;
-    const csW = ssleuth.prefs['rating.ciphersuite.params'];
+    const cs = ciphersuites,
+        csW = ssleuth.prefs['rating.ciphersuite.params'];
 
     function getRating(csParam) {
         for (var i = 0; i < csParam.length; i++) {
@@ -433,9 +439,9 @@ function getCipherSuiteRating(cipherName) {
         }
         return null;
     }
-    var keyExchange = getRating(cs.keyExchange);
-    var bulkCipher = getRating(cs.bulkCipher);
-    var hmac = getRating(cs.HMAC);
+    var keyExchange = getRating(cs.keyExchange),
+        bulkCipher = getRating(cs.bulkCipher),
+        hmac = getRating(cs.HMAC);
 
     if ((keyExchange && bulkCipher && hmac) == null)
         return null;
@@ -480,12 +486,12 @@ function getSignatureAlg(cert) {
         var certASN1 = Cc['@mozilla.org/security/nsASN1Tree;1']
             .createInstance(Ci.nsIASN1Tree);
         certASN1.loadASN1Structure(cert.ASN1Structure);
-        var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, '');
-        var signature = {
-            hmac: '',
-            enc: '',
-            rating: 0
-        };
+        var sigText = certASN1.getDisplayData(4).replace(/PKCS #1/g, ''),
+            signature = {
+                hmac: '',
+                enc: '',
+                rating: 0
+            };
 
         // Some certs only have OIDs in them.
         // 1 2 840 10045 = ANSI X9.62 ECDSA signatures
@@ -503,7 +509,7 @@ function getSignatureAlg(cert) {
             }
         }
 
-        const cs = ssleuthCipherSuites;
+        const cs = ciphersuites;
         for (var i = 0; i < cs.HMAC.length; i++) {
             if ((sigText.indexOf(cs.HMAC[i].ui) != -1) || ((cs.HMAC[i].sigui) &&
                     (sigText.indexOf(cs.HMAC[i].sigui) != -1))) {
@@ -530,7 +536,7 @@ function getSignatureAlg(cert) {
 // TODO : optimize, combine the rating, cipher suite string matching 
 //
 function getCertificateAlg(cipherName) {
-    const csA = ssleuthCipherSuites.authentication;
+    const csA = ciphersuites.authentication;
     for (var i = 0; i < csA.length; i++) {
         if ((cipherName.indexOf(csA[i].name) != -1)) {
             return csA[i].cert;
@@ -540,10 +546,10 @@ function getCertificateAlg(cipherName) {
 }
 
 function toggleCipherSuites(prefsOld) {
-    const prefs = preferences.service;
-    const br = 'security.ssl3.';
-    const SUITES_TOGGLE = 'suites.toggle';
-    const PREF_SUITES_TOGGLE = preferences.BRANCH + SUITES_TOGGLE;
+    const prefs = preferences.service,
+        br = preferences.TLS,
+        SUITES_TOGGLE = 'suites.toggle',
+        PREF_SUITES_TOGGLE = preferences.BRANCH + SUITES_TOGGLE;
 
     for (var t = 0; t < ssleuth.prefs[SUITES_TOGGLE].length; t++) {
 

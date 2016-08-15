@@ -30,7 +30,8 @@
     const Cc = Components.classes,
         Ci = Components.interfaces,
         prefs = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch),
-        BRANCH = 'extensions.ssleuth.';
+        BRANCH = 'extensions.ssleuth.',
+        BRANCHTLS = 'security.ssl3.';
 
     const PREF_NOTIF_LOC = BRANCH + 'notifier.location',
         PREF_PANEL_FONT = BRANCH + 'panel.fontsize',
@@ -282,13 +283,13 @@
 
             // Deck 
             var box = document.createElement('listbox');
-            var chList = prefs.getChildList('security.ssl3.', {});
+            var chList = prefs.getChildList(BRANCHTLS, {});
 
             for (var i = 0; i < chList.length; i++) {
                 var dItem = document.createElement('listitem');
 
                 dItem.setAttribute('label',
-                    chList[i].replace('security.ssl3.', ''));
+                    chList[i].replace(BRANCHTLS, ''));
                 box.appendChild(dItem);
             }
             csDeck.appendChild(box);
@@ -487,7 +488,7 @@
             // While doing a reset, reset the user list to 'default'
             //     This will clear everything in it once.
             // Also need to reset all the other ones. Optimize this?
-            var csList = prefs.getChildList('security.ssl3.', {});
+            var csList = prefs.getChildList(BRANCHTLS, {});
             for (var i = 0; i < csList.length; i++) {
                 prefs.clearUserPref(csList[i]);
             }

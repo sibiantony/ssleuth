@@ -455,13 +455,13 @@ function setButtonRank(connectionRank, proto, win) {
 
 function showCipherDetails(cipherSuite, win) {
     var doc = win.document;
-    const cs = ssleuthCipherSuites;
+    const cs = ciphersuites;
     const rp = ui.prefs['rating.params'];
 
     var marginCipherStatus = 'low';
-    if (cipherSuite.rank >= cs.cipherSuiteStrength.HIGH) {
+    if (cipherSuite.rank >= cs.strength.HIGH) {
         marginCipherStatus = 'high';
-    } else if (cipherSuite.rank > cs.cipherSuiteStrength.MEDIUM) {
+    } else if (cipherSuite.rank > cs.strength.MEDIUM) {
         marginCipherStatus = 'med';
     }
 
@@ -626,10 +626,10 @@ function showTLSVersion(win, tab) {
         tlsIndex = 'ff_cache';
 
     doc.getElementById('ssleuth-text-tls-version').textContent =
-        ssleuthTlsVersions[tlsIndex].ui;
+        tlsVersions[tlsIndex].ui;
 
     doc.getElementById('ssleuth-img-tls-version').setAttribute('state',
-        ssleuthTlsVersions[tlsIndex].state);
+        tlsVersions[tlsIndex].state);
 }
 
 function showCrossDomainRating(win, tab) {
@@ -695,7 +695,7 @@ function resetAllLists() {
     const prefs = preferences.service,
         branch = preferences.BRANCH;
 
-    var csList = prefs.getChildList('security.ssl3.', {});
+    var csList = prefs.getChildList(preferences.TLS, {});
     for (var i = 0; i < csList.length; i++) {
         prefs.clearUserPref(csList[i]);
     }

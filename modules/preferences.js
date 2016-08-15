@@ -18,8 +18,8 @@ var preferences = (function () {
         'ui.keyshortcut': 'control shift }',
         'ui.urlbar.colorize': false,
         'ui.notifier.colorize': false,
-        'rating.params': ssleuthConnectionRating,
-        'rating.ciphersuite.params': ssleuthCipherSuites.weighting,
+        'rating.params': connectionRating,
+        'rating.ciphersuite.params': ciphersuites.weighting,
         'suites.toggle': ffToggleDefault,
         'panel.info': {
             keyExchange: true,
@@ -33,6 +33,7 @@ var preferences = (function () {
     };
 
     var BRANCH = 'extensions.ssleuth.',
+        TLS = 'security.ssl3.',
         service = Cc['@mozilla.org/preferences-service;1'].getService(Ci.nsIPrefBranch),
         _branch,
         _callback,
@@ -161,6 +162,7 @@ var preferences = (function () {
         uninit: uninit,
         openTab: openTab,
         BRANCH: BRANCH,
+        TLS: TLS,
         service: service
     };
 
