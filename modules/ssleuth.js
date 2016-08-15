@@ -23,7 +23,10 @@ var ssleuth = (function () {
         try {
             initPrefs = preferences.init(prefListener);
 
-            observer.init(observerCallbacks);
+            observer.init({
+                onExamineResponse: onExamineResponse,
+                updateHostEntries: updateHostEntries
+            });
 
             ui.startup(initPrefs);
             windows.init(initWindow, uninitWindow);
@@ -48,7 +51,9 @@ var ssleuth = (function () {
     var initWindow = function (win) {
         try {
             progressListener(win).init();
-            listener(win).init();
+            listener(win).init({
+                onTabClose: onTabClose
+            });
 
             ui.init(win);
 
@@ -62,6 +67,106 @@ var ssleuth = (function () {
         ui.uninit(win);
 
         // Listener and progresslisteners are unloaded along with window unloaders
+    };
+
+    var onTabClose = function (msg) {
+        if (observer)
+            observer.deleteLoc(msg.data.id);
+    }
+
+    var onExamineResponse = function (channel) {
+        var url = channel.URI.asciiSpec,
+            hostId = channel.URI.scheme + ':' + channel.URI.hostPort,
+            tab = channel.loadInfo.parentOuterWindowID.toString(),
+            responseCache = observer.responseCache;
+
+        // ignore tab = 0
+        if (tab === '0') return;
+
+        // log.debug('url : ' + utils.cropText(url) + ' content : ' + channel.contentType + ' host ID : ' + hostId);
+
+        if (!responseCache[tab]) {
+            observer.newLoc(url, tab);
+        }
+
+        var hostEntry = responseCache[tab].reqs[hostId];
+
+        if (!hostEntry) {
+
+            hostEntry = responseCache[tab].reqs[hostId] = {
+                count: 0,
+                ctype: {},
+            }
+
+            if (channel.securityInfo) {
+                var sslStatus = channel.securityInfo
+                    .QueryInterface(Ci.nsISSLStatusProvider)
+                    .SSLStatus.QueryInterface(Ci.nsISSLStatus);
+                if (sslStatus) {
+                    hostEntry.cipherName = sslStatus.cipherName;
+                    hostEntry.certValid = isCertValid(sslStatus.serverCert);
+                    hostEntry.domMatch = !sslStatus.isDomainMismatch;
+                    hostEntry.csRating = getCipherSuiteRating(hostEntry.cipherName);
+                    hostEntry.pfs = checkPFS(hostEntry.cipherName);
+                    hostEntry.pubKeyAlg = getCertificateAlg(hostEntry.cipherName);
+                    hostEntry.signature = getSignatureAlg(sslStatus.serverCert);
+                    hostEntry.pubKeySize = getKeySize(sslStatus.serverCert, hostEntry.pubKeyAlg);
+                    // The evCert and ff status are not available per channel.
+                    // Wait for it to be filled in after the main channel request.
+                    hostEntry.cxRating = -1;
+                }
+            }
+        }
+
+        // If the ff status/ev cert for main channel had already been filled,
+        // then set the connection rating
+        if ((channel.originalURI.schemeIs('https')) &&
+            (hostEntry.cxRating === -1)) {
+            setHostCxRating(tab, hostId);
+            // TODO : do update notif for every response ?
+            //        Need to see perf impact
+            domainsUpdated(tab);
+        }
+
+        hostEntry.count++;
+
+        // Check content type - only save the top-level type for now.
+        // application, text, image, video etc.
+        var cType = channel.contentType.split('/')[0];
+        if (!(cType in hostEntry.ctype)) {
+            hostEntry.ctype[cType] = 0;
+        }
+        hostEntry.ctype[cType]++;
+
+    };
+
+    var setHostCxRating = function (tab, hostId) {
+        const responseCache = observer.responseCache;
+        var evCert = responseCache[tab]['evCert'];
+        var ffStatus = responseCache[tab]['ffStatus'];
+        let hostEntry = responseCache[tab].reqs[hostId];
+
+        if (ffStatus != null) {
+            hostEntry.cxRating = getConnectionRating(
+                hostEntry.csRating,
+                hostEntry.pfs,
+                ffStatus, (hostEntry.domMatch && hostEntry.certValid),
+                evCert,
+                hostEntry.signature.rating);
+        }
+    };
+
+    var updateHostEntries = function (tab) {
+        const responseCache = observer.responseCache;
+        var reqs = responseCache[tab].reqs;
+
+        for (var [domain, hostEntry] in Iterator(reqs)) {
+            if ((domain.indexOf('https:') !== -1) && (hostEntry.cxRating === -1)) {
+                setHostCxRating(tab, domain);
+            }
+        }
+
+        domainsUpdated(tab);
     };
 
     return {
@@ -333,7 +438,7 @@ function getConnectionRating(csRating, pfs, ffStatus, certStatus, evCert, signat
     const rp = ssleuth.prefs['rating.params'];
     // Connection rating. Normalize the params to 10
     var rating = (csRating * rp.cipherSuite + pfs * 10 * rp.pfs +
-        Number(ffStatus == 'Secure') * 10 * rp.ffStatus +
+        Number(ffStatus === 'Secure') * 10 * rp.ffStatus +
         Number(certStatus) * 10 * rp.certStatus + Number(evCert) * 10 * rp.evCert + signature * rp.signature) / rp.total;
 
     return Number(rating).toFixed(1);
@@ -603,17 +708,6 @@ function toggleCipherSuites(prefsOld) {
             Ci.nsIWebNavigation.LOAD_FLAGS_BYPASS_CACHE);
     }
 }
-
-var observerCallbacks = {
-    domainsUpdated: domainsUpdated,
-    isCertValid: isCertValid,
-    getCipherSuiteRating: getCipherSuiteRating,
-    getCertificateAlg: getCertificateAlg,
-    getKeySize: getKeySize,
-    checkPFS: checkPFS,
-    getConnectionRating: getConnectionRating,
-    getSignatureAlg: getSignatureAlg
-};
 
 var prefListener = function (branch, name) {
     switch (name) {

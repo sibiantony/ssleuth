@@ -44,29 +44,12 @@ var observer = (function () {
 
             try {
                 var channel = subject.QueryInterface(Ci.nsIHttpChannel);
-                updateResponseCache(channel);
+                utilCb.onExamineResponse(channel);
             } catch (e) {
                 log.error('Error http response: ' + e.message);
             }
-
         },
-
-        response: function (subject, topic, data) {
-            if ((topic !== 'http-on-examine-response') &&
-                (topic !== 'http-on-examine-cached-response') &&
-                (topic !== 'http-on-examine-merged-response'))
-                return;
-            if (!(subject instanceof Ci.nsIHttpChannel)) return;
-
-            try {
-                var channel = subject.QueryInterface(Ci.nsIHttpChannel);
-                updateResponseCache(channel);
-            } catch (e) {
-                log.error('Error http response: ' + e.message);
-            }
-        }
     };
-
 
     var newLoc = function (url, tabId) {
         responseCache[tabId] = {
@@ -85,111 +68,11 @@ var observer = (function () {
             responseCache[tabId][atr] = val;
         }
         // mainly for the connection rating
-        updateHostEntries(tabId);
+        utilCb.updateHostEntries(tabId);
     };
 
     var deleteLoc = function (tabId) {
         delete responseCache[tabId];
-    };
-
-    var updateResponseCache = function (channel) {
-        try {
-            var url = channel.URI.asciiSpec,
-                hostId = channel.URI.scheme + ':' + channel.URI.hostPort,
-                tab = channel.loadInfo.parentOuterWindowID.toString();
-
-            // ignore tab = 0
-            if (tab === '0') return;
-
-            // log.debug('url : ' + utils.cropText(url) + ' content : ' + channel.contentType + ' host ID : ' + hostId);
-
-            if (!responseCache[tab]) {
-                // Use a string index - helps with deletion without problems.
-                newLoc(url, tab);
-            }
-
-            var hostEntry = responseCache[tab].reqs[hostId];
-
-            if (!hostEntry) {
-
-                hostEntry = responseCache[tab].reqs[hostId] = {
-                    count: 0,
-                    ctype: {},
-                }
-
-                if (channel.securityInfo) {
-                    var sslStatus = channel.securityInfo
-                        .QueryInterface(Ci.nsISSLStatusProvider)
-                        .SSLStatus.QueryInterface(Ci.nsISSLStatus);
-                    if (sslStatus) {
-                        hostEntry.cipherName = sslStatus.cipherName;
-                        hostEntry.certValid = utilCb.isCertValid(sslStatus.serverCert);
-                        hostEntry.domMatch = !sslStatus.isDomainMismatch;
-                        hostEntry.csRating = utilCb.getCipherSuiteRating(hostEntry.cipherName);
-                        hostEntry.pfs = utilCb.checkPFS(hostEntry.cipherName);
-                        hostEntry.pubKeyAlg = utilCb.getCertificateAlg(hostEntry.cipherName);
-                        hostEntry.signature = utilCb.getSignatureAlg(sslStatus.serverCert);
-                        hostEntry.pubKeySize = utilCb.getKeySize(sslStatus.serverCert, hostEntry.pubKeyAlg);
-                        // The evCert and ff status are not available per channel.
-                        // Wait for it to be filled in after the main channel request.
-                        hostEntry.cxRating = -1;
-                    }
-                }
-            }
-
-            // If the ff status/ev cert for main channel had already been filled,
-            // then set the connection rating
-            if ((channel.originalURI.schemeIs('https')) &&
-                (hostEntry.cxRating === -1)) {
-                setHostCxRating(tab, hostId);
-                // TODO : do update notif for every response ?
-                //        Need to see perf impact
-                utilCb.domainsUpdated(tab);
-            }
-
-            hostEntry.count++;
-
-            // Check content type - only save the top-level type for now.
-            // application, text, image, video etc.
-            var cType = channel.contentType.split('/')[0];
-            if (!(cType in hostEntry.ctype)) {
-                hostEntry.ctype[cType] = 0;
-            }
-            hostEntry.ctype[cType]++;
-
-        } catch (e) {
-            // TODO : Handle special cases. url links (no hostPort),
-            //          sslStatus.cipherName unavailable etc.
-            log.error('Error updateResponseCache : ' + e.message);
-        }
-    };
-
-    var setHostCxRating = function (tab, hostId) {
-        var evCert = responseCache[tab]['evCert'];
-        var ffStatus = responseCache[tab]['ffStatus'];
-        let hostEntry = responseCache[tab].reqs[hostId];
-
-        if (ffStatus != null) {
-            hostEntry.cxRating = utilCb.getConnectionRating(
-                hostEntry.csRating,
-                hostEntry.pfs,
-                ffStatus, (hostEntry.domMatch && hostEntry.certValid),
-                evCert,
-                hostEntry.signature.rating);
-        }
-    };
-
-    var updateHostEntries = function (tab) {
-
-        var reqs = responseCache[tab].reqs;
-
-        for (var [domain, hostEntry] in Iterator(reqs)) {
-            if ((domain.indexOf('https:') !== -1) && (hostEntry.cxRating === -1)) {
-                setHostCxRating(tab, domain);
-            }
-        }
-
-        utilCb.domainsUpdated(tab);
     };
 
     var printCache = function () {

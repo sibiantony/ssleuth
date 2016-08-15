@@ -17,9 +17,10 @@ Cu.import('resource://ssleuth/utils.js');
 var listener = function (win) {
     'use strict';
 
-    var browserMM;
+    var browserMM, callbacks;
 
-    var init = function () {
+    var init = function (_callbacks) {
+        callbacks = _callbacks;
         // This message won't be received if a window closes with many tabs in it.
         win.messageManager.addMessageListener('ssleuth@github:tab-close', onTabClose, true);
 
@@ -29,8 +30,7 @@ var listener = function (win) {
     };
 
     var onTabClose = function (msg) {
-        if (observer)
-            observer.deleteLoc(msg.data.id);
+        callbacks.onTabClose(msg);
     };
 
     var getFrameMessage = function (callback) {
