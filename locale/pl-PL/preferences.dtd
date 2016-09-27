@@ -1,0 +1,94 @@
+<!ENTITY ssleuth.pref.title.label "Preferencje SSleuth" >
+<!ENTITY ssleuth.pref.tab.ssleuthui "Ogólne" >
+<!ENTITY ssleuth.pref.tab.ranking "Ocena połączenia" >
+<!ENTITY ssleuth.pref.tab.about "O programie" >
+
+<!ENTITY ssleuth.pref.ui.notifier.label "Położenie powiadomienia" >
+<!ENTITY ssleuth.pref.ui.notifier.urlbar "Pasek adresu" >
+<!ENTITY ssleuth.pref.ui.notifier.toolbar "Pasek narzędzi" >
+
+<!ENTITY ssleuth.pref.ui.fontsize "Rozmiar czcionki panelu">
+<!ENTITY ssleuth.pref.ui.fontsize.default "Mały: ">
+<!ENTITY ssleuth.pref.ui.fontsize.medium "Średni: ">
+<!ENTITY ssleuth.pref.ui.fontsize.large "Duży: ">
+
+<!ENTITY ssleuth.pref.ui.fontsize.body "Treść">
+<!ENTITY ssleuth.pref.ui.fontsize.header "Nagłówek">
+
+<!-- New locale strings : 19/12/2014 -->
+<!ENTITY ssleuth.pref.tab.ciphersuites "Zestawy szyfrów" >
+
+<!ENTITY ssleuth.pref.panel.panelinfo "Informacje panelu" >
+<!ENTITY ssleuth.pref.panel.ciphersuite "Zestaw szyfrów : " >
+<!ENTITY ssleuth.pref.panel.certificate "Certyfikat : " >
+<!ENTITY ssleuth.pref.panel.keyexchange "Pokaż algorytm wymiany klucza" >
+<!ENTITY ssleuth.pref.panel.authentication "Pokaż algorytm uwierzytelniania" >
+<!ENTITY ssleuth.pref.panel.bulkcipher "Pokaż szyfr blokowy" >
+<!ENTITY ssleuth.pref.panel.hmac "Pokaż HMAC" >
+<!ENTITY ssleuth.pref.panel.validity "Pokaż ważność" >
+<!ENTITY ssleuth.pref.panel.validitytime "Pokaż ważność w czasie GMT/UTC" >
+<!ENTITY ssleuth.pref.panel.fingerprint "Pokaż odcisk SHA-2" >
+
+<!ENTITY ssleuth.pref.ui.urlbar "Pasek adresu" >
+<!ENTITY ssleuth.pref.ui.urlbar.colorize "Kolorowanie : Dodaje w pasku adresu gradient koloru według oceny" >
+
+<!ENTITY ssleuth.pref.panel.domainstab "Karta domen" >
+
+<!-- Configure rating -->
+
+<!ENTITY ssleuth.pref.rating.overall "Ocena ogólna" >
+<!ENTITY ssleuth.pref.rating.total "Suma" >
+<!ENTITY ssleuth.pref.rating.overall.desc "Konfiguruje obliczanie oceny ogólnej. Umożliwia wpisanie 1 miejsca po przecinku" >
+<!ENTITY ssleuth.pref.rating.ciphersuite "Zestaw szyfrów" >
+<!ENTITY ssleuth.pref.rating.forwardsecrecy "Utajnienie przekazywania" >
+<!ENTITY ssleuth.pref.rating.extendedvalidation "Rozszerzona walidacja" >
+<!ENTITY ssleuth.pref.rating.connectionstatus "Status połączenia" >
+<!ENTITY ssleuth.pref.rating.certstate "Status certyfikatu" >
+<!ENTITY ssleuth.pref.rating.signaturealg "Algorytm sygantury" >
+
+<!ENTITY ssleuth.pref.rating.ciphersuite "Ocena zestawu szyfrów" >
+<!ENTITY ssleuth.pref.rating.ciphersuite.desc "Konfiguruje obliczanie oceny zestawu szyfrów." >
+<!ENTITY ssleuth.pref.rating.keyexchange "Wymiana klucza" >
+<!ENTITY ssleuth.pref.rating.bulkcipher "Szyfr blokowy" >
+<!ENTITY ssleuth.pref.rating.hmac "HMAC" >
+
+<!-- Cipher suites toggle -->
+
+<!ENTITY ssleuth.pref.ciphersuites.title "Zarządzanie listą przełączania zestawów szyfrów" >
+<!ENTITY ssleuth.pref.ciphersuites.desc1 "Zarządza własną listą zestawów szyfrów, które mogą być włączone i wyłączone. Skonfigurowane listy będą wyświetlone w menu prawego przycisku myszy powiadomienia." >
+<!ENTITY ssleuth.pref.ciphersuites.desc2 "Dodaj nowy wpis w lewej ramce i wybierz listę zestawów szyfrów z prawej ramki." >
+<!ENTITY ssleuth.pref.ciphersuites.name "Nazwa" >
+<!ENTITY ssleuth.pref.ciphersuites.state "Status" >
+
+<!ENTITY ssleuth.pref.ciphersuites.note.title "Proszę zauważ:" >
+<!ENTITY ssleuth.pref.ciphersuites.note.1 "Domyślnie = Zestawy szyfrów w liście zostają jednorazowo zresetowane do ich domyślnych statusów." >
+<!ENTITY ssleuth.pref.ciphersuites.note.2 "Włącz = Zestawy szyfrów w liście zostają włączone do użytku." >
+<!ENTITY ssleuth.pref.ciphersuites.note.3 "Wyłącz = Zestawy szyfrów w liście zostają wyłączone z użytku." >
+<!ENTITY ssleuth.pref.ciphersuites.note.4 "Unikaj tworzenia wielu list posiadających wspólne zestawy szyfrów." >
+<!ENTITY ssleuth.pref.ciphersuites.note.5 "Listy są włączane/wyłączane według kolejności w jakiej są wyświetlone. Ostatni wpis ma wyższy priorytet niż wszystkie poprzednie wpisy." >
+<!ENTITY ssleuth.pref.ciphersuites.note.6 "Zduplikowane nazwy dla list nie są dozwolone." >
+
+<!ENTITY ssleuth.pref.ciphersuites.note.restore "Przywróć domyślną listę SSleuth. Zauważ, że usunie to jakiekolwiek listy stworzone przez użytkownika." >
+
+<!ENTITY ssleuth.pref.ciphersuites.reset.title "Resetuj ustawienia" >
+<!ENTITY ssleuth.pref.ciphersuites.reset.desc "Resetuj wszystkie statusy zestawów szyfrów do wartości domyślnych ustawień Firefox'a" >
+<!ENTITY ssleuth.pref.ciphersuites.wiki "Projekt wiki - Włączanie i wyłączanie zestawów szyfrów. (eng.)" >
+
+<!ENTITY ssleuth.pref.ui.button.restore "Przywróć listy" >
+<!ENTITY ssleuth.pref.ui.button.resetall "Resetuj wszystko" >
+
+<!-- About -->
+<!ENTITY ssleuth.pref.about.author "Autor : " >
+<!ENTITY ssleuth.pref.about.thanks "Podziękowania ">
+<!ENTITY ssleuth.pref.about.translations "Tłumaczenia : " >
+<!ENTITY ssleuth.pref.about.license "Licencja" >
+
+<!-- Buttons -->
+<!ENTITY ssleuth.pref.ui.button.apply "Zastosuj" >
+<!ENTITY ssleuth.pref.ui.button.reset "Resetuj" >
+<!ENTITY ssleuth.pref.ui.button.cancel "Anuluj" >
+<!ENTITY ssleuth.pref.ui.button.new "Nowy" >
+<!ENTITY ssleuth.pref.ui.button.edit "Edycja" >
+<!ENTITY ssleuth.pref.ui.button.remove "Usuń" >
+
+<!ENTITY ssleuth.pref.ui.notifier.colorize "Kolorowanie powiadomienia : Dodaje do ikony powiadomienia gradient koloru" >

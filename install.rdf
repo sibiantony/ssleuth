@@ -30,6 +30,14 @@
                     <description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
                 </r:Description>
             </localized>
+            
+            <localized>
+                <r:Description>
+                    <locale>pl-PL</locale>
+                    <name>SSleuth</name>
+                    <description>Jak silne jest Twoje połączenie HTTPS? SSleuth ocenia nawiązane połączenie SSL/TLS i dostarcza krótkie podsumowanie parametrów SSL/TLS. Pozwala użytkownikom poprawić status zestawów szyfrów.</description>
+                </r:Description>
+            </localized>
 
         </r:Description>
     </r:RDF>
