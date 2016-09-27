@@ -35,7 +35,7 @@
                 <r:Description>
                     <locale>pl-PL</locale>
                     <name>SSleuth</name>
-                    <description>Jak silne jest Twoje połączenie HTTPS? SSleuth ocenia nawiązane połączenie SSL/TLS i dostarcza a krótkie podsumowanie parametrów SSL/TLS. Pozwala użytkownikom poprawić status zestawów szyfrów.</description>
+                    <description>Jak silne jest Twoje połączenie HTTPS? SSleuth ocenia nawiązane połączenie SSL/TLS i dostarcza krótkie podsumowanie parametrów SSL/TLS. Pozwala użytkownikom poprawić status zestawów szyfrów.</description>
                 </r:Description>
             </localized>
 
