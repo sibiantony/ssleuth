@@ -26,7 +26,7 @@
 <!ENTITY ssleuth.pref.panel.bulkcipher "Pokaż szyfr blokowy" >
 <!ENTITY ssleuth.pref.panel.hmac "Pokaż HMAC" >
 <!ENTITY ssleuth.pref.panel.validity "Pokaż ważność" >
-<!ENTITY ssleuth.pref.panel.validitytime "Pokaż czas GMT/UTC w ważności" >
+<!ENTITY ssleuth.pref.panel.validitytime "Pokaż ważność w czasie GMT/UTC" >
 <!ENTITY ssleuth.pref.panel.fingerprint "Pokaż odcisk SHA-2" >
 
 <!ENTITY ssleuth.pref.ui.urlbar "Pasek adresu" >
@@ -80,7 +80,7 @@
 <!-- About -->
 <!ENTITY ssleuth.pref.about.author "Autor : " >
 <!ENTITY ssleuth.pref.about.thanks "Podziękowania ">
-<!ENTITY ssleuth.pref.about.translations "Tłumaczenie : " >
+<!ENTITY ssleuth.pref.about.translations "Tłumaczenia : " >
 <!ENTITY ssleuth.pref.about.license "Licencja" >
 
 <!-- Buttons -->
