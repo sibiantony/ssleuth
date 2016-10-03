@@ -454,7 +454,7 @@ function setDomainStates(ffStatus, evCert, winId) {
 function setTLSVersion(win, winId) {
     try {
         var index = '';
-        var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2'];
+        var versionStrings = ['sslv3', 'tlsv1_0', 'tlsv1_1', 'tlsv1_2', 'tlsv1_3'];
 
         // TODO : At the moment, depends on observer module. Change.
         if (Services.vc.compare(Services.appinfo.platformVersion, '36.0') > -1) {

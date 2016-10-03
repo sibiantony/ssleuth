@@ -347,6 +347,11 @@ const tlsVersions = {
         ui: 'TLSv1.2',
         state: 'okay'
     },
+    tlsv1_3: {
+        ui: 'TLSv1.3',
+        state: 'okay'
+    },
+
 
     ff_cache: {
         ui: '<Firefox cache. Reload page>',
