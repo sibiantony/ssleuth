@@ -26,9 +26,11 @@ var ui = (function () {
     var startup = function (_prefs) {
         prefs = _prefs;
         loadStyleSheet();
+        identicon.init();
     };
 
     var shutdown = function () {
+        identicon.uninit();
         removeStyleSheet();
     };
 
@@ -165,6 +167,49 @@ var ui = (function () {
         },
     }
 
+}());
+
+var identicon = (function () {
+
+    var jdenticon;
+    var init = function () {
+        const {
+            require
+        } = Cu.import("resource://gre/modules/commonjs/toolkit/require.js", {});
+
+        jdenticon = require("resource://ssleuth/lib/jdenticon.min");
+        if (!jdenticon) {
+            log.error("No jdenticon library found!");
+            return;
+        }
+        jdenticon.config = {
+            lightness: {
+                color: [0.4, 0.8],
+                grayscale: [0.3, 0.7]
+            },
+            saturation: 0.6
+        };
+
+    };
+
+    var uninit = function () {
+        jdenticon = null;
+    };
+
+    var update = function (cert, doc) {
+
+        var fingerprint = cert.sha256Fingerprint.replace(/:/g, '');
+
+        var canvas = doc.getElementById('ssleuth-img-cert-fingerprint-identicon');
+        canvas.setAttribute('data-jdenticon-hash', fingerprint);
+        jdenticon.update(canvas);
+    };
+
+    return {
+        init: init,
+        uninit: uninit,
+        update: update
+    };
 }());
 
 function _ssleuthButton(win) {
@@ -538,16 +583,16 @@ function showFFState(state, win) {
 }
 
 function showCertDetails(cert, domMismatch, ev, win) {
-    var svCert = cert.serverCert;
-    var validity = svCert.validity.QueryInterface(Ci.nsIX509CertValidity);
-    var doc = win.document;
+    var svCert = cert.serverCert,
+        validity = svCert.validity.QueryInterface(Ci.nsIX509CertValidity),
+        doc = win.document;
     const rp = ui.prefs['rating.params'];
     const panelInfo = ui.prefs['panel.info'];
 
     doc.getElementById('ssleuth-text-cert-common-name').textContent = svCert.commonName;
-    var certRating = doc.getElementById('ssleuth-cert-status-rating');
-    var evRating = doc.getElementById('ssleuth-cert-ev-rating');
-    var elemEV = doc.getElementById('ssleuth-text-cert-extended-validation');
+    var certRating = doc.getElementById('ssleuth-cert-status-rating'),
+        evRating = doc.getElementById('ssleuth-cert-ev-rating'),
+        elemEV = doc.getElementById('ssleuth-text-cert-extended-validation');
     if (ev) {
         elemEV.textContent = utils.getText('general.yes');
         elemEV.setAttribute('ev', 'Yes');
@@ -611,8 +656,11 @@ function showCertDetails(cert, domMismatch, ev, win) {
     doc.getElementById('ssleuth-text-cert-fingerprint-3')
         .textContent = svCert.sha256Fingerprint.substring(66);
 
+    identicon.update(svCert, doc);
+
     doc.getElementById('ssleuth-text-cert-validity-box').hidden = !(panelInfo.certValidity);
     doc.getElementById('ssleuth-text-cert-fingerprint-box').hidden = !(panelInfo.certFingerprint);
+
 }
 
 function showTLSVersion(win, tab) {

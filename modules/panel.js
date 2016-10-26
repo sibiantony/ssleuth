@@ -517,16 +517,37 @@ var panelbox = function (win) {
                                     class: 'ssleuth-text-body-class'
                                 }));
                             } {
-                                let hb = vb.appendChild(elem('hbox', {
+                                let hb1 = vb.appendChild(elem('hbox', {
+                                    id: 'ssleuth-text-cert-fingerprint-label-box',
+                                    align: 'baseline',
+                                })); {
+                                    /* The fingerprint description will be a hidden element,
+                                    however will be needed in clipboard copies.
+                                    */
+                                    hb1.appendChild(elem('description', {
+                                        id: 'ssleuth-text-cert-fingerprint-label',
+                                        value: utils.getText('certificate.fingerprint'),
+                                        class: 'ssleuth-text-title-class',
+                                        hidden: 'true'
+                                    }));
+                                }
+                                let hb2 = vb.appendChild(elem('hbox', {
                                     id: 'ssleuth-text-cert-fingerprint-box',
                                     align: 'baseline',
-                                }));
-                                hb.appendChild(elem('description', {
-                                    id: 'ssleuth-text-cert-fingerprint-label',
-                                    value: utils.getText('certificate.fingerprint'),
-                                    class: 'ssleuth-text-body-class'
                                 })); {
-                                    let vb = hb.appendChild(elem('vbox', {
+                                    let chb = hb2.appendChild(elem('hbox', {
+                                        align: 'left',
+                                        width: IMG_MARGIN_WIDTH
+                                    }));
+
+                                    let canvas = doc.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+                                    canvas.setAttribute('id', 'ssleuth-img-cert-fingerprint-identicon');
+                                    canvas.setAttribute('width', 55);
+                                    canvas.setAttribute('height', 55);
+
+                                    chb.appendChild(canvas);
+                                } {
+                                    let vb = hb2.appendChild(elem('vbox', {
                                         align: 'baseline',
                                         flex: '1'
                                     }));

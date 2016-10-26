@@ -355,7 +355,7 @@
 					</groupbox>
 					<groupbox>
 						<caption label='&ssleuth.pref.about.thanks;' />
-							<description value=' • John Souvestre (beta tests)'/>
+							<description value=' • John Souvestre (beta tests, v0.3.1)'/>
 							<description value='&ssleuth.pref.about.translations;'/>
 							<description value=' • Jei Four (de-DE)' />
 							<description value=' • Thomas PORTASSAU (fr-FR) 0.4.x' />
@@ -375,6 +375,13 @@
 							This software is distributed in the hope that it will be useful, 
 							but WITHOUT ANY WARRANTY. See the GNU General Public License for more details.
 						</description>
+
+						<description value=""/>
+
+						<description class="ssleuth-pref-text">
+							Jdenticon 1.3.2 zlib license, jdenticon.com (c) Daniel Mester Pirttijärvi
+						</description>
+
 
 					</groupbox>
 				</vbox>

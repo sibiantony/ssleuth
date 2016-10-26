@@ -6,7 +6,7 @@
             <homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
             <id>ssleuth@github</id>
             <name>SSleuth</name>
-            <version>0.5.1</version>
+            <version>0.5.2</version>
             <iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
             <optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
             <optionsType>3</optionsType>
@@ -30,7 +30,7 @@
                     <description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
                 </r:Description>
             </localized>
-            
+
             <localized>
                 <r:Description>
                     <locale>pl-PL</locale>

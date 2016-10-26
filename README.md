@@ -65,3 +65,5 @@ mozilla guidelines for [modifiers](https://developer.mozilla.org/en-US/docs/XUL/
 
 SSleuth is released under [GPLv3.0](https://www.gnu.org/licenses/gpl-3.0.html).
 You should find the license text in the About page of add-on preferences.
+
+Jdenticon 1.3.2 zlib license, jdenticon.com (c) Daniel Mester Pirttijärvi
