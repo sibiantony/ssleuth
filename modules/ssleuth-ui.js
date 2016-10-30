@@ -649,12 +649,20 @@ function showCertDetails(cert, domMismatch, ev, win) {
     doc.getElementById('ssleuth-cert-sigalg-rating')
         .textContent = _fmt(rating) + '/' + _fmt(rp.signature);
 
+    var fingerPrint = svCert.sha256Fingerprint.replace(/:/g, '');
+
+    /*
+        doc.getElementById('ssleuth-text-cert-fingerprint-1')
+            .textContent = svCert.sha256Fingerprint.substring(0, 33);
+        doc.getElementById('ssleuth-text-cert-fingerprint-2')
+            .textContent = svCert.sha256Fingerprint.substring(33, 66);
+        doc.getElementById('ssleuth-text-cert-fingerprint-3')
+            .textContent = svCert.sha256Fingerprint.substring(66);*/
+
     doc.getElementById('ssleuth-text-cert-fingerprint-1')
-        .textContent = svCert.sha256Fingerprint.substring(0, 33);
+        .textContent = fingerPrint.substring(0, 32);
     doc.getElementById('ssleuth-text-cert-fingerprint-2')
-        .textContent = svCert.sha256Fingerprint.substring(33, 66);
-    doc.getElementById('ssleuth-text-cert-fingerprint-3')
-        .textContent = svCert.sha256Fingerprint.substring(66);
+        .textContent = fingerPrint.substring(33);
 
     identicon.update(svCert, doc);
 
