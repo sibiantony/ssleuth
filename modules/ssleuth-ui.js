@@ -477,8 +477,13 @@ function showCipherDetails(cipherSuite, win) {
 
     doc.getElementById('ssleuth-text-cipher-suite-kxchange').textContent =
         (cipherSuite.keyExchange.ui + '.');
+    doc.getElementById('ssleuth-text-cipher-suite-kxchange-notes').textContent =
+        utils.getText(cipherSuite.keyExchange.notes);
+
     doc.getElementById('ssleuth-text-cipher-suite-auth').textContent =
         (cipherSuite.authentication.ui + '. ');
+    doc.getElementById('ssleuth-text-cipher-suite-auth-notes').textContent =
+        utils.getText(cipherSuite.authentication.notes);
 
     doc.getElementById('ssleuth-text-cipher-suite-bulkcipher').textContent =
         (cipherSuite.bulkCipher.ui + ' ' + cipherSuite.cipherKeyLen +
