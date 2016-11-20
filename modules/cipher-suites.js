@@ -61,6 +61,24 @@ const ciphersuites = {
             ui: 'RSA EXPORT',
             notes: ''
         },
+
+        // Workaround for TLS 1.3 draft cipher suite strings.
+        // Mozilla doesn't yet expose the key exchange in SSLStatus
+        {
+            name: 'TLS_AES',
+            rank: 10,
+            pfs: 1,
+            ui: 'Unknown',
+            notes: 'TLS 1.3'
+        },
+        {
+            name: 'TLS_CHACHA20',
+            rank: 10,
+            pfs: 1,
+            ui: 'Unknown',
+            notes: 'TLS 1.3'
+        },
+
         {
             name: '',
             rank: 0,
@@ -100,6 +118,26 @@ const ciphersuites = {
             cert: 'DSA',
             notes: ''
         },
+
+        // Workaround for TLS 1.3 draft cipher suite strings.
+        // Mozilla doesn't yet expose the authentication in SSLStatus
+        {
+            name: 'TLS_AES',
+            rank: 10,
+            minSecureKeyLength: 0,
+            ui: 'Unknown',
+            cert: '',
+            notes: 'TLS 1.3'
+        },
+        {
+            name: 'TLS_CHACHA20',
+            rank: 10,
+            minSecureKeyLength: 0,
+            ui: 'Unknown',
+            cert: '',
+            notes: 'TLS 1.3'
+        },
+
         {
             name: '',
             rank: 0,
