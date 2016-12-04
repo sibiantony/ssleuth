@@ -343,7 +343,7 @@
 										active="true">
 				<vbox class="ssleuth-pref-view-container">
 					<groupbox>
-						<caption label="SSleuth v0.5.1"/>
+						<caption label="SSleuth v0.5.3"/>
 						<description value="&ssleuth.pref.about.author; Sibi Antony"/>
 						<description class="ssleuth-pref-text" >
 								Your feedback and development/translation support are welcome.
