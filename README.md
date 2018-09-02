@@ -1,4 +1,4 @@
-**_Please note : This add-on for Firefox is not compatible with Firefox 57+, due to missing APIs from Mozilla. For more details :  https://github.com/sibiantony/ssleuth/issues/78_**
+**_Please note : This add-on is not compatible with Firefox 57+ (Quantum). For more details :  https://github.com/sibiantony/ssleuth/issues/78_**
 
 SSleuth
 =======
