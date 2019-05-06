@@ -517,34 +517,18 @@ var panelbox = function (win) {
                                     class: 'ssleuth-text-body-class'
                                 }));
                             } {
-                                let hb1 = vb.appendChild(elem('hbox', {
-                                    id: 'ssleuth-text-cert-fingerprint-label-box',
-                                    align: 'baseline',
-                                })); 
-                                let hb2 = vb.appendChild(elem('hbox', {
+                                let hb = vb.appendChild(elem('hbox', {
                                     id: 'ssleuth-text-cert-fingerprint-box',
                                     align: 'baseline',
+                                }));
+                                hb.appendChild(elem('description', {
+                                    id: 'ssleuth-text-cert-fingerprint-label',
+                                    value: utils.getText('certificate.fingerprint'),
+                                    class: 'ssleuth-text-body-class'
                                 })); {
-                                    let chb = hb2.appendChild(elem('hbox', {
-                                        align: 'left',
-                                        width: IMG_MARGIN_WIDTH
-                                    }));
-
-                                    let canvas = doc.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-                                    canvas.setAttribute('id', 'ssleuth-img-cert-fingerprint-identicon');
-                                    canvas.setAttribute('width', 58);
-                                    canvas.setAttribute('height', 58);
-
-                                    chb.appendChild(canvas);
-                                } {
-                                    let vb = hb2.appendChild(elem('vbox', {
+                                    let vb = hb.appendChild(elem('vbox', {
                                         align: 'baseline',
                                         flex: '1'
-                                    }));
-                                    vb.appendChild(elem('description', {
-                                        id: 'ssleuth-text-cert-fingerprint-label',
-                                        value: utils.getText('certificate.fingerprint'),
-                                        class: 'ssleuth-text-body-class',
                                     }));
                                     vb.appendChild(elem('description', {
                                         id: 'ssleuth-text-cert-fingerprint-1',
