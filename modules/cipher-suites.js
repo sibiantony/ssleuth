@@ -346,7 +346,7 @@ const ffToggleDefault = [
             'rsa_rc4_128_md5',
             'rsa_rc4_128_sha'
         ],
-        state: 'default'
+        state: 'disable'
     },
     {
         name: 'Non PFS, non RC4 suites',
@@ -394,9 +394,5 @@ const tlsVersions = {
     ff_cache: {
         ui: '<Firefox cache. Reload page>',
         state: 'okay'
-    },
-    ff_29plus: {
-        ui: '<Requires Firefox 29+ >',
-        state: 'med'
     }
 }

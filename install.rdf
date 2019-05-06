@@ -6,7 +6,7 @@
             <homepageURL>https://github.com/sibiantony/ssleuth/</homepageURL>
             <id>ssleuth@github</id>
             <name>SSleuth</name>
-            <version>0.5.3</version>
+            <version>0.5.4</version>
             <iconURL>chrome://ssleuth/skin/ssleuth-icon.png</iconURL>
             <optionsURL>chrome://ssleuth/content/preferences.xul</optionsURL>
             <optionsType>3</optionsType>
@@ -14,12 +14,20 @@
             <bootstrap>true</bootstrap>
             <type>2</type>
             <multiprocessCompatible>true</multiprocessCompatible>
-
+            <!-- Basilisk / Iceweasel-UXP -->
             <targetApplication>
                 <r:Description>
                     <id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</id>
                     <minVersion>42.0</minVersion>
-                    <maxVersion>51.0a1</maxVersion>
+                    <maxVersion>52.*</maxVersion>
+                </r:Description>
+            </targetApplication>
+            <!-- Pale Moon -->
+            <targetApplication>
+                <r:Description>
+                    <id>{8de7fcbb-c55c-4fbe-bfc5-fc555c87dbc4}</id>
+                    <minVersion>28.0</minVersion>
+                    <maxVersion>28.*</maxVersion>
                 </r:Description>
             </targetApplication>
 
@@ -27,7 +35,7 @@
                 <r:Description>
                     <locale>de-DE</locale>
                     <name>SSleuth</name>
-                    <description>How strong is your HTTPS connection? SSleuth ranks an established SSL/TLS connection and provides a brief summary of the SSL/TLS parameters. Lets users tweak cipher suites status.</description>
+                    <description>Wie stark ist Ihre HTTPS-Verbindung? SSleuth ordnet eine bestehende SSL / TLS-Verbindung ein und bietet eine kurze Zusammenfassung der SSL / TLS-Parameter. Ermöglicht Benutzern, den Status der Chiffriersätze zu optimieren.</description>
                 </r:Description>
             </localized>
             
