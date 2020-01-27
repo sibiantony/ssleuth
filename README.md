@@ -1,4 +1,10 @@
-**_Please note : This add-on is not compatible with Firefox 57+ (Quantum). For more details :  https://github.com/sibiantony/ssleuth/issues/78_**
+
+**_Update Jan 27, 2020 :
+SSleuth development has stopped. Please look at the alternatives [IndicateTLS](https://addons.mozilla.org/firefox/addon/indicatetls/), [Certainly Something](https://addons.mozilla.org/en-US/firefox/addon/certainly-something/)_**
+
+
+**_Update Sep 2, 2019 :
+Please note : This add-on is not compatible with Firefox 57+ (Quantum). For more details :  https://github.com/sibiantony/ssleuth/issues/78_**
 
 SSleuth
 =======
